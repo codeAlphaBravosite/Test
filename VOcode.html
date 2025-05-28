@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Voice Alchemist's Handbook: Definitive Guide to Voiceover Mastery</title>
+    <style>
+        /* Reset and Base Styles */
+        :root {
+            --primary-color: #4A00E0; /* Deep Purple */
+            --primary-dark: #300090; /* Darker Purple */
+            --secondary-color: #00B4DB; /* Bright Cyan */
+            --accent-color: #FF7E5F; /* Coral */
+            --bg-color: #F0F2F5; /* Light Gray-Blue */
+            --card-bg: #FFFFFF;
+            --text-color: #1A202C; /* Very Dark Blue/Gray */
+            --text-light: #4A5568; /* Medium Gray */
+            --border-color: #CBD5E0; /* Light Gray Border */
+            --success-color: #38A169; /* Green */
+            --warning-color: #DD6B20; /* Orange */
+            --info-color: #3182CE; /* Blue */
+            --font-sans: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-serif: 'Merriweather', 'Georgia', serif;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.7;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--card-bg);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-family: var(--font-serif);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        header h1 .icon {
+            font-size: 2.2rem;
+            margin-right: 0.75rem;
+            vertical-align: middle;
+        }
+        header p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary-dark);
+            color: var(--card-bg);
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav ul li a {
+            color: var(--card-bg);
+            text-decoration: none;
+            padding: 0.85rem 1.1rem;
+            display: block;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--card-bg);
+            color: var(--primary-dark);
+            border-radius: 5px;
+        }
+
+        /* Main Content Area */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 1rem;
+            flex-grow: 1;
+        }
+
+        section {
+            background-color: var(--card-bg);
+            margin-bottom: 3rem;
+            padding: 2rem 2.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            scroll-margin-top: 90px; /* Adjust for sticky nav height */
+        }
+
+        section h2 {
+            color: var(--primary-color);
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--secondary-color);
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        section h2 .icon {
+            margin-right: 1rem;
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+
+        section h3 {
+            color: var(--primary-dark);
+            font-family: var(--font-sans);
+            font-size: 1.6rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+         section h4 {
+            color: var(--text-color);
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 0.75rem;
+        }
+
+
+        p {
+            margin-bottom: 1.25rem;
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.75rem;
+        }
+        ul li, ol li {
+            margin-bottom: 0.6rem;
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+        ul li strong, ol li strong {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        /* Interactive Elements: Accordion */
+        .accordion-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            background-color: var(--card-bg); /* Ensure content bg matches */
+        }
+
+        .accordion-header {
+            background-color: #E9D8FD; /* Lighter Purple for header */
+            color: var(--primary-dark);
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #D6BCFA; /* Slightly darker purple */
+        }
+        .accordion-header .icon {
+            transition: transform 0.3s ease;
+            font-size: 1.3rem;
+            color: var(--accent-color);
+        }
+        .accordion-header.active .icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .accordion-content p, .accordion-content ul, .accordion-content ol {
+            margin-top: 1rem;
+        }
+        .accordion-content.active {
+            padding: 1.5rem;
+        }
+
+        /* Cards for Styles */
+        .style-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .style-card {
+            background-color: #FDFEFF; /* Off-white */
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .style-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+        }
+        .style-card h4 {
+            color: var(--secondary-color);
+            font-size: 1.35rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            border-left: none; /* remove default h4 border */
+            padding-left: 0;
+            font-family: var(--font-sans);
+        }
+        .style-card h4 .icon {
+            margin-right: 0.6rem;
+            font-size: 1.2em;
+        }
+        .style-card .details {
+            font-size: 0.95rem;
+            flex-grow: 1; /* Makes sure card content fills space */
+        }
+        .style-card .details strong {
+            color: var(--primary-dark);
+        }
+        .style-card .example-sound {
+            font-style: italic;
+            color: var(--accent-color);
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #FFF3E0; /* Light Orange/Coral */
+            border-left: 4px solid var(--accent-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Table for Cheatsheet */
+        .cheatsheet-table-container {
+            overflow-x: auto; /* Essential for responsiveness */
+            margin-top: 1.5rem;
+        }
+        .cheatsheet-table {
+            width: 100%;
+            min-width: 700px; /* Ensure table has some width for scrolling */
+            border-collapse: collapse;
+        }
+        .cheatsheet-table th, .cheatsheet-table td {
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        .cheatsheet-table th {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--card-bg);
+            font-weight: 600;
+        }
+        .cheatsheet-table tbody tr:nth-child(even) {
+            background-color: #F7FAFC; /* Lighter Gray */
+        }
+        .cheatsheet-table tbody tr:hover {
+            background-color: #E2E8F0; /* Light Blue-Gray on hover */
+        }
+
+        /* Quiz Styles */
+        .quiz-container { /* Added container for better structure */
+            background-color: #F7FAFC;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        .quiz-question {
+            margin-bottom: 1.75rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+        }
+        .quiz-question p {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+        .quiz-options label {
+            display: block;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.2s, border-color 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        .quiz-options label:hover {
+            background-color: #E9D8FD; /* Light purple */
+            border-color: var(--primary-color);
+        }
+        .quiz-options input[type="radio"] {
+            margin-right: 0.75rem;
+            transform: scale(1.1);
+        }
+        .quiz-feedback {
+            margin-top: 0.75rem;
+            font-weight: bold;
+            font-size: 0.95rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        .quiz-feedback.correct {
+            color: var(--success-color);
+            background-color: #C6F6D5; /* Light green */
+        }
+        .quiz-feedback.incorrect {
+            color: var(--warning-color);
+            background-color: #FEEBC8; /* Light orange */
+        }
+        #submit-quiz {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+        #submit-quiz:hover {
+            background-color: #00A3C4; /* Darker Cyan */
+            transform: translateY(-2px);
+        }
+        #quiz-score {
+            margin-top: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        /* Callout Boxes */
+        .callout {
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-left-width: 5px;
+            border-left-style: solid;
+            border-radius: 5px;
+        }
+        .callout-info {
+            border-left-color: var(--info-color);
+            background-color: #EBF8FF; /* Light Blue */
+        }
+        .callout-info h4 { color: var(--info-color); border-left: none; padding-left: 0; }
+
+        .callout-warning {
+            border-left-color: var(--warning-color);
+            background-color: #FFFBEB; /* Light Amber */
+        }
+         .callout-warning h4 { color: var(--warning-color); border-left: none; padding-left: 0; }
+
+        .callout-tip {
+            border-left-color: var(--success-color);
+            background-color: #F0FFF4; /* Light Green */
+        }
+        .callout-tip h4 { color: var(--success-color); border-left: none; padding-left: 0; }
+
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            margin-top: auto;
+        }
+        footer p {
+            color: var(--bg-color); /* Override default p color */
+            font-size: 0.95rem;
+        }
+
+        /* Utility Classes */
+        .text-accent { color: var(--accent-color) !important; }
+        .text-secondary { color: var(--secondary-color) !important; }
+        .font-bold { font-weight: bold !important; }
+        .mt-1 { margin-top: 1rem !important; }
+        .mb-2 { margin-bottom: 2rem !important; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 900px) { /* Adjusted breakpoint */
+            header h1 {
+                font-size: 2rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+            nav ul li a {
+                padding: 0.75rem 0.9rem;
+                font-size: 0.9rem;
+            }
+            .container {
+                width: 95%;
+            }
+            section {
+                padding: 1.5rem;
+            }
+            section h2 {
+                font-size: 1.8rem;
+            }
+            section h3 {
+                font-size: 1.4rem;
+            }
+            .style-cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+        @media (max-width: 600px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav ul li a {
+                padding: 0.6rem 0.8rem;
+                width: 100%;
+                text-align: center;
+            }
+            header h1 { font-size: 1.75rem; }
+            section h2 { font-size: 1.6rem; }
+            section h3 { font-size: 1.3rem; }
+             .style-cards-container {
+                grid-template-columns: 1fr; /* Stack cards on mobile */
+            }
+            .cheatsheet-table th, .cheatsheet-table td {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+        }
+         /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary-dark), var(--secondary-color));
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--secondary-color), var(--primary-dark));
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><span class="icon">🌌</span>The Voice Alchemist's Handbook</h1>
+        <p>The Definitive Guide to Voiceover Styles, Techniques & Industry Mastery</p>
+    </header>
+
+    <nav id="main-nav">
+        <ul>
+            <li><a href="#welcome" class="active">Welcome</a></li>
+            <li><a href="#lexicon">Lexicon</a></li>
+            <li><a href="#styles">Styles</a></li>
+            <li><a href="#advanced-techniques">Techniques</a></li>
+            <li><a href="#direction">Direction</a></li>
+            <li><a href="#matching">Matching</a></li>
+            <li><a href="#pro-studio">Pro Studio</a></li>
+            <li><a href="#cheatsheet">Cheatsheet</a></li>
+            <li><a href="#quiz">Quiz</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <section id="welcome">
+            <h2><span class="icon">👋</span>Welcome to the Alchemy Lab!</h2>
+            <p>Greetings, future voice virtuoso! Step into "The Voice Alchemist's Handbook," your comprehensive compendium for mastering the art and science of voiceover. This isn't just an SOP; it's your launchpad into understanding the profound impact of vocal delivery.</p>
+            <p>In this dynamic industry, the <strong class="text-secondary">right voice, delivered with precision and intent, is pure gold</strong>. It transforms mere words into compelling narratives, persuasive arguments, and unforgettable characters. It's the bridge between a script and an audience's heart and mind.</p>
+            <p>This definitive guide will empower you to:</p>
+            <ul>
+                <li>Master the full spectrum of voiceover terminology – from foundational to advanced.</li>
+                <li>Explore an extensive range of voiceover styles and their nuanced applications.</li>
+                <li>Decode complex directional cues and understand client psychology.</li>
+                <li>Strategically select and execute the perfect voice style for any project, on any platform.</li>
+                <li>Understand basic studio craft and technical considerations that impact performance.</li>
+            </ul>
+            <p class="font-bold text-accent">Prepare to delve deep, experiment boldly, and transmute your vocal potential into professional excellence!</p>
+        </section>
+
+        <section id="lexicon">
+            <h2><span class="icon">📖</span>The Comprehensive Voiceover Lexicon</h2>
+            <p>The voiceover world has its own rich language. Mastering this lexicon is the first step towards professional fluency and seamless collaboration. We'll cover foundational terms, performance nuances, technical jargon, and directional shorthand.</p>
+
+            <h3>Part 1: Core Vocal Performance Attributes</h3>
+            <div class="accordion-item">
+                <div class="accordion-header">Articulation <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The physical act of producing speech sounds clearly and distinctly. It involves the precise movement and coordination of lips, tongue, teeth, jaw, and soft palate.<br><strong>Importance:</strong> Ensures every syllable and phoneme is intelligible, crucial for clarity, especially in fast-paced reads, technical content, or when targeting diverse audiences.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Enunciation <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> While related to articulation, enunciation often emphasizes the completeness and distinctness of word pronunciation, including giving full value to vowels and clearly sounding out consonants, especially at the end of words and phrases.<br><strong>Importance:</strong> Contributes to a polished, professional sound and prevents "word swallowing" or mumbling. Essential for formal reads and maintaining authority.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Inflection / Intonation <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The variation in vocal pitch during speech. Inflection refers to changes within a word or phrase, while intonation often describes the overall pitch pattern or "melody" of a sentence.<br><strong>Importance:</strong> Conveys emotion, grammatical meaning (e.g., questions vs. statements), emphasis, and subtext. Prevents monotony and makes speech sound natural and engaging.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Emphasis (Stress) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Highlighting specific words or phrases to give them greater significance. Achieved through increased volume, higher pitch, longer duration, a pause before/after, or a change in tone.<br><strong>Importance:</strong> Directs the listener's attention, clarifies meaning, reinforces key messages, and adds emotional weight.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Tone (Vocal Tone / Timbre) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The overall emotional quality, character, or color of the voice. Timbre is the unique characteristic sound of a voice, distinct from pitch or loudness.<br><strong>Importance:</strong> Sets the mood, conveys attitude (e.g., warm, cold, sarcastic, sincere), and is fundamental in aligning with brand identity or character persona.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Pitch <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The perceived highness or lowness of a sound, determined by the frequency of vocal cord vibration. Every individual has a natural pitch range.<br><strong>Importance:</strong> Can be manipulated to convey age, emotion, energy levels, and character. Strategic pitch variation (modulation) is key to an expressive read.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Pacing / Pace / Tempo <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The speed at which speech is delivered, typically measured in words per minute (WPM). Includes the use of pauses and the overall rhythm.<br><strong>Importance:</strong> Critically affects mood, comprehension, and engagement. Fast pace can denote excitement/urgency; slow pace can imply seriousness/drama or aid learning.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Projection (Vocal Projection) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The ability to make the voice audible and clear to listeners, whether in a large room or through a microphone, without straining or shouting. It involves efficient breath support and resonance.<br><strong>Importance:</strong> Ensures the voice sounds confident, present, and full-bodied, even at lower volumes. Distinct from mere loudness.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Cadence / Rhythm <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The rhythmic flow, pattern, and "beat" of speech, created by the interplay of stressed/unstressed syllables, pauses, and phrase lengths. It's the "musicality" of language.<br><strong>Importance:</strong> A natural and varied cadence enhances listenability and engagement. A poor or monotonous cadence can make a read sound robotic or dull.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Resonance <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The quality of a sound being deep, full, and reverberating. It's influenced by the size and shape of the vocal tract cavities (pharynx, oral cavity, nasal cavity) where sound waves are amplified and modified.<br><strong>Importance:</strong> A well-resonated voice often sounds richer, warmer, more authoritative, and carries better.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Modulation (Vocal Modulation) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The skillful variation of vocal characteristics—pitch, pace, volume, tone, and inflection—during a read to maintain interest and convey meaning effectively.<br><strong>Importance:</strong> The antidote to monotony. Essential for expressive storytelling, dynamic commercials, and engaging narration.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Breath Control / Support <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The conscious and efficient management of breath (typically diaphragmatic breathing) to sustain vocal tone, control volume, deliver long phrases smoothly, and prevent audible gasps or running out of air.<br><strong>Importance:</strong> Fundamental for vocal power, stamina, consistency, and a professional sound. Prevents vocal strain.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Diction <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A broader term that encompasses articulation, enunciation, and pronunciation, as well as choice of words and style of speaking. In voiceover, it often refers to the overall clarity and correctness of speech.<br><strong>Importance:</strong> Good diction makes a voiceover artist easy to understand and sound professional and credible.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Prosody <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The patterns of stress and intonation in a language. It encompasses rhythm, pitch, loudness, and tempo, contributing to the overall "melody" and emotional expression of speech.<br><strong>Importance:</strong> Crucial for conveying naturalness, emotion, and subtle meanings beyond the literal words. Poor prosody can make speech sound robotic or misinterpreted.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Vocal Placement / Focus <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The perceived origin or center of resonance of the voice (e.g., chest, throat, mouth, nasal, head). Manipulating placement can alter timbre and character.<br><strong>Importance:</strong> Used by actors to create different vocal qualities. For example, chest voice for authority, head voice for lightness/youth, nasal for certain characters.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Vocal Range <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The span of pitches a voice can produce, from the lowest to the highest note.<br><strong>Importance:</strong> A wider effective range allows for more expressive modulation and character versatility.</p></div>
+            </div>
+
+
+            <h3>Part 2: Delivery Descriptors, Emotional Cues & Stylistic Nuances</h3>
+            <p>These terms describe the *impact*, *feeling*, or *specific style* of the delivery. This is where the artistry truly shines.</p>
+            <div class="callout callout-info">
+                <h4>Beyond the Basics: A World of Nuance</h4>
+                <p>While this Lexicon covers many common delivery descriptors, the language of voiceover is rich and creative! You might also hear directors use more specific emotional terms (like 'reflective,' 'cynical,' or 'vulnerable'), character archetypes ('heroic,' 'wise elder'), or even metaphorical descriptions ('make it sound rounder'). The key is always to listen carefully, ask clarifying questions if you're unsure, and try to understand the *underlying feeling or impact* the director is aiming for. Your ability to interpret and translate these nuances will grow with experience!</p>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">Engaging <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Captivates listener attention; feels alive, interactive, and interesting. Makes the audience want to lean in and hear more.<br><strong>Achieved by:</strong> Dynamic modulation, authentic emotional connection, varied pacing, clear intent, natural inflections, and avoiding predictability.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Expressive <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Richly conveys emotion, meaning, and subtext through skillful use of vocal variations (pitch, tone, pace, volume, inflection).<br><strong>Achieved by:</strong> Deep script understanding, emotional range, precise vocal control, and the ability to color words with feeling.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Enthusiastic <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Genuinely conveys excitement, passion, and positive energy about the subject matter.<br><strong>Achieved by:</strong> Higher energy, often a brighter tone and "smile in the voice," faster pace, upward inflections, and palpable zeal.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">High-Energy <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A sustained delivery that is fast-paced, typically louder, very upbeat, and full of dynamism. Often demanded for promos and retail ads.<br><strong>Achieved by:</strong> Strong projection, quick pacing, elevated and varied pitch, sharp articulation, and a sense of drive or urgency.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Punchy <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A delivery style characterized by sharp, impactful, and often rhythmic enunciation of words or phrases. Designed for quick attention-grabbing and memorability.<br><strong>Achieved by:</strong> Strong articulation, emphasis on key syllables/words (often verbs or adjectives), strategic use of short pauses, and a staccato-like quality at times.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Explosive Excitement <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> An over-the-top, sudden burst of extreme enthusiasm, joy, or surprise. Often used for big reveals or highly dramatic moments in promos or game shows.<br><strong>Achieved by:</strong> Rapid increase in volume and pitch, very animated inflections, strong breath support for the burst of energy.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Genuine Amazement / Awe-Struck <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Sounding truly surprised, impressed, or filled with wonder in a believable way. Not forced or overly theatrical.<br><strong>Achieved by:</strong> Slightly lifted and often softer/breathier pitch, widened eyes (even off-camera), natural pauses or gasps, and a tone of discovery or reverence.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Authentic / Real / Grounded <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Sounds believable, sincere, and relatable, as if the speaker is genuinely experiencing or expressing the emotions/thoughts. Avoids sounding "actory" or artificial.<br><strong>Achieved by:</strong> Connecting emotionally with the script, using natural speech patterns, avoiding overly polished delivery, and speaking from a place of truth.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Conversational <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A relaxed, natural, and friendly delivery style that mimics everyday speech. As if talking to a friend or colleague.<br><strong>Achieved by:</strong> Natural inflections and pacing, slight imperfections (like small hesitations if appropriate), approachable tone, and avoiding a "formal announcer" sound.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Authoritative <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Conveys confidence, command, expertise, and credibility. The listener trusts the information being delivered.<br><strong>Achieved by:</strong> Clear and steady delivery, often a slightly lower pitch, deliberate pacing, precise articulation, and a tone of conviction.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Warm / Friendly / Approachable <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Creates a sense of comfort, sincerity, and openness. Makes the listener feel at ease and receptive.<br><strong>Achieved by:</strong> Gentle tone, often a "smile in the voice," moderate pace, empathetic inflections, and a welcoming quality.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Empathetic / Compassionate <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Conveys understanding, care, and shared feeling for the listener or the subject matter. Sensitive and supportive.<br><strong>Achieved by:</strong> Softer tone, often slower pace, gentle inflections, and a palpable sense of sincerity and concern.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Serious / Grave / Solemn <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Conveys weight, importance, and a lack of levity. Appropriate for serious topics, warnings, or somber occasions.<br><strong>Achieved by:</strong> Slower pace, often lower pitch, measured delivery, minimal inflection (but not flat), and a focused, respectful tone.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Urgent / Intense <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Conveys a sense of immediacy, high stakes, or critical importance. Can also create tension or excitement.<br><strong>Achieved by:</strong> Faster pace, clipped articulation, focused energy, often a slightly higher or more intense pitch, and minimal pauses.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Playful / Cheeky / Witty <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Light-hearted, fun, mischievous, or cleverly humorous. Often involves a knowing tone.<br><strong>Achieved by:</strong> Brighter tone, varied and often upward inflections, rhythmic delivery, perhaps a slight smirk in the voice, and precise timing for humorous effect.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Sarcastic / Ironic <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Saying the opposite of what is meant, often for humorous or critical effect. The vocal delivery is key to signaling the sarcasm.<br><strong>Achieved by:</strong> Exaggerated or flattened inflection, specific tonal shifts, sometimes a slower, deliberate delivery of the sarcastic phrase, or an overly sweet tone contrasting with the words.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Deadpan / Dry Humor <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Delivering humorous or absurd lines with a deliberately flat, emotionless, or serious tone. The humor arises from this contrast.<br><strong>Achieved by:</strong> Minimal inflection, steady pace, serious facial expression (even off-camera helps), letting the words themselves carry the comedy.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Inspirational / Uplifting / Motivational <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Aims to evoke hope, courage, and positive action. Often builds in intensity and emotional resonance.<br><strong>Achieved by:</strong> Sincere and passionate tone, often starting softer/slower and building in volume/pace/pitch, strong emphasis on empowering words, and a sense of conviction.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Sophisticated / Elegant / Polished <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Conveys refinement, class, and high quality. Often used for luxury brands or upscale services.<br><strong>Achieved by:</strong> Smooth and controlled delivery, clear articulation, often a slightly slower and measured pace, precise language, and a confident, understated tone.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Mysterious / Intriguing / Suspenseful <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Creates a sense of curiosity, uncertainty, or anticipation. Draws the listener in with unanswered questions.<br><strong>Achieved by:</strong> Often a lower, softer, or breathier tone, strategic use of pauses, varied pacing to build tension, and inflections that hint at hidden meanings.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Gritty / Raw <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A delivery that sounds tough, unpolished, and often has a textured or slightly raspy quality. Conveys realism or hardship.<br><strong>Achieved by:</strong> Can involve vocal fry, a more forceful delivery, less "pretty" resonance, and an authentic, streetwise, or world-weary attitude.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Smooth / Silky <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A very fluid, pleasant, and often seductive or calming vocal quality. Effortless and pleasing to the ear.<br><strong>Achieved by:</strong> Excellent breath control, legato phrasing (connecting words smoothly), warm resonance, and controlled, flowing inflections.</p></div>
+            </div>
+
+
+            <h3>Part 3: Technical & Studio Terminology (Essential for Pros)</h3>
+            <div class="accordion-item">
+                <div class="accordion-header">Read / Take <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A single performance or recording of a script or a section of it. Directors often ask for multiple "takes."</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Cold Read <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Reading a script aloud with little or no prior preparation or rehearsal. Often used in auditions to assess natural instincts and adaptability.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Punch-In / Punch and Roll <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A recording technique where a mistake in a take is corrected by re-recording only that specific section, "punching in" at a point before the error and "punching out" after. "Punch and Roll" allows the talent to hear a few seconds of the existing recording before they start their new line.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Pickup / Wild Line <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Re-recording a small portion of a script (a line or phrase) to correct an error or improve delivery. A "wild line" is a line recorded without reference to picture, often for options in editing.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Slate / Slating <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Verbally identifying yourself and sometimes the role or project at the beginning of an audition recording. (e.g., "John Smith, reading for Narrator.")</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">ADR (Automated Dialogue Replacement) / Dubbing <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The process of re-recording dialogue in a controlled studio environment after filming, to replace poor quality production sound or to alter dialogue. Dubbing also refers to replacing dialogue in one language with another.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Room Tone / Presence <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The ambient sound of a recording space when no one is speaking. Recorded for a short period and used by audio editors to fill gaps in dialogue or smooth transitions, making edits sound natural.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Levels / Gain <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The strength or volume of an audio signal. "Setting levels" means adjusting the input sensitivity (gain) of the microphone to ensure a strong, clear signal without distortion (clipping).</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Clipping / Peaking <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Audible distortion that occurs when an audio signal is too loud for the recording equipment to handle, exceeding its maximum capacity. Visually, the waveform appears "clipped" or squared off at the top and bottom.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Pop Filter / Windscreen <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> A screen placed between the speaker and the microphone to reduce or eliminate "plosives" – popping sounds caused by bursts of air from 'p', 'b', 't', 'd' sounds.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Sibilance / De-esser <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> An exaggerated or harsh hissing sound on 's', 'sh', 'z' consonants. A "de-esser" is an audio processor (or plugin) used to reduce sibilance.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Mouth Clicks / Noise Floor <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Small clicking or smacking sounds made by the mouth, often due to dryness or saliva. "Noise floor" is the level of background noise (hums, hiss, room sounds) present in a recording environment when no primary sound is being made.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">DAW (Digital Audio Workstation) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> Software used for recording, editing, and producing audio files (e.g., Adobe Audition, Pro Tools, Audacity, Logic Pro X, Reaper).</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Script Analysis / Markup <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Meaning:</strong> The process of thoroughly reading and interpreting a script to understand its meaning, emotional arc, key messages, and character intent. "Marking up" involves making notes on the script for emphasis, pauses, breathing, tone shifts, etc.</p></div>
+            </div>
+        </section>
+
+        <section id="styles">
+            <h2><span class="icon">🎨</span>The Expansive Style Spectrum: Your Vocal Palette</h2>
+            <p>Voiceover is an art of immense variety. Understanding the nuances of different styles allows you to adapt to any project. This section explores a comprehensive range of styles, from common commercial reads to niche character work.</p>
+            <div class="style-cards-container">
+                <!-- Cards from previous version with potential for more detail -->
+                <div class="style-card">
+                    <h4><span class="icon">💬</span>Conversational / Natural</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> The "anti-announcer" read. Sounds like an authentic, unscripted chat with a friend or peer. Relatable, genuine, and often includes slight imperfections for realism.</p>
+                        <p><strong>Key Traits:</strong> Friendly tone, natural (sometimes varied) pacing, subtle inflections, casual language, warm, approachable. May use slight vocal fry or "ums" if contextually appropriate for hyper-realism.</p>
+                        <p><strong>Use Cases:</strong> Modern commercials (DTC brands, tech, lifestyle), social media, explainer videos, podcasts, internal communications, testimonial-style reads.</p>
+                    </div>
+                    <p class="example-sound">"So, I was scrolling the other day, and you know how it is... then bam! This thing totally changed my workflow."</p>
+                </div>
+
+                <div class="style-card">
+                    <h4><span class="icon">👔</span>Authoritative / Credible</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Projects confidence, expertise, and trustworthiness. The voice of knowledge and reliability.</p>
+                        <p><strong>Key Traits:</strong> Clear and steady delivery, often mid to lower pitch range, deliberate pacing with thoughtful pauses, precise articulation, strong projection, and a tone of conviction without being aggressive.</p>
+                        <p><strong>Use Cases:</strong> News narration, corporate presentations, financial/medical/legal content, serious documentaries, technical explainers, expert commentary.</p>
+                    </div>
+                     <p class="example-sound">"Based on extensive research, the data conclusively supports this strategic direction for sustainable growth."</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">😊</span>Warm & Friendly / Approachable</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Invites connection through sincerity, kindness, and a positive demeanor. Puts the listener at ease.</p>
+                        <p><strong>Key Traits:</strong> Gentle and reassuring tone, often a "smile in the voice," moderate and smooth pacing, empathetic inflections, clear but soft articulation.</p>
+                        <p><strong>Use Cases:</strong> Family-oriented ads, customer service (IVR), healthcare, non-profits, PSAs, children's content, lifestyle brands aiming for comfort.</p>
+                    </div>
+                    <p class="example-sound">"We're here to listen and support you, every step of the way. You're not alone in this."</p>
+                </div>
+
+                <div class="style-card">
+                    <h4><span class="icon">⚡</span>High-Energy / Upbeat / Promotional</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Bubbling with enthusiasm, excitement, and dynamism. Designed to grab attention, create hype, and motivate action.</p>
+                        <p><strong>Key Traits:</strong> Faster pace, higher and more varied pitch, strong projection, bright tone, punchy delivery of keywords, often uses exclamatory inflections.</p>
+                        <p><strong>Use Cases:</strong> Retail ads (sales, promotions), event promos, youth-market products (gaming, snacks, entertainment), radio sweepers, contest announcements.</p>
+                    </div>
+                    <p class="example-sound">"Don't walk, RUN! Our biggest sale of the year is ON NOW with deals you won't believe!"</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">📚</span>Narrative / Storyteller</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Weaves a tale, guiding the listener through events, characters, and emotions. Can range from intimate to epic.</p>
+                        <p><strong>Key Traits:</strong> Expressive modulation, varied pacing to build suspense or reflect mood, clear articulation, ability to convey emotion subtly, engaging and immersive tone. For audiobooks, includes differentiating character voices slightly.</p>
+                        <p><strong>Use Cases:</strong> Documentaries, audiobooks, historical programs, branded storytelling, case studies, museum tours, long-form explainers with a narrative arc.</p>
+                    </div>
+                    <p class="example-sound">"The wind whispered through the ancient ruins, carrying secrets of a forgotten civilization..."</p>
+                </div>
+                 <div class="style-card">
+                    <h4><span class="icon">🎭</span>Dramatic / Cinematic</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Heightened emotion, intensity, and impact. Often larger-than-life, designed to evoke strong feelings or build suspense.</p>
+                        <p><strong>Key Traits:</strong> Powerful and resonant tone, deliberate pacing (can be slow for gravitas or rapid for action), strong dynamic range (louds and softs), significant pitch variation, and impactful pauses.</p>
+                        <p><strong>Use Cases:</strong> Movie trailers, TV show promos, video game cutscenes/trailers, theatrical productions, dramatic podcast intros, epic brand anthems.</p>
+                    </div>
+                    <p class="example-sound">"In a future torn by conflict... one hero will rise against all odds. This summer." (Deep, resonant, building)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🏢</span>Corporate / Business Professional</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Polished, confident, and clear, tailored for a business audience. Conveys competence, reliability, and professionalism.</p>
+                        <p><strong>Key Traits:</strong> Formal but not stiff, articulate, steady and measured pace, often a neutral accent, calm and assured tone. Can have a hint of warmth for approachability.</p>
+                        <p><strong>Use Cases:</strong> Corporate overview videos, investor relations, B2B marketing, training modules for employees, company policy announcements, financial reports.</p>
+                    </div>
+                    <p class="example-sound">"Our commitment to innovation and customer satisfaction remains the cornerstone of our corporate strategy."</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🥸</span>Character Actor / Animation / Gaming</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> The art of creating distinct and believable voices for fictional characters. Requires immense versatility and acting skill.</p>
+                        <p><strong>Key Traits:</strong> Highly varied—can involve accents, dialects, unique pitches, timbres, speech patterns, and emotional ranges specific to each character (e.g., villain, hero, sidekick, creature, child, elder).</p>
+                        <p><strong>Use Cases:</strong> Animated films and series, video games (NPCs, main characters), commercials with mascots, audio dramas, puppet shows, toys.</p>
+                    </div>
+                    <p class="example-sound">"Fear not, citizen! For I, Captain Quirk, shall unravel this dastardly plot!" (In a quirky, heroic voice)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">😂</span>Comedic / Humorous</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Aims to amuse, entertain, and elicit laughter. Relies heavily on timing, delivery, and understanding of comedic archetypes.</p>
+                        <p><strong>Key Traits:</strong> Can be witty, sarcastic, goofy, deadpan, ironic, or character-driven. Involves sharp timing for punchlines, playful or exaggerated inflections, strategic pauses, and sometimes silly voices or sound effects.</p>
+                        <p><strong>Use Cases:</strong> Humorous commercials, comedy sketches, animated comedies, satirical content, funny explainers, podcast comedy segments.</p>
+                    </div>
+                    <p class="example-sound">"My smart fridge just ordered more kale. I think it's judging my life choices." (Delivered with a wry, slightly exasperated tone)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🧑‍🏫</span>Educational / E-Learning / Instructional</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Clear, articulate, and easy to understand, with the primary goal of imparting knowledge or teaching a skill.</p>
+                        <p><strong>Key Traits:</strong> Friendly yet authoritative tone, precise articulation, moderate and consistent pacing (often slightly slower for comprehension), clear emphasis on key terms/concepts, engaging but not overly dramatic.</p>
+                        <p><strong>Use Cases:</strong> Online courses, software tutorials, how-to videos, academic lectures, safety training, museum audio guides, language learning apps.</p>
+                    </div>
+                    <p class="example-sound">"To begin, locate the main toolbar at the top of your screen. The 'File' menu is on the far left."</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">📢</span>Classic Announcer / Broadcast</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> A more traditional, often formal and projected voice associated with radio, television, and live events. Can range from "booming" to "smooth."</p>
+                        <p><strong>Key Traits:</strong> Excellent diction and enunciation, often a slightly lower pitch range, strong vocal presence, and a sense of authority or officialdom. Pace and energy vary by context (e.g., energetic for promos, measured for formal announcements).</p>
+                        <p><strong>Use Cases:</strong> Traditional commercials, live event hosting (Voice of God), game shows, award ceremonies, public service announcements, station IDs.</p>
+                    </div>
+                     <p class="example-sound">"And now, live from the Grand Auditorium, it's the moment you've all been waiting for!" (Projected, enthusiastic)</p>
+                </div>
+                 <div class="style-card">
+                    <h4><span class="icon">🧘</span>Calm / Soothing / Meditative / ASMR</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Extremely gentle, soft, often whispered or spoken at a low volume. Aims to induce relaxation, tranquility, or sensory responses (ASMR).</p>
+                        <p><strong>Key Traits:</strong> Very slow and deliberate pace, soft and often breathy tone, minimal pitch variation (can be slightly sing-song for meditative), close mic technique is crucial. ASMR may include specific mouth sounds or triggers.</p>
+                        <p><strong>Use Cases:</strong> Guided meditations, sleep stories, relaxation apps, ASMR content, some luxury/wellness brand commercials seeking an intimate feel.</p>
+                    </div>
+                    <p class="example-sound">"Gently close your eyes... and allow your breath... to deepen... feeling the calm wash over you..." (Very soft, slow, breathy)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🚨</span>Urgent / News Reporter / Alert</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Conveys immediacy, importance, and factual information, often in a time-sensitive context. Serious and direct.</p>
+                        <p><strong>Key Traits:</strong> Quick but exceptionally clear pace, crisp articulation, serious and impartial tone (though urgency can add intensity), moderate and steady pitch. Focus on delivering information efficiently.</p>
+                        <p><strong>Use Cases:</strong> Breaking news reports, emergency alerts, public safety announcements, live field reporting, some types of documentary narration requiring factual immediacy.</p>
+                    </div>
+                    <p class="example-sound">"We're coming to you live from downtown where emergency crews are currently on the scene of a multi-vehicle incident."</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🌟</span>Inspirational / Motivational / Anthem</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Aims to uplift, empower, evoke hope, and encourage belief or action. Often builds emotionally.</p>
+                        <p><strong>Key Traits:</strong> Sincere and passionate tone, often starts with a grounded or reflective feel and builds in volume, pitch, and intensity towards a climax. Strong emphasis on empowering words, use of pauses for impact, and a sense of conviction.</p>
+                        <p><strong>Use Cases:</strong> Non-profit campaigns, motivational speeches, sports brand commercials ("hero" narratives), graduation addresses, brand manifestos, political rallies.</p>
+                    </div>
+                    <p class="example-sound">"Believe in your potential. Dare to dream. And together, let's build a future without limits!" (Building in power and passion)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">😏</span>Witty / Snarky / Irreverent</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Cleverly humorous, often with a knowing, slightly sarcastic, or playfully critical edge. Challenges norms with intelligence.</p>
+                        <p><strong>Key Traits:</strong> Uses irony and subtle sarcasm, often a conversational or laid-back pace with sharp timing for witty lines. Specific inflections and tonal shifts highlight the humor or critique. Can be deadpan or more animatedly cynical.</p>
+                        <p><strong>Use Cases:</strong> Content targeting younger demographics (Gen Z, Millennials), edgy brand voices, humorous explainers, satirical ads, some podcast hosts, comedy roasts.</p>
+                    </div>
+                    <p class="example-sound">"Oh, fantastic. Another 'groundbreaking' app that does exactly what ten other apps already do. My excitement is... contained." (Dry, knowing tone)</p>
+                </div>
+                 <div class="style-card">
+                    <h4><span class="icon">😐</span>Deadpan / Dry Humorist</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Delivering humorous, absurd, or ironic lines with a deliberately flat, emotionless, or overly serious tone. The comedy stems from this stark contrast.</p>
+                        <p><strong>Key Traits:</strong> Monotonous or very limited inflection, steady and often unhurried pace, serious facial expression (which influences the voice), allowing the inherent absurdity of the words to shine.</p>
+                        <p><strong>Use Cases:</strong> Specific comedic characters (e.g., Aubrey Plaza style), parody content, mockumentaries, some stand-up comedy styles, ads aiming for quirky humor.</p>
+                    </div>
+                    <p class="example-sound">"I've decided to take up competitive napping. The training is intense. Mostly involves my couch." (Delivered completely flat, serious)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🧐</span>Intriguing / Mysterious / Suspenseful</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Creates curiosity, uncertainty, or anticipation. Draws the listener in with hints, unanswered questions, and an air of the unknown.</p>
+                        <p><strong>Key Traits:</strong> Often a lower, softer, or breathier tone. Strategic use of pauses and silence. Varied pacing to build tension – sometimes slow and deliberate, sometimes quickening. Inflections that suggest hidden meanings or impending events.</p>
+                        <p><strong>Use Cases:</strong> Thriller/mystery trailers or narration, true crime podcasts, escape room intros, sci-fi or fantasy world-building, teasers for reveals.</p>
+                    </div>
+                    <p class="example-sound">"They say the old house on the hill holds a secret... a secret no one has ever returned to tell." (Low, slightly breathy, with pauses)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">💎</span>Luxury / Sophisticated / Elegant</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> Conveys exclusivity, refinement, high quality, and aspirational value. Smooth, polished, and confident without being arrogant.</p>
+                        <p><strong>Key Traits:</strong> Flawless articulation, smooth and controlled delivery, often a slightly slower and measured pace. Tone is confident, understated, and can be warm, cool, or even slightly seductive depending on the brand. Impeccable diction.</p>
+                        <p><strong>Use Cases:</strong> High-end fashion, jewelry, automotive, travel, fine dining, premium services, art gallery narrations.</p>
+                    </div>
+                    <p class="example-sound">"Experience the epitome of craftsmanship. Where every detail is a testament to timeless elegance." (Smooth, calm, confident)</p>
+                </div>
+                <div class="style-card">
+                    <h4><span class="icon">🌍</span>Global / Neutral / Mid-Atlantic Accent</h4>
+                    <div class="details">
+                        <p><strong>Description:</strong> An accent that is clear, easily understood by a wide international audience, and generally free of strong regional characteristics. The Mid-Atlantic accent is a cultivated blend of American and British English pronunciations.</p>
+                        <p><strong>Key Traits:</strong> Precise articulation, clear vowel sounds, standard grammar. The goal is broad intelligibility and a professional, often slightly formal, sound.</p>
+                        <p><strong>Use Cases:</strong> International business presentations, global e-learning modules, airline announcements, voice assistants for a worldwide market, some documentary narration for international distribution.</p>
+                    </div>
+                    <p class="example-sound">"Welcome. This module will provide an overview of our international operations and strategic partnerships." (Clear, neutral accent)</p>
+                </div>
+                 <div class="style-card">
+                    <h4><span class="icon">🗣️</span>Hard Sell vs. Soft Sell (Persuasive Styles)</h4>
+                    <div class="details">
+                        <p><strong>Hard Sell:</strong> Direct, forceful, urgent, and overtly persuasive. Aims for immediate action, often highlighting scarcity or limited-time offers. Typically louder and faster.</p>
+                        <p><strong>Soft Sell:</strong> More subtle, indirect, and persuasive through charm, logic, trust-building, or emotional connection. Less aggressive, focuses on benefits and experience.</p>
+                        <p><strong>Use Cases:</strong>
+                            <strong>Hard Sell:</strong> Retail promotions, car dealerships, direct response TV, "act now" offers.
+                            <strong>Soft Sell:</strong> Luxury goods, financial services, healthcare, consultative sales, brand-building.</p>
+                    </div>
+                     <p class="example-sound"><strong>Hard:</strong> "SLASHED PRICES! EVERYTHING MUST GO! THIS WEEKEND ONLY! DON'T MISS OUT!" <br><strong>Soft:</strong> "Discover how our tailored solutions can help you achieve your long-term financial aspirations with confidence and peace of mind."</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="advanced-techniques">
+            <h2><span class="icon">🔬</span>Advanced Vocal Alchemy: Techniques & Nuances</h2>
+            <p>Beyond basic styles, true vocal mastery involves understanding and applying subtle techniques that add depth, emotion, and believability to your reads. These are the tools of the seasoned alchemist.</p>
+
+            <h4>Subtext: Reading Between the Lines</h4>
+            <p>Subtext is the unspoken meaning, emotion, or intention behind the actual words on the page. It's what a character (or narrator) is *really* thinking or feeling but not explicitly saying.</p>
+            <ul>
+                <li><strong>Identifying Subtext:</strong> Ask: What is the character's objective? What are their relationships? What are the stakes? What happened *before* this line?</li>
+                <li><strong>Voicing Subtext:</strong> Conveyed through subtle shifts in tone, pacing, inflection, pauses, sighs, or even the way a breath is taken. For example, the line "I'm fine" can mean "I'm genuinely okay," "I'm definitely not okay but don't want to talk," or "I'm furious but being polite."</li>
+            </ul>
+
+            <h4>Emotional Layering & Transitions</h4>
+            <p>Few scripts maintain a single emotion. Great voice actors can layer multiple emotions or transition smoothly between them.</p>
+            <ul>
+                <li><strong>Layering:</strong> A character might be angry but also scared, or happy but with an undercurrent of sadness. The voice should reflect this complexity.</li>
+                <li><strong>Transitions:</strong> How do you move from a lighthearted moment to a serious one? It requires careful control of pace, pitch, and tone to guide the listener naturally. Avoid abrupt, jarring shifts unless specifically intended for comedic or dramatic effect.</li>
+            </ul>
+
+            <h4>Using Pauses Effectively (The Power of Silence)</h4>
+            <p>Silence can be as powerful as sound. Strategic pauses can:</p>
+            <ul>
+                <li><strong>Build Suspense:</strong> A pause before a reveal or a critical piece of information.</li>
+                <li><strong>Add Emphasis:</strong> Pausing before or after a key word makes it stand out.</li>
+                <li><strong>Allow for Comprehension:</strong> Giving the listener a moment to process complex information.</li>
+                <li><strong>Convey Emotion:</strong> A hesitant pause can show uncertainty; a heavy pause can show grief or deep thought.</li>
+                <li><strong>Create Comedic Timing:</strong> The "beat" before a punchline is often crucial.</li>
+            </ul>
+            <div class="callout callout-tip">
+                <h4>Types of Pauses:</h4>
+                <p><strong>Caesura:</strong> A short, natural pause within a line or sentence, often for breath or slight emphasis. <br><strong>Dramatic Pause:</strong> A longer, more intentional pause for significant impact. <br><strong>Comedic Pause:</strong> Timed for humorous effect, often setting up a punchline.</p>
+            </div>
+
+            <h4>Vocal Color & Texture</h4>
+            <p>"Color" refers to the richness and variety of tonal qualities in the voice. "Texture" can describe qualities like breathiness, huskiness, smoothness, or even a slight rasp.</p>
+            <ul>
+                <li><strong>Adding Color:</strong> Experiment with different placements of resonance (chest, head, nasal), varying degrees of breathiness, and subtle tonal shifts to make your read more interesting and emotionally resonant.</li>
+                <li><strong>Using Texture:</strong> A slightly breathy voice can sound intimate or vulnerable. A touch of huskiness might suit a world-weary character. These should be used intentionally and appropriately for the script.</li>
+            </ul>
+
+            <h4>Mic Technique as a Performance Tool</h4>
+            <p>How you use the microphone can subtly (or overtly) affect your performance style.</p>
+            <ul>
+                <li><strong>Proximity Effect:</strong> Getting closer to a directional mic increases bass frequencies, creating a warmer, more intimate, or "boomy" sound. Used for soft sells, ASMR, or deep announcer reads.</li>
+                <li><strong>Working Off-Axis:</strong> Slightly turning your head away from the mic can reduce plosives, soften sibilance, or create a sense of distance or introspection.</li>
+                <li><strong>Varying Distance:</strong> Moving slightly further from the mic for louder passages and closer for softer ones can help manage dynamics, though good vocal control is paramount.</li>
+            </ul>
+             <div class="callout callout-warning">
+                <h4>Caution with Mic Technique:</h4>
+                <p>These are advanced techniques. The primary goal is always a clean, consistent signal. Drastic changes in mic distance can lead to inconsistent levels and phasing issues. Always prioritize good vocal technique first.</p>
+            </div>
+
+            <h4>Dialects & Accents: The Art of Authenticity</h4>
+            <p>If a script calls for a specific dialect or accent:</p>
+            <ul>
+                <li><strong>Research & Respect:</strong> Thoroughly research the accent. Listen to native speakers. Understand the cultural context. Avoid caricatures or offensive stereotypes.</li>
+                <li><strong>Phonetics:</strong> Understanding the International Phonetic Alphabet (IPA) can be helpful for learning specific sound changes.</li>
+                <li><strong>Consistency:</strong> Maintain the accent consistently throughout the read.</li>
+                <li><strong>Coaching:</strong> If it's a significant role or a challenging accent, consider working with a dialect coach.</li>
+            </ul>
+             <h4>Improvisation & Ad-Libbing (When Appropriate)</h4>
+            <p>Sometimes, especially in conversational or character reads, a director might allow or encourage some improvisation or ad-libbing (adding small, unscripted lines or sounds) to enhance realism or humor.</p>
+            <ul>
+                <li><strong>Know the Boundaries:</strong> Always clarify with the director if ad-libbing is welcome and to what extent.</li>
+                <li><strong>Stay in Character/Tone:</strong> Any ad-libs should be consistent with the established character or the overall tone of the piece.</li>
+                <li><strong>Less is More:</strong> Often, a small, well-placed ad-lib is more effective than excessive improvisation.</li>
+            </ul>
+        </section>
+
+        <section id="direction">
+            <h2><span class="icon">🎬</span>Decoding the Director: Mastering Session Language</h2>
+            <p>Working with directors, clients, or producers is a collaborative art. Understanding their feedback and "session lingo" is crucial for efficient and successful recordings. This section goes beyond basic cues into more nuanced direction.</p>
+
+            <h4>General Directional Philosophies</h4>
+            <ul>
+                <li><strong>Result-Oriented Direction:</strong> Focuses on the *feeling* or *impact* desired (e.g., "Make it sound more hopeful," "I want to feel the urgency").</li>
+                <li><strong>Action-Oriented Direction:</strong> Focuses on *how* to achieve the result (e.g., "Speed up the pace here," "Try a higher pitch on that word").</li>
+                <li><strong>Good directors often blend both.</strong> Your job is to translate their vision into vocal performance.</li>
+            </ul>
+
+            <h4>Common Directional Phrases & Their Meanings (Expanded)</h4>
+            <div class="accordion-item">
+                <div class="accordion-header">"Give me another one, just like that." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> They liked the previous take and want a safety/backup, or perhaps to see if you can replicate it with even more precision or subtle improvement. Maintain the same energy, pacing, and tone.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"Let's try one that's a bit 'smaller' / 'bigger'." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>"Smaller":</strong> Less energy, softer volume, more intimate or understated. Could mean less projection or a more internal feeling.<br><strong>"Bigger":</strong> More energy, louder volume, more projection, more expansive or dramatic. Could mean a more "performative" read.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"Can you find the 'arc' in that sentence/paragraph?" <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> They want you to shape the phrase dynamically – perhaps starting softer, building to a peak, and then resolving. Give it a sense of journey or progression rather than a flat delivery.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"Connect those thoughts more." / "Make it flow better." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> The read might sound choppy or disjointed. Try to link phrases more smoothly, perhaps with shorter pauses between related ideas or by carrying the energy through the sentence.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"It's sounding a bit 'sing-songy'." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> Your inflection pattern might be too repetitive or predictable, creating an unnatural melodic quality. Vary your pitch patterns and rhythms to sound more natural.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"Too 'on the nose'." / "A bit too literal." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> Your delivery might be too obvious or overtly telegraphing the emotion or meaning. They might be looking for more subtlety or subtext. Try a more nuanced approach.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"Let the words do the work." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> You might be over-acting or pushing too hard. The script itself is strong, so a more understated, natural delivery might be more effective. Trust the writing.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">"Find the 'button' on that line/section." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> Deliver the end of a line or section with a clear sense of finality, emphasis, or a "punch" that provides a satisfying conclusion or transition point. It's like putting an exclamation point on it.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"More 'texture' / 'grit' / 'air'." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Texture/Grit:</strong> Add a bit of vocal fry, huskiness, or a less polished sound. <br><strong>Air:</strong> Make it breathier, lighter, softer. Often for intimacy or vulnerability.</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">"Pitch it to [demographic/scenario]." (e.g., "Pitch it to a busy mom," "Pitch it like you're explaining to a child") <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> Adjust your tone, language complexity (if allowed), and energy to suit a specific imagined listener. This helps to make the read more targeted and relatable.</p></div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">"Give me a 'safer' read." <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Means:</strong> They might want a more neutral, less stylized, or less risky take, perhaps for a broader audience or if previous takes were too "out there." Often involves less extreme emotional choices.</p></div>
+            </div>
+
+            <h4>Interpreting Client Feedback & "The Subtext of Direction"</h4>
+            <ul>
+                <li><strong>Listen Actively:</strong> Don't just hear the words; try to understand the *intent* behind them.
+                <li><strong>Ask Clarifying Questions:</strong> If direction is vague (e.g., "make it pop more"), don't be afraid to ask for specifics: "Do you mean with more energy, a higher pitch, or more emphasis on certain words?"</li>
+                <li><strong>Offer Options:</strong> If unsure, you can say, "I can try that a couple of ways. Are you thinking more [option A] or more [option B]?"</li>
+                <li><strong>Read the Room (or Virtual Room):</strong> Pay attention to the client's overall demeanor and reactions. Are they looking for something highly creative or something very straightforward?</li>
+                <li><strong>It's Not Personal:</strong> Direction is about getting the best performance for the project, not a critique of your talent. Be open and adaptable.</li>
+            </ul>
+            <div class="callout callout-tip">
+                <h4>The "Why" Behind the Direction:</h4>
+                <p>Sometimes clients can't articulate exactly what they want in technical VO terms. They might say "make it bluer." Your job, as the alchemist, is to translate that into vocal choices. "Bluer" might mean calmer, cooler, more trustworthy, or even sadder depending on context. Gentle probing questions can help: "When you say 'bluer,' are you thinking more calm and soothing, or perhaps a bit more serious?"</p>
+            </div>
+        </section>
+
+        <section id="matching">
+            <h2><span class="icon">🧩</span>Strategic Alchemy: Matching Voice to Project & Platform</h2>
+            <p>The true alchemist knows that the same ingredient can yield different results depending on the formula. Matching your voice style to the specific project, brand, audience, and platform is critical for success. This section delves deeper into strategic considerations.</p>
+
+            <h3>The Core Triangle: Brand - Audience - Message</h3>
+            <p>Before choosing a style, always analyze these three pillars:</p>
+            <ol>
+                <li><strong>BRAND IDENTITY:</strong>
+                    <ul>
+                        <li>What are the brand's core values (e.g., innovation, tradition, fun, reliability, luxury)?</li>
+                        <li>What is its personality/archetype (e.g., The Jester, The Sage, The Hero, The Everyman)?</li>
+                        <li>What is its existing tone of voice in other communications? (The VO should align).</li>
+                    </ul>
+                </li>
+                <li><strong>TARGET AUDIENCE:</strong>
+                    <ul>
+                        <li>Demographics: Age, gender, location, education, income.</li>
+                        <li>Psychographics: Lifestyle, interests, values, attitudes, pain points.</li>
+                        <li>What kind of voice will resonate most authentically with them? What will they trust?</li>
+                    </ul>
+                </li>
+                <li><strong>KEY MESSAGE & OBJECTIVE:</strong>
+                    <ul>
+                        <li>What is the single most important thing the audience should take away?</li>
+                        <li>What is the desired action or feeling (e.g., buy, learn, feel inspired, be entertained)?</li>
+                        <li>How can the voice best serve this objective?</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Platform-Specific Considerations</h3>
+            <p>The medium often dictates the delivery style:</p>
+             <div class="accordion-item">
+                <div class="accordion-header">Short-Form Video (TikTok, Reels, Shorts) <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Extremely fast-paced, high competition for attention, authenticity valued.</p>
+                    <p><strong>Voice Styles:</strong> Conversational, High-Energy, Engaging, Witty/Snarky, Punchy, Humorous. Often benefits from a strong "hook" in the first 1-3 seconds. Pacing is critical – usually quick, but with strategic pauses for emphasis or comedic timing. Dynamic pitch modulation helps maintain interest.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">YouTube (Longer Form) <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Can vary widely from educational to entertainment. Building a connection with the audience over time is often key.</p>
+                    <p><strong>Voice Styles:</strong> Conversational and Engaging are very popular for vlogs and explainers. Narrative/Storytelling for documentaries or case studies. Educational for tutorials. The style needs to be sustainable and engaging for the video's duration. Consistency is important.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Broadcast TV & Radio Commercials <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Time is limited (15, 30, 60 seconds). Message needs to be clear and impactful. Production quality is generally high.</p>
+                    <p><strong>Voice Styles:</strong> Wide range – Announcer, High-Energy, Conversational, Warm, Authoritative, Comedic, Hard/Soft Sell. The style is heavily dictated by the brand and target demographic.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Podcasts <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Intimate medium. Listeners often build a strong rapport with hosts. Authenticity and personality are key.</p>
+                    <p><strong>Voice Styles (Host):</strong> Predominantly Conversational, Engaging, Authentic. The host's natural personality usually defines the style. Can be Humorous, Investigative, Storytelling, etc.<br>
+                    <strong>Voice Styles (Intros/Ads):</strong> Can be more produced – Announcer, Energetic, Dramatic, depending on the show's branding.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">E-Learning & Corporate Training <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Goal is knowledge transfer and retention. Clarity, engagement, and professionalism are paramount.</p>
+                    <p><strong>Voice Styles:</strong> Educational/Instructional, Professional/Corporate, Clear, Engaging, sometimes Conversational to make complex topics more relatable. Pacing should allow for comprehension. Avoid overly dramatic or distracting styles.</p>
+                </div>
+            </div>
+             <div class="accordion-item">
+                <div class="accordion-header">Audiobooks <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Long-form listening. Stamina and consistency are crucial for the narrator. Immersive experience for the listener.</p>
+                    <p><strong>Voice Styles:</strong> Primarily Narrative/Storytelling. Requires excellent modulation, pacing, and emotional range. For fiction, subtle character differentiation is key. For non-fiction, can be Authoritative, Conversational, or Educational depending on the book's tone.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Video Games <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Highly immersive and interactive. Voices bring characters and worlds to life.</p>
+                    <p><strong>Voice Styles:</strong> Predominantly Character-driven. Huge range from heroic to villainous, comedic to dramatic, human to fantastical. Requires strong acting skills and often the ability to perform effort sounds (grunts, yells, etc.). Cinematic narration is also common.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">IVR (Interactive Voice Response) / On-Hold Messaging <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Characteristics:</strong> Needs to be extremely clear, calm, and easy to understand. Often the first "voice" of a company.</p>
+                    <p><strong>Voice Styles:</strong> Professional, Warm, Friendly, Calm, Clear. Articulation must be impeccable. Pacing should be moderate and consistent. Avoid overly enthusiastic or distracting styles.</p>
+                </div>
+            </div>
+
+            <h4>Trend Awareness & Adaptability</h4>
+            <p>Voiceover styles evolve. What sounded fresh a decade ago might sound dated now.</p>
+            <ul>
+                <li><strong>Stay Current:</strong> Pay attention to current advertising trends, popular YouTube/TikTok styles, and podcast delivery norms.</li>
+                <li><strong>Authenticity is King (Currently):</strong> Many modern projects lean towards more natural, conversational, and "real" sounding voices over overly polished or "announcer-y" styles, but this varies by industry and brand.</li>
+                <li><strong>Be Versatile:</strong> The ability to adapt to different trends and deliver a range of styles is a significant asset.</li>
+            </ul>
+            <div class="callout callout-info">
+                <h4>The "Non-Announcer" Announcer</h4>
+                <p>A current trend, especially in commercials, is the "non-announcer" announcer. This is a voice that has the clarity and professionalism of a traditional announcer but delivers the message in a much more conversational, relatable, and often understated way. It's about sounding trustworthy and authentic, not like a booming voice from on high.</p>
+            </div>
+        </section>
+
+        <section id="pro-studio">
+            <h2><span class="icon">🎧</span>The Alchemist's Lab: Pro Studio & Technical Craft</h2>
+            <p>While performance is paramount, understanding the technical side of voiceover is crucial for delivering professional-quality audio. This section covers essential studio craft, recording best practices, and basic audio concepts.</p>
+
+            <h4>Creating Your Recording Space (The "Booth")</h4>
+            <ul>
+                <li><strong>Quiet is Golden:</strong> The most important factor. Minimize external noise (traffic, neighbors, appliances) and internal noise (computer fans, AC hum).
+                    <ul>
+                        <li><strong>Location:</strong> Closets (with clothes) can be good starting points due to natural sound absorption. Basements can also work if dry and quiet.</li>
+                    </ul>
+                </li>
+                <li><strong>Acoustic Treatment:</strong> Reduce reflections and echo within your space.
+                    <ul>
+                        <li><strong>Absorption:</strong> Soft, porous materials absorb sound waves (e.g., acoustic foam panels, heavy blankets, thick rugs, bass traps for low frequencies). Cover reflective surfaces like bare walls, ceilings, and hard floors.</li>
+                        <li><strong>Diffusion:</strong> Irregular surfaces scatter sound waves, preventing standing waves and flutter echo (e.g., bookshelves filled with books of varying sizes, specifically designed diffusers).</li>
+                        <li><strong>Goal:</strong> A "dead" but not "claustrophobic" sound – clear and direct with minimal room coloration.</li>
+                    </ul>
+                </li>
+                <li><strong>Ventilation:</strong> Treated spaces can get stuffy. Ensure some form of quiet ventilation if possible.</li>
+            </ul>
+
+            <h4>Essential Equipment & Setup</h4>
+            <div class="accordion-item">
+                <div class="accordion-header">Microphone (The Wand) <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Types:</strong></p>
+                    <ul>
+                        <li><strong>Condenser Mics:</strong> Generally more sensitive, detailed, and capture a wider frequency range. Excellent for studio voiceover. Require phantom power (+48V).
+                            <ul><li><em>Large Diaphragm Condensers (LDCs):</em> Often preferred for their warm, rich sound on vocals.</li></ul>
+                        </li>
+                        <li><strong>Dynamic Mics:</strong> More rugged, less sensitive, better at rejecting background noise. Good for untreated rooms, louder sources, or a more "broadcast" sound (e.g., Shure SM7B).</li>
+                        <li><strong>USB Mics:</strong> Convenient (plug directly into computer), but professional setups usually involve XLR mics. Quality varies greatly.</li>
+                    </ul>
+                    <p><strong>Polar Patterns:</strong> Describes the mic's sensitivity to sound from different directions.</p>
+                    <ul>
+                        <li><em>Cardioid:</em> Most common for VO. Picks up sound primarily from the front, rejects sound from the rear. Helps isolate your voice.</li>
+                        <li><em>Omnidirectional:</em> Picks up sound equally from all directions. Not ideal for most home VO unless the room is exceptionally well-treated.</li>
+                        <li><em>Bidirectional (Figure-8):</em> Picks up from front and rear, rejects sides. Used for specific interview setups or advanced stereo techniques.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Audio Interface (The Bridge) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p>Connects an XLR microphone to your computer. Converts analog mic signals to digital. Provides phantom power for condenser mics and includes preamps to boost the mic signal. Also has outputs for headphones and studio monitors. (e.g., Focusrite Scarlett series, Audient iD series, Universal Audio Apollo series).</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Headphones (The Monitors) <span class="icon">🔽</span></div>
+                <div class="accordion-content">
+                    <p><strong>Closed-Back Headphones:</strong> Essential for recording. They isolate sound, preventing mic bleed (the sound from your headphones leaking into the microphone). You need to hear your voice clearly as it's being recorded, as well as any backing tracks or director's cues. (e.g., Audio-Technica ATH-M50x, Sennheiser HD 280 Pro, Beyerdynamic DT 770 Pro).</p>
+                    <p><strong>Open-Back Headphones:</strong> Generally preferred for mixing and critical listening (not recording) as they offer a more natural and spacious sound, but they do leak sound.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Pop Filter & Mic Stand/Mount <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p><strong>Pop Filter:</strong> Crucial for reducing plosive sounds ('p', 'b'). Usually a nylon mesh or metal screen.<br><strong>Mic Stand/Mount:</strong> A sturdy stand (desk-mounted boom arm or floor stand) is vital to keep the mic positioned correctly and isolated from vibrations (a shock mount helps further).</p></div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Computer & DAW Software (The Cauldron) <span class="icon">🔽</span></div>
+                <div class="accordion-content"><p>A reasonably modern computer capable of running your Digital Audio Workstation (DAW) smoothly. Popular DAWs include Adobe Audition, Pro Tools, Reaper, Audacity (free), Logic Pro (Mac-only), Cubase, Studio One.</p></div>
+            </div>
+
+            <h4>Recording Best Practices</h4>
+            <ul>
+                <li><strong>Mic Placement:</strong>
+                    <ul>
+                        <li><strong>Distance:</strong> Typically 4-10 inches from the mouth for cardioid LDCs. Experiment to find your "sweet spot."</li>
+                        <li><strong>Angle:</strong> Often slightly off-axis (not directly in front of your mouth) can help reduce plosives and sibilance. Aiming towards the corner of the mouth can work.</li>
+                        <li><strong>Consistency:</strong> Maintain a consistent distance and angle throughout the recording for a uniform sound.</li>
+                    </ul>
+                </li>
+                <li><strong>Setting Levels (Gain Staging):</strong>
+                    <ul>
+                        <li>Aim for an average recording level of around -18dBFS to -12dBFS, with peaks not exceeding -6dBFS. This provides ample "headroom" and prevents clipping.</li>
+                        <li>Record in 24-bit depth for better dynamic range. Sample rate of 44.1kHz or 48kHz is standard.</li>
+                    </ul>
+                </li>
+                <li><strong>Minimize Noise:</strong>
+                    <ul>
+                        <li>Turn off fans, AC, phones. Remove jangly jewelry. Be mindful of clothing rustle.</li>
+                        <li>Stay hydrated to reduce mouth clicks, but avoid drinking right before a line. Green apples can help reduce mouth noise for some.</li>
+                    </ul>
+                </li>
+                <li><strong>Performance Etiquette (Even Solo):</strong>
+                    <ul>
+                        <li>Avoid bumping the mic or stand.</li>
+                        <li>Be mindful of page turns if using paper scripts (use a tablet or print single-sided and lay them out).</li>
+                        <li>Give a few seconds of silence (room tone) at the beginning and end of each recording file.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4>Basic Audio Editing & Processing (Post-Production Polish)</h4>
+            <p>While complex mixing is often done by an audio engineer, VO artists are usually expected to deliver clean, edited audio.</p>
+            <ul>
+                <li><strong>Noise Reduction:</strong> Carefully remove consistent background noise (hiss, hum) if present. Overuse can make the voice sound artificial.</li>
+                <li><strong>Breath Editing:</strong> Reduce the volume of breaths or remove overly loud/distracting ones. Don't remove all breaths, as it can sound unnatural.</li>
+                <li><strong>Removing Mistakes & Mouth Clicks:</strong> Edit out flubbed lines, stumbles, and prominent mouth noises.</li>
+                <li><strong>Normalization/Gain Matching:</strong> Adjust the overall volume of the recording to meet client specifications (e.g., -3dBFS peak, specific LUFS target).</li>
+                <li><strong>Basic EQ (Equalization):</strong> Subtle adjustments to frequency balance. A high-pass filter (around 60-80Hz) can remove low-end rumble. Gentle boosts or cuts can enhance clarity or warmth.
+                    <div class="callout callout-warning"><h4>EQ Caution:</h4><p>Less is often more with EQ. Drastic EQ changes can make the voice sound unnatural. If you're unsure, it's often better to provide clean, un-EQ'd audio.</p></div>
+                </li>
+                <li><strong>Compression (Subtle):</strong> Can help even out dynamics, making softer parts louder and louder parts softer for a more consistent volume. Use sparingly and with understanding.</li>
+                <li><strong>File Naming & Delivery:</strong> Follow client specifications for file formats (e.g., .WAV, .MP3), naming conventions, and delivery methods.</li>
+            </ul>
+            <div class="callout callout-tip">
+                <h4>Learn Your DAW:</h4>
+                <p>Invest time in learning the basic editing functions of your chosen DAW. There are countless free tutorials available online for all major platforms.</p>
+            </div>
+        </section>
+
+        <section id="cheatsheet">
+            <h2><span class="icon">📋</span>The Alchemist's Quick Reference Grimoire</h2>
+            <p>A rapid-access guide to key styles, their defining traits, and common applications. Use this when you need to quickly align a script with a vocal approach.</p>
+            <div class="cheatsheet-table-container">
+                <table class="cheatsheet-table">
+                    <thead>
+                        <tr>
+                            <th>Style Category</th>
+                            <th>Specific Style</th>
+                            <th>Key Vocal Traits</th>
+                            <th>Typical Content</th>
+                            <th>Core Intent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="3"><strong>Natural & Relatable</strong></td>
+                            <td>Conversational</td>
+                            <td>Friendly, authentic, natural pace, warm, approachable</td>
+                            <td>Modern Ads, Explainers, Podcasts, Social Media</td>
+                            <td>Connect, Build Trust</td>
+                        </tr>
+                        <tr>
+                            <td>Authentic/Real</td>
+                            <td>Believable, sincere, unpolished, emotionally honest</td>
+                            <td>Testimonials, Documentaries, Indie Films</td>
+                            <td>Convey Truth, Relate</td>
+                        </tr>
+                        <tr>
+                            <td>Warm & Friendly</td>
+                            <td>Comforting, sincere, gentle tone, "smile in voice"</td>
+                            <td>Family Brands, Healthcare, PSAs, Kids' Content</td>
+                            <td>Reassure, Comfort</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Authoritative & Informative</strong></td>
+                            <td>Authoritative/Credible</td>
+                            <td>Confident, clear, deliberate pace, mid-to-low pitch</td>
+                            <td>News, Corporate, Serious Docs, Technical Content</td>
+                            <td>Inform, Establish Expertise</td>
+                        </tr>
+                        <tr>
+                            <td>Professional/Corporate</td>
+                            <td>Polished, articulate, steady pace, neutral, calm</td>
+                            <td>B2B, Training, Investor Relations</td>
+                            <td>Convey Competence</td>
+                        </tr>
+                        <tr>
+                            <td>Educational/E-Learning</td>
+                            <td>Clear, precise, moderate pace, instructive, engaging</td>
+                            <td>Tutorials, Online Courses, How-To Videos</td>
+                            <td>Teach, Explain</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Energetic & Persuasive</strong></td>
+                            <td>High-Energy/Upbeat</td>
+                            <td>Fast pace, dynamic pitch, enthusiastic, bright tone</td>
+                            <td>Retail Ads, Promos, Youth Market, Events</td>
+                            <td>Excite, Motivate Action</td>
+                        </tr>
+                        <tr>
+                            <td>Hard Sell</td>
+                            <td>Urgent, direct, loud, forceful, fast</td>
+                            <td>Limited-Time Offers, Direct Response</td>
+                            <td>Create Urgency, Sell Now</td>
+                        </tr>
+                        <tr>
+                            <td>Promotional</td>
+                            <td>Bright, engaging, persuasive, clear call to action</td>
+                            <td>Product Launches, Event Announcements</td>
+                            <td>Generate Interest</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Creative & Performance</strong></td>
+                            <td>Narrative/Storyteller</td>
+                            <td>Expressive, varied pacing, immersive, emotional range</td>
+                            <td>Audiobooks, Documentaries, Branded Stories</td>
+                            <td>Engage Emotionally, Transport</td>
+                        </tr>
+                        <tr>
+                            <td>Dramatic/Cinematic</td>
+                            <td>Intense, powerful, resonant, builds tension/emotion</td>
+                            <td>Trailers, Game Cutscenes, Epic Promos</td>
+                            <td>Evoke Strong Feelings</td>
+                        </tr>
+                        <tr>
+                            <td>Character/Animation</td>
+                            <td>Highly varied (pitch, accent, tone), acts the role</td>
+                            <td>Cartoons, Video Games, Mascots</td>
+                            <td>Bring Characters to Life</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Specialized Tones</strong></td>
+                            <td>Comedic/Humorous</td>
+                            <td>Witty timing, playful, sarcastic, deadpan, ironic</td>
+                            <td>Funny Ads, Comedy Sketches, Satire</td>
+                            <td>Amuse, Entertain</td>
+                        </tr>
+                        <tr>
+                            <td>Calm/Soothing/Meditative</td>
+                            <td>Soft, slow, gentle, breathy, intimate</td>
+                            <td>Meditation, Sleep Stories, ASMR, Wellness</td>
+                            <td>Relax, Soothe</td>
+                        </tr>
+                        <tr>
+                            <td>Inspirational/Motivational</td>
+                            <td>Sincere, passionate, builds intensity, empowering</td>
+                            <td>Non-Profits, Speeches, Brand Anthems</td>
+                            <td>Uplift, Inspire Action</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="quiz">
+            <h2><span class="icon">❓</span>The Alchemist's Trial: Test Your Mastery!</h2>
+            <p>Ready to test your newfound knowledge? This trial will challenge your understanding of voiceover concepts. Choose wisely!</p>
+            <div class="quiz-container">
+                <form id="voiceover-quiz">
+                    <div class="quiz-question">
+                        <p>1. A director asks for a read with more "subtext." What are they looking for?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q1" value="a"> a) Louder volume and faster pace.</label>
+                            <label><input type="radio" name="q1" value="b"> b) The unspoken meaning or emotion behind the words.</label>
+                            <label><input type="radio" name="q1" value="c"> c) Perfect articulation and enunciation.</label>
+                            <label><input type="radio" name="q1" value="d"> d) A more neutral and flat delivery.</label>
+                        </div>
+                        <div class="quiz-feedback" id="q1-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p>2. Which voiceover style would be LEAST appropriate for a luxury car commercial aiming for sophistication?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q2" value="a"> a) Smooth and Elegant</label>
+                            <label><input type="radio" name="q2" value="b"> b) Authoritative with a warm undertone</label>
+                            <label><input type="radio" name="q2" value="c"> c) Explosive Excitement with a Hard Sell</label>
+                            <label><input type="radio" name="q2" value="d"> d) Polished and Understated</label>
+                        </div>
+                        <div class="quiz-feedback" id="q2-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p>3. "Room tone" is recorded to:</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q3" value="a"> a) Test the microphone's sensitivity.</label>
+                            <label><input type="radio" name="q3" value="b"> b) Help audio editors fill gaps and smooth edits naturally.</label>
+                            <label><input type="radio" name="q3" value="c"> c) Create a dramatic echo effect.</label>
+                            <label><input type="radio" name="q3" value="d"> d) Warm up the recording equipment.</label>
+                        </div>
+                        <div class="quiz-feedback" id="q3-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p>4. What does "ADR" primarily involve in post-production?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q4" value="a"> a) Adding background music and sound effects.</label>
+                            <label><input type="radio" name="q4" value="b"> b) Creating character voices from scratch.</label>
+                            <label><input type="radio" name="q4" value="c"> c) Re-recording dialogue to replace or improve original audio.</label>
+                            <label><input type="radio" name="q4" value="d"> d) Mastering the final audio mix for broadcast.</label>
+                        </div>
+                        <div class="quiz-feedback" id="q4-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>5. A "Mid-Atlantic" accent is often sought for voiceovers requiring:</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q5" value="a"> a) A strong regional American flavor.</label>
+                            <label><input type="radio" name="q5" value="b"> b) A specific quirky character voice.</label>
+                            <label><input type="radio" name="q5" value="c"> c) Broad international intelligibility and neutrality.</label>
+                            <label><input type="radio" name="q5" value="d"> d) A very informal and casual delivery.</label>
+                        </div>
+                        <div class="quiz-feedback" id="q5-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>6. "Gain staging" in recording refers to:</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q6" value="a"> a) The speed at which you deliver your lines.</label>
+                            <label><input type="radio" name="q6" value="b"> b) Adjusting input levels to get a strong, clean signal without clipping.</label>
+                            <label><input type="radio" name="q6" value="c"> c) The number of takes you record for a script.</label>
+                            <label><input type="radio" name="q6" value="d"> d) The type of microphone polar pattern used.</label>
+                        </div>
+                        <div class="quiz-feedback" id="q6-feedback"></div>
+                    </div>
+
+
+                    <button type="button" id="submit-quiz">Reveal Alchemical Wisdom (Submit)</button>
+                    <div id="quiz-score"></div>
+                </form>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Your Team Name Here. Go Forth and Transmute Words into Gold!</p>
+    </footer>
+
+    <script>
+        // Accordion Functionality
+        const accordionItems = document.querySelectorAll('.accordion-header');
+        accordionItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const currentlyActiveAccordionItem = document.querySelector('.accordion-header.active');
+                if (currentlyActiveAccordionItem && currentlyActiveAccordionItem !== item) {
+                    currentlyActiveAccordionItem.classList.remove('active');
+                    currentlyActiveAccordionItem.nextElementSibling.style.maxHeight = 0;
+                    currentlyActiveAccordionItem.nextElementSibling.classList.remove('active');
+                    currentlyActiveAccordionItem.nextElementSibling.style.paddingTop = '0';
+                    currentlyActiveAccordionItem.nextElementSibling.style.paddingBottom = '0';
+                }
+
+                item.classList.toggle('active');
+                const content = item.nextElementSibling;
+                content.classList.toggle('active');
+                if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                    content.style.maxHeight = 0;
+                    content.style.paddingTop = '0';
+                    content.style.paddingBottom = '0';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    content.style.paddingTop = '1.5rem';
+                    content.style.paddingBottom = '1.5rem';
+                }
+            });
+        });
+
+        // Smooth Scrolling & Active Nav Link
+        const navLinks = document.querySelectorAll('#main-nav a');
+        const nav = document.getElementById('main-nav');
+        const navHeight = nav ? nav.offsetHeight : 70; // Fallback if nav not found immediately
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+                    
+                    window.scrollTo({
+                         top: offsetPosition,
+                         behavior: "smooth"
+                    });
+
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav link on scroll
+        const sections = document.querySelectorAll('section');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                // const sectionHeight = section.clientHeight; // Not always needed for this logic
+                if (pageYOffset >= (sectionTop - navHeight - 50 )) { // 50px buffer
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+            if (pageYOffset < sections[0].offsetTop - navHeight - 50) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                const welcomeLink = document.querySelector('#main-nav a[href="#welcome"]');
+                if(welcomeLink) welcomeLink.classList.add('active');
+            }
+        });
+
+
+        // Quiz Functionality
+        const quizForm = document.getElementById('voiceover-quiz');
+        const submitButton = document.getElementById('submit-quiz');
+        const quizScoreDisplay = document.getElementById('quiz-score');
+
+        const answers = {
+            q1: 'b',
+            q2: 'c',
+            q3: 'b',
+            q4: 'c',
+            q5: 'c',
+            q6: 'b'
+        };
+
+        if (submitButton && quizForm) { // Check if elements exist
+            submitButton.addEventListener('click', () => {
+                let score = 0;
+                const totalQuestions = Object.keys(answers).length;
+                let allAnswered = true;
+
+                for (const question in answers) {
+                    const feedbackEl = document.getElementById(`${question}-feedback`);
+                    if (!feedbackEl) continue; // Skip if feedback element doesn't exist
+
+                    const radioGroup = quizForm.elements[question];
+                    let selectedOption = null;
+                    if (radioGroup) { // radioGroup can be a single element or NodeList
+                         selectedOption = radioGroup.value; // For NodeList, .value gives selected
+                    }
+                    
+                    if (selectedOption) {
+                        if (selectedOption === answers[question]) {
+                            score++;
+                            feedbackEl.textContent = "Correct! Your wisdom shines! ✨";
+                            feedbackEl.className = 'quiz-feedback correct';
+                        } else {
+                            feedbackEl.textContent = `Not quite. The alchemical formula pointed to: '${answers[question].toUpperCase()}'.`;
+                            feedbackEl.className = 'quiz-feedback incorrect';
+                        }
+                    } else {
+                        feedbackEl.textContent = "This riddle remains unsolved. Please select an answer.";
+                        feedbackEl.className = 'quiz-feedback incorrect';
+                        allAnswered = false;
+                    }
+                }
+                if (allAnswered) {
+                    quizScoreDisplay.textContent = `Your Alchemical Trial Score: ${score} out of ${totalQuestions}`;
+                } else {
+                    quizScoreDisplay.textContent = `Please answer all questions to reveal your full score.`;
+                }
+            });
+        }
+
+
+        // Current Year for Footer
+        const currentYearEl = document.getElementById('currentYear');
+        if (currentYearEl) {
+            currentYearEl.textContent = new Date().getFullYear();
+        }
+
+    </script>
+</body>
+</html>
