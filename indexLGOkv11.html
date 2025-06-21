@@ -492,7 +492,11 @@
             font-size: 1em; font-weight: 500; color: var(--text-color-light);
             margin-bottom: 10px; 
             padding: 0 0 8px 0; /* Padding bottom for border spacing */
-            border-bottom: 1px solid var(--border-color); 
+            position: sticky;
+            top: 0;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg-color);
+            z-index: 10;
         }
         .clip-item-card {
             display: flex;
