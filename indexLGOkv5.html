@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogReel</title>
+    <style>
+        :root {
+            --primary-color: #4A90E2; /* A more modern blue */
+            --primary-color-dark: #357ABD;
+            --secondary-color: #50E3C2; /* A contrasting teal/mint */
+            --text-color: #333;
+            --text-color-light: #555;
+            --text-color-very-light: #777;
+            --bg-color: #F7F9FA; /* Off-white background */
+            --card-bg-color: #FFFFFF;
+            --border-color: #E0E0E0;
+            --danger-color: #D0021B;
+            --warning-color: #F5A623; /* Orange/Yellow for stars and important marks */
+            --success-color: #7ED321;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.05);
+            --box-shadow-light: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Headers */
+        .app-header {
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            padding: 18px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--box-shadow-light);
+        }
+        .app-header h1 {
+            font-size: 1.75em;
+            font-weight: 600;
+        }
+
+        .header-with-back {
+            display: grid;
+            grid-template-columns: auto 1fr auto; /* Col1: button, Col2: title, Col3: spacer */
+            align-items: center;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--box-shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+        .header-with-back .back-button {
+            grid-column: 1 / 2;
+            background: none;
+            border: none;
+            color: var(--text-color-light);
+            font-size: 1.8em;
+            cursor: pointer;
+            padding: 5px 15px 5px 5px; /* Increased tap area */
+            font-weight: 500;
+            line-height: 1;
+        }
+        .header-with-back .back-button:hover { color: var(--primary-color); }
+        .header-with-back h2 {
+            grid-column: 2 / 3;
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+        }
+        .header-spacer-right {
+            grid-column: 3 / 4;
+            width: 1px; /* Default, will be set by JS to match back button width */
+            visibility: hidden; /* It's just for spacing */
+        }
+
+
+        /* Buttons */
+        .button {
+            display: inline-flex; /* For aligning icon and text */
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .button-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .button-primary:hover:not(:disabled) {
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+        .button-secondary {
+            background-color: var(--card-bg-color);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .button-secondary:hover:not(:disabled) {
+            background-color: #f0f6ff; /* Light blue tint */
+        }
+        .button-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+        .button-danger:hover:not(:disabled) {
+            background-color: #a70216;
+            border-color: #a70216;
+        }
+        .button-subtle {
+            background-color: transparent;
+            color: var(--text-color-light);
+            border-color: var(--border-color);
+        }
+        .button-subtle:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            color: var(--text-color);
+        }
+        .button-full-width { display: flex; width: 100%; margin-bottom: 10px; }
+        .button-small { padding: 6px 12px; font-size: 0.85em; }
+        .button-icon { margin-right: 8px; font-size: 1.1em; }
+        .button .button-icon-only { margin-right: 0; } /* For icon-only buttons like 'important' */
+
+
+        /* Cards (article is used for semantic cards) */
+        article.card, article.video-entry-card, article.log-item {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            /* padding: 20px; /* Base padding removed as children will manage */
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+         article.video-entry-card { padding: 0; /* Let children control padding */ }
+         article.log-item { padding: 20px; } /* Log items on Screen 3 need their padding */
+
+
+        .card-title { /* Can be used inside article.card or standalone */
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        .card-meta {
+            font-size: 0.9em;
+            color: var(--text-color-light);
+            margin-bottom: 15px;
+        }
+        .card-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+         article.card .card-actions, article.log-item .card-actions { 
+             padding: 0 20px 20px; /* Padding for actions in generic .card or .log-item */
+             margin-top: 15px; /* Adjust margin if needed */
+        }
+        
+        .card-actions .button { flex-grow: 1; }
+        @media (max-width: 480px) {
+            .card-actions .button { min-width: 100%; }
+        }
+
+
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9em;
+            color: var(--text-color-light);
+        }
+        .form-group input[type="text"],
+        .form-group input[type="search"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            font-family: var(--font-family);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="search"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        input[type="search"] {
+            padding: 12px 15px;
+            font-size: 1em;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        input[type="search"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        /* Modals */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: var(--card-bg-color); margin: 10% auto; padding: 25px;
+            border-radius: var(--border-radius); width: 90%; max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); animation: modalOpen 0.3s ease-out;
+        }
+        @keyframes modalOpen { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px;
+        }
+        .modal-title { font-size: 1.4em; font-weight: 600; }
+        .close-button {
+            color: var(--text-color-very-light); font-size: 28px; font-weight: normal;
+            cursor: pointer; background: none; border: none; padding: 0; line-height: 1;
+        }
+        .close-button:hover { color: var(--text-color); }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: calc(100% - 40px); /* Ensure toasts don't overflow small screens */
+        }
+        .toast-message {
+            padding: 12px 18px;
+            background-color: var(--text-color);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            font-size: 0.9em;
+            opacity: 0;
+            transform: translateX(110%); /* Start further off-screen */
+            transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast-message.error { background-color: var(--danger-color); }
+        .toast-message.success { background-color: var(--success-color); }
+        .toast-message.warning { background-color: var(--warning-color); color: var(--text-color); }
+
+
+        /* General UI Elements */
+        .actions-bar {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .actions-bar .button { flex: 1; min-width: calc(50% - 10px); }
+        @media (max-width: 480px) { .actions-bar .button { min-width: 100%; } }
+
+        .section-title {
+            font-size: 1.2em; font-weight: 600; margin-top: 30px;
+            margin-bottom: 15px; padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color); color: var(--text-color);
+        }
+        .empty-state {
+            text-align: center; padding: 40px 20px;
+            color: var(--text-color-light); border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius); margin-top: 20px;
+        }
+        .empty-state p { font-size: 1.1em; margin-bottom: 15px; }
+
+
+        /* Screen 2: Project Videos - New Layout */
+        .video-entry-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+        }
+        .video-entry-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+            flex-grow: 1;
+        }
+        .video-card-number {
+            font-weight: normal;
+            color: var(--text-color-light);
+            margin-right: 4px;
+        }
+        .video-entry-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .video-entry-actions .button { margin-left: 0; }
+        .btn-toggle-important .button-icon { font-size: 1.3em; margin-right: 0; }
+        .btn-toggle-important.is-important .button-icon { color: var(--warning-color); }
+
+        /* Main Video Preview on Card - Screen 2 */
+        .main-video-preview-area {
+            padding: 15px 20px;
+            background-color: #f0f3f5; /* Light grey background */
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            min-height: 150px; /* Adjust as needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-video-thumbnail {
+            max-width: 100%;
+            max-height: 200px; /* Adjust as needed */
+            object-fit: contain;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+        .play-main-video-preview-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-main-video-preview-btn:hover { background: rgba(0,0,0,0.5); }
+        .main-video-preview-player {
+            width: 100%;
+            display: block;
+            max-height: 300px; /* Adjust as needed */
+            border-radius: var(--border-radius);
+        }
+        .main-video-preview-prompt { /* Similar to inline-clip-player-prompt */
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background-color: rgba(0,0,0,0.85); color: white; padding: 20px; text-align: center;
+            z-index: 5; /* Ensure it's above thumbnail/player if both somehow visible */
+        }
+        .main-video-preview-prompt p { margin-bottom: 15px; font-size: 0.95em; line-height: 1.4; }
+
+
+        /* Inline Clip Player - Screen 2 */
+        .inline-clip-player-area {
+            background-color: #000;
+            position: relative;
+            min-height: auto; /* Will be set by content */
+            padding: 10px;
+            display: none; /* Initially hidden */
+        }
+        .inline-clip-player-area.active { display: block; }
+        .inline-clip-player-area video { width: 100%; display: block; max-height: 300px; background-color: #000;}
+
+        /* Custom Controls for Inline Clip Player */
+        .inline-clip-player-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 5px;
+            background-color: rgba(0,0,0,0.7); /* Darker overlay for controls */
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+        }
+        .inline-clip-player-controls.hidden { display: none; }
+        .inline-clip-player-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2em; /* Control icon size */
+            padding: 5px;
+            cursor: pointer;
+        }
+        .inline-clip-player-controls button:hover { color: var(--secondary-color); }
+        .inline-progress-bar-container {
+            flex-grow: 1;
+            height: 8px;
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .inline-progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 0%; /* Initial width */
+        }
+        .inline-timecode {
+            font-size: 0.8em;
+            color: white;
+            font-family: monospace;
+            min-width: 80px; /* For MM:SS / MM:SS */
+            text-align: right;
+        }
+
+        .inline-clip-player-prompt { /* Existing, ensure it overlays correctly if active */
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background-color: rgba(0,0,0,0.85); color: white; padding: 20px; text-align: center;
+            z-index: 5;
+        }
+        .inline-clip-player-prompt p { margin-bottom: 15px; font-size: 0.95em; line-height: 1.4; }
+        .inline-clip-player-prompt strong { color: var(--secondary-color); }
+        .inline-clip-player-prompt label { font-size: 0.9em; }
+
+        /* Scrollable Logged Clips List - Screen 2 */
+        .video-clips-list-container {
+            padding: 15px 20px;
+            max-height: 270px; /* Approx 2.5 items + header. Adjust as needed */
+            overflow-y: auto;
+        }
+        .video-clips-list-container h4 {
+            font-size: 1em; font-weight: 500; color: var(--text-color-light);
+            margin-bottom: 15px;
+            position: sticky; top: 0; /* Keep header visible during scroll if container has specific bg */
+            background-color: var(--card-bg-color); /* Match card bg for sticky header */
+            z-index: 1;
+            padding-bottom: 5px;
+        }
+        .clip-item-card {
+            display: flex;
+            gap: 15px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+            background-color: #fdfdfd;
+            align-items: center;
+        }
+        .clip-item-card:last-child { margin-bottom: 0; }
+        .clip-item-thumbnail {
+            width: 80px; height: 50px;
+            background-color: var(--border-color); object-fit: cover;
+            border-radius: 4px; flex-shrink: 0;
+        }
+        .clip-item-info { flex-grow: 1; min-width:0; }
+        .clip-item-info .notes { font-size: 0.95em; margin-bottom: 4px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .clip-item-info .time, .clip-item-info .keywords, .clip-item-info .rating {
+            font-size: 0.8em; color: var(--text-color-very-light); margin-bottom: 2px;
+        }
+        .clip-item-actions { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; flex-shrink:0; }
+        .clip-item-actions .button-small { padding: 5px 8px; font-size: 0.8em; }
+
+        /* Screen 3: Video Logging */
+        #video-player-container {
+            width: 100%; background-color: black; margin-bottom: 15px;
+            position: relative; border-radius: var(--border-radius); overflow:hidden;
+        }
+        #video-player { width: 100%; display: block; max-height: 50vh;}
+        #video-file-prompt {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.85); color: white; padding: 25px; text-align: center;
+            border-radius: var(--border-radius); z-index:10;
+        }
+        #video-file-prompt p { margin-bottom: 15px; line-height: 1.4; font-size: 0.95em;}
+        #video-file-prompt strong { color: var(--secondary-color); }
+        
+        .video-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        .video-controls .main-controls { display: flex; align-items: center; gap: 10px; }
+        .video-controls .button .button-icon { font-size: 1.2em; margin-right: 0; display: inline-flex; align-items: center; justify-content: center; }
+        .video-controls .timecode-display { font-family: monospace; font-size: 0.9em; color: var(--text-color-light); text-align: center; flex-grow: 1; min-width: 130px; }
+        .video-controls .speed-control-group { display: flex; align-items: center; }
+        .video-controls .speed-control-group select { min-width: 70px; }
+        
+        #timeline-container {
+            width: 100%; height: 8px; background-color: #ddd; cursor: pointer;
+            border-radius: 4px; margin-bottom: 8px; overflow: hidden;
+            touch-action: pan-y;
+        }
+        #timeline-progress { height: 100%; background-color: var(--primary-color); border-radius: 4px; }
+        .mark-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mark-buttons .button { flex-grow: 1; }
+        
+        .star-rating { display: flex; gap: 6px; cursor: pointer; margin-bottom: 10px; }
+        .star-rating .star { background: none; border: none; padding: 0; font-size: 2em; color: var(--border-color); line-height: 1; cursor: pointer; }
+        .star-rating .star.selected, .star-rating .star:hover, .star-rating .star:focus { color: var(--warning-color); outline: none; }
+        .star-rating .star:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+        
+        /* .log-item is an article.card, padding set above */
+        .log-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .log-item-time { font-weight: 600; font-size: 0.95em; }
+        .log-item-notes { margin-bottom: 8px; font-size:0.95em; color: var(--text-color-light); }
+        .log-item-keywords { font-style: italic; font-size: 0.85em; color: var(--text-color-very-light); margin-bottom: 8px; }
+        .log-item-rating .star { font-size: 0.8em; }
+        .log-item img { max-width:100px; max-height:60px; border-radius:4px; margin-top:8px; border:1px solid var(--border-color); }
+
+        /* File input styling */
+        .file-input-label {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 18px; font-size: 0.95em; font-weight: 500;
+            cursor: pointer; text-align: center; text-decoration: none;
+            border: 1px solid var(--primary-color); border-radius: var(--border-radius);
+            background-color: var(--primary-color); color: white;
+            transition: all 0.2s ease-in-out;
+        }
+        .file-input-label:hover { background-color: var(--primary-color-dark); border-color: var(--primary-color-dark); }
+        input[type="file"] { display: none; }
+        
+        .hidden { display: none !important; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+        .mt-1 { margin-top: 10px; }
+        .mb-1 { margin-bottom: 10px; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .app-header h1 { font-size: 1.5em; }
+            .header-with-back h2 { font-size: 1.2em; }
+            .header-with-back .back-button { font-size: 1.6em; padding: 5px 10px 5px 0px;}
+            .header-spacer-right { min-width: 30px; }
+
+            .video-controls { flex-direction: column; align-items: stretch; }
+            .video-controls .main-controls { justify-content: center; width: 100%; margin-bottom: 10px; }
+            .video-controls .timecode-display { margin-bottom: 10px; min-width: unset; }
+            .video-controls .speed-control-group { justify-content: center; width: 100%; }
+            .video-controls .speed-control-group select { width: 100%; }
+
+            .mark-buttons { flex-direction: column; }
+            .video-entry-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .video-entry-title { font-size: 1.05em; }
+            .video-entry-actions { width: 100%; display: flex; justify-content: space-around; }
+            .video-entry-actions .button { flex-grow: 0 !important; margin-left: 0 !important; }
+            
+            .clip-item-card { flex-direction: column; align-items: flex-start; }
+            .clip-item-thumbnail { width: 100%; height: auto; max-height: 150px; margin-bottom:10px; }
+            .clip-item-actions { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 10px; }
+            .clip-item-actions .button-small { flex-grow: 1; }
+            .clip-item-actions .button-small + .button-small { margin-left: 5px;}
+
+            /* Responsive inline clip player controls */
+            .inline-clip-player-controls { flex-wrap: wrap; justify-content: center; }
+            .inline-progress-bar-container { order: 1; width: 100%; margin: 5px 0; } /* Full width on new line */
+            .inline-timecode { order: 2; margin-left: auto; } /* Push to right */
+            .inline-clip-player-controls button { font-size: 1.1em; } /* Slightly smaller icons */
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Screen 1: Projects List -->
+        <div id="screen-projects" class="screen">
+            <header class="app-header">
+                <h1>LogReel</h1>
+            </header>
+            <div class="container">
+                <div class="actions-bar">
+                    <button id="btn-new-project" class="button button-primary">
+                        <span class="button-icon">&#43;</span> New Project
+                    </button>
+                    <label class="button button-secondary">
+                        <span class="button-icon">&#x1F4E5;</span> Import Projects
+                        <input type="file" id="import-projects-input" accept=".json">
+                    </label>
+                </div>
+                <div id="projects-list" aria-live="polite" aria-atomic="true">
+                    <!-- Project cards will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Project Videos (NEW LAYOUT) -->
+        <div id="screen-project-videos" class="screen">
+            <header class="header-with-back">
+                <button id="btn-back-to-projects" class="back-button" aria-label="Back to projects list">&#x2190;</button>
+                <h2 id="project-name-header">Project Name</h2>
+                <div class="header-spacer-right" id="project-videos-header-spacer"></div>
+            </header>
+            <div class="container">
+                <div class="actions-bar">
+                    <label class="button button-primary">
+                         <span class="button-icon">&#43;</span> Add Videos
+                        <input type="file" id="add-videos-input" multiple accept="video/*">
+                    </label>
+                    <button id="btn-export-project" class="button button-secondary">
+                        <span class="button-icon">&#x1F4E4;</span> Export Project
+                    </button>
+                </div>
+                <input type="search" id="project-videos-search" placeholder="Search videos or clips by name, notes, tags..." aria-label="Search videos and clips">
+                
+                <div id="project-videos-container" aria-live="polite" aria-atomic="true">
+                    <!-- Video Entry Cards will be rendered here with new structure -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Video Logging -->
+        <div id="screen-video-logging" class="screen">
+            <header class="header-with-back">
+                <button id="btn-back-to-project-videos" class="back-button" aria-label="Back to project videos">&#x2190;</button>
+                <h2 id="video-filename-header">Video Filename</h2>
+                <div class="header-spacer-right" id="video-logging-header-spacer"></div>
+            </header>
+            <div class="container">
+                <div id="video-player-container">
+                    <video id="video-player" playsinline controls></video> <!-- `controls` attribute often better handled by custom controls -->
+                     <div id="video-file-prompt" class="hidden"> 
+                        <p id="video-file-prompt-message">Please select the video file.</p>
+                        <label class="button button-primary mt-1">
+                            Select Video File
+                            <input type="file" id="video-file-input-logging" accept="video/*">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="timeline-container" class="mb-1" aria-label="Video timeline"><div id="timeline-progress"></div></div>
+                
+                <div class="video-controls">
+                    <div class="main-controls">
+                        <button id="rewind-btn" class="button button-subtle" aria-label="Rewind 5 seconds">
+                            <span class="button-icon">&#x23EA;</span> <!-- Rewind icon ⏪ -->
+                        </button>
+                        <button id="play-pause-btn" class="button button-subtle" aria-label="Play or Pause video">
+                            <span class="button-icon">&#9658;</span> <!-- Play icon ▶️ -->
+                        </button>
+                        <button id="forward-btn" class="button button-subtle" aria-label="Forward 5 seconds">
+                            <span class="button-icon">&#x23E9;</span> <!-- Fast-forward icon ⏩ -->
+                        </button>
+                    </div>
+                    <div id="timecode-display" class="timecode-display" aria-live="off">00:00 / 00:00</div>
+                    <div class="speed-control-group">
+                        <label for="speed-select" class="sr-only">Playback Speed:</label>
+                        <select id="speed-select" class="button button-subtle" aria-label="Playback speed">
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2x</option>
+                            <option value="2.5">2.5x</option>
+                            <option value="3">3x</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mark-buttons">
+                    <button id="mark-in-btn" class="button button-secondary">Mark In (00:00.0)</button>
+                    <button id="mark-out-btn" class="button button-secondary">Mark Out (00:00.0)</button>
+                </div>
+
+                <article class="card"> <!-- This is a generic card, its padding for content is handled by children or specific CSS for it -->
+                    <div style="padding: 20px 20px 0;"> <!-- Wrapper for top content padding -->
+                        <h3 class="card-title">Log Entry</h3>
+                        <div class="form-group">
+                            <label for="log-notes">Notes:</label>
+                            <textarea id="log-notes"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label id="rating-label">Rating:</label>
+                            <div id="log-rating" class="star-rating" role="group" aria-labelledby="rating-label">
+                                <button type="button" class="star" data-value="1" aria-label="Rate 1 star" aria-pressed="false">&#9733;</button>
+                                <button type="button" class="star" data-value="2" aria-label="Rate 2 stars" aria-pressed="false">&#9733;</button>
+                                <button type="button" class="star" data-value="3" aria-label="Rate 3 stars" aria-pressed="false">&#9733;</button>
+                                <button type="button" class="star" data-value="4" aria-label="Rate 4 stars" aria-pressed="false">&#9733;</button>
+                                <button type="button" class="star" data-value="5" aria-label="Rate 5 stars" aria-pressed="false">&#9733;</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="log-keywords">Keywords (comma-separated):</label>
+                            <input type="text" id="log-keywords">
+                        </div>
+                    </div>
+                     <!-- Actions are outside the top padding wrapper, will use their own padding via .card-actions -->
+                    <div class="card-actions" style="padding-top:0;"> <!-- remove top padding from here as it's handled by margin -->
+                         <button id="save-log-btn" class="button button-primary button-full-width">Save Log</button>
+                    </div>
+                    <input type="hidden" id="editing-log-id"> 
+                </article>
+
+                <h3 class="section-title mt-2">Saved Logs for this Video</h3>
+                <div id="saved-logs-list" aria-live="polite" aria-atomic="true">
+                    <!-- Saved logs will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div id="modal-new-project" class="modal" role="dialog" aria-labelledby="modal-new-project-title" aria-modal="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-new-project-title">Create New Project</h3>
+                    <button class="close-button" data-modal-id="modal-new-project" aria-label="Close new project dialog">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="new-project-name">Project Name:</label>
+                    <input type="text" id="new-project-name">
+                </div>
+                <button id="btn-create-project-confirm" class="button button-primary button-full-width">Create Project</button>
+            </div>
+        </div>
+
+        <div id="modal-confirm-action" class="modal" role="dialog" aria-labelledby="modal-confirm-action-title" aria-modal="true">
+            <div class="modal-content">
+                 <div class="modal-header">
+                    <h3 class="modal-title" id="modal-confirm-action-title">Confirm Action</h3>
+                    <button class="close-button" data-modal-id="modal-confirm-action" aria-label="Close confirmation dialog">&times;</button>
+                </div>
+                <p id="confirm-action-message" style="margin-bottom: 20px; font-size: 1.05em;">Are you sure?</p>
+                <div class="card-actions" style="margin-top:0;">
+                    <button id="btn-confirm-action-cancel" class="button button-subtle">Cancel</button>
+                    <button id="btn-confirm-action-confirm" class="button button-danger">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="thumbnail-canvas" style="display:none;"></canvas>
+        <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+    </div>
+
+    <script>
+    const app = {
+        data: {
+            projects: [],
+            currentProjectId: null,
+            currentVideoId: null, 
+            videoElement: null,
+            timelineProgress: null,
+            timelineContainer: null,
+            playPauseBtn: null,
+            rewindBtn: null, 
+            forwardBtn: null, 
+            timecodeDisplay: null,
+            speedSelect: null,
+            markInBtn: null,
+            markOutBtn: null,
+            markInTime: 0,
+            markOutTime: null,
+            currentRating: 0,
+            videoFileCache: {}, 
+            activeInlinePlayer: { // For Screen 2 inline clip player
+                videoId: null,
+                logId: null,
+                playerElement: null,
+                promptElement: null,
+                fileInputElement: null,
+                controlsContainer: null,
+                playPauseBtn: null,
+                rewindBtn: null,
+                forwardBtn: null,
+                progressBarContainer: null,
+                progressBar: null,
+                timecodeDisplay: null,
+                isPlaying: false,
+                currentClipDuration: 0,
+                currentClipStartTime: 0,
+                isScrubbing: false,
+                wasPlayingBeforeScrub: false, // Added for inline player scrub resume
+                boundTimeUpdateHandler: null,
+                boundLoadedMetadataHandler: null,
+                boundEndedHandler: null,
+                boundErrorHandler: null,
+                boundPlayHandler: null,
+                boundPauseHandler: null,
+            },
+            activeMainVideoPreview: { // For Screen 2 main video preview player
+                videoId: null,
+                playerElement: null,
+                thumbnailElement: null,
+                playButtonElement: null,
+                promptElement: null,
+                fileInputElement: null,
+                isPlaying: false
+            },
+            previouslyFocusedElement: null,
+            skipTimeSeconds: 5, 
+            isScrubbing: false, // For Screen 3 timeline
+            wasPlayingBeforeScrub: false, // For Screen 3 timeline
+        },
+        dom: {}, 
+        idb: {
+            db: null,
+            dbName: 'LogReelFilesDB',
+            storeName: 'videoFiles',
+            version: 1,
+
+            initDB() {
+                return new Promise((resolve, reject) => {
+                    if (app.idb.db) {
+                        resolve(app.idb.db);
+                        return;
+                    }
+                    if (!window.indexedDB) {
+                        console.warn("IndexedDB not supported by this browser.");
+                        reject("IndexedDB not supported");
+                        return;
+                    }
+                    const request = indexedDB.open(app.idb.dbName, app.idb.version);
+
+                    request.onerror = (event) => {
+                        console.error("IndexedDB error:", event.target.error);
+                        reject("IndexedDB error: " + event.target.error);
+                    };
+
+                    request.onsuccess = (event) => {
+                        app.idb.db = event.target.result;
+                        console.log("IndexedDB initialized successfully.");
+                        resolve(app.idb.db);
+                    };
+
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains(app.idb.storeName)) {
+                            db.createObjectStore(app.idb.storeName, { keyPath: 'videoId' });
+                            console.log("IndexedDB object store created.");
+                        }
+                    };
+                });
+            },
+
+            storeFile(videoId, file) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        if (!app.idb.db) { 
+                             try {
+                                await app.idb.initDB();
+                            } catch (initError) {
+                                reject(initError); 
+                                return;
+                            }
+                        }
+                        if (!app.idb.db) { 
+                           reject("IndexedDB not available for storing file.");
+                           return;
+                        }
+                        const transaction = app.idb.db.transaction([app.idb.storeName], 'readwrite');
+                        const store = transaction.objectStore(app.idb.storeName);
+                        const request = store.put({ videoId: videoId, file: file });
+
+                        request.onsuccess = () => resolve();
+                        request.onerror = (event) => {
+                            console.error("Error storing file in IndexedDB:", event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error("Exception in storeFile:", error);
+                        reject(error);
+                    }
+                });
+            },
+
+            retrieveFile(videoId) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        if (!app.idb.db) {
+                            try {
+                                await app.idb.initDB();
+                            } catch (initError) {
+                                reject(initError);
+                                return;
+                            }
+                        }
+                         if (!app.idb.db) {
+                           reject("IndexedDB not available for retrieving file.");
+                           return;
+                        }
+                        const transaction = app.idb.db.transaction([app.idb.storeName], 'readonly');
+                        const store = transaction.objectStore(app.idb.storeName);
+                        const request = store.get(videoId);
+
+                        request.onsuccess = (event) => {
+                            if (event.target.result) {
+                                resolve(event.target.result.file);
+                            } else {
+                                resolve(null); // File not found
+                            }
+                        };
+                        request.onerror = (event) => {
+                            console.error("Error retrieving file from IndexedDB:", event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error("Exception in retrieveFile:", error);
+                        reject(error);
+                    }
+                });
+            },
+
+            deleteFile(videoId) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        if (!app.idb.db) {
+                             try {
+                                await app.idb.initDB();
+                            } catch (initError) {
+                                reject(initError);
+                                return;
+                            }
+                        }
+                        if (!app.idb.db) {
+                           reject("IndexedDB not available for deleting file.");
+                           return;
+                        }
+                        const transaction = app.idb.db.transaction([app.idb.storeName], 'readwrite');
+                        const store = transaction.objectStore(app.idb.storeName);
+                        const request = store.delete(videoId);
+
+                        request.onsuccess = () => resolve();
+                        request.onerror = (event) => {
+                            console.error("Error deleting file from IndexedDB:", event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error("Exception in deleteFile:", error);
+                        reject(error);
+                    }
+                });
+            }
+        },
+        utils: {
+            generateId() { 
+                return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+            },
+            formatTime(seconds, includeMillis = false) { 
+                if (isNaN(seconds) || seconds < 0) return includeMillis ? '00:00.0' : '00:00';
+                const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60);
+                const s = Math.floor(seconds % 60); const ms = Math.floor((seconds - Math.floor(seconds)) * 10); 
+                let timeStr = ''; if (h > 0) timeStr += `${String(h).padStart(2, '0')}:`;
+                timeStr += `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                if (includeMillis) timeStr += `.${ms}`; return timeStr;
+            },
+            escapeHtml(unsafe) { 
+                if (typeof unsafe !== 'string') return String(unsafe);
+                return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+        },
+
+        async init() {
+            this.cacheDomElements();
+            this.boundHandleTimelineMouseMove = this.handleTimelineMouseMove.bind(this);
+            this.boundHandleTimelineMouseUp = this.handleTimelineMouseUp.bind(this);
+            this.boundHandleTimelineTouchMove = this.handleTimelineTouchMove.bind(this);
+            this.boundHandleTimelineTouchEnd = this.handleTimelineTouchEnd.bind(this);
+
+            try {
+                await this.idb.initDB(); 
+            } catch (error) {
+                console.warn("Failed to initialize IndexedDB. App will rely on file selection prompts.", error);
+                this.showToast("Persistent file storage unavailable. Files may need re-selection each session.", "warning", 7000);
+            }
+            this.loadData();
+            this.registerEventListeners();
+            this.adjustHeaderSpacers();
+            this.navigateTo('screen-projects');
+            console.log("LogReel App Initialized");
+        },
+
+        adjustHeaderSpacers() {
+            const adjustSpacer = (buttonId, spacerId) => {
+                const button = document.getElementById(buttonId);
+                const spacer = document.getElementById(spacerId);
+                if (button && spacer) {
+                    spacer.style.width = `${button.offsetWidth}px`;
+                }
+            };
+            adjustSpacer('btn-back-to-projects', 'project-videos-header-spacer');
+            adjustSpacer('btn-back-to-project-videos', 'video-logging-header-spacer');
+        },
+
+        cacheDomElements() {
+            this.dom.screens = {
+                'projects': document.getElementById('screen-projects'),
+                'project-videos': document.getElementById('screen-project-videos'),
+                'video-logging': document.getElementById('screen-video-logging'),
+            };
+            this.dom.modals = {
+                newProject: document.getElementById('modal-new-project'),
+                confirmAction: document.getElementById('modal-confirm-action'),
+            };
+            this.dom.toastContainer = document.getElementById('toast-container');
+            // Screen 1
+            this.dom.projectsList = document.getElementById('projects-list');
+            this.dom.btnNewProject = document.getElementById('btn-new-project');
+            this.dom.importProjectsInput = document.getElementById('import-projects-input');
+            
+            // Screen 2
+            this.dom.btnBackToProjects = document.getElementById('btn-back-to-projects');
+            this.dom.projectNameHeader = document.getElementById('project-name-header');
+            this.dom.projectVideosHeaderSpacer = document.getElementById('project-videos-header-spacer');
+            this.dom.addVideosInput = document.getElementById('add-videos-input');
+            this.dom.btnExportProject = document.getElementById('btn-export-project');
+            this.dom.projectVideosSearch = document.getElementById('project-videos-search');
+            this.dom.projectVideosContainer = document.getElementById('project-videos-container');
+
+            // Screen 3
+            this.dom.btnBackToProjectVideos = document.getElementById('btn-back-to-project-videos');
+            this.dom.videoFilenameHeader = document.getElementById('video-filename-header');
+            this.dom.videoLoggingHeaderSpacer = document.getElementById('video-logging-header-spacer');
+            this.data.videoElement = document.getElementById('video-player');
+            this.dom.videoPlayerContainer = document.getElementById('video-player-container'); 
+            this.dom.videoFilePrompt = document.getElementById('video-file-prompt');
+            this.dom.videoFilePromptMessage = document.getElementById('video-file-prompt-message');
+            this.dom.videoFileInputLogging = document.getElementById('video-file-input-logging');
+            this.data.timelineContainer = document.getElementById('timeline-container');
+            this.data.timelineProgress = document.getElementById('timeline-progress');
+
+            this.data.rewindBtn = document.getElementById('rewind-btn');
+            this.data.playPauseBtn = document.getElementById('play-pause-btn');
+            this.data.forwardBtn = document.getElementById('forward-btn');
+            this.data.timecodeDisplay = document.getElementById('timecode-display');
+            this.data.speedSelect = document.getElementById('speed-select');
+            
+            this.data.markInBtn = document.getElementById('mark-in-btn');
+            this.data.markOutBtn = document.getElementById('mark-out-btn');
+            this.dom.logNotes = document.getElementById('log-notes');
+            this.dom.logRatingContainer = document.getElementById('log-rating');
+            this.dom.logKeywords = document.getElementById('log-keywords');
+            this.dom.saveLogBtn = document.getElementById('save-log-btn');
+            this.dom.editingLogIdInput = document.getElementById('editing-log-id');
+            this.dom.savedLogsList = document.getElementById('saved-logs-list');
+            this.dom.thumbnailCanvas = document.getElementById('thumbnail-canvas');
+
+            // Modals
+            this.dom.newProjectNameInput = document.getElementById('new-project-name');
+            this.dom.btnCreateProjectConfirm = document.getElementById('btn-create-project-confirm');
+            this.dom.confirmActionMessage = document.getElementById('confirm-action-message');
+            this.dom.btnConfirmActionCancel = document.getElementById('btn-confirm-action-cancel');
+            this.dom.btnConfirmActionConfirm = document.getElementById('btn-confirm-action-confirm');
+        },
+
+        navigateTo(screenId, params = {}) {
+            const targetScreenKey = screenId.replace('screen-', '');
+            
+            Object.values(this.dom.screens).forEach(screen => {
+                if (screen) screen.classList.remove('active'); // Check if screen exists
+            });
+            
+            if (this.dom.screens[targetScreenKey]) {
+                this.dom.screens[targetScreenKey].classList.add('active');
+            } else {
+                console.error(`Screen key "${targetScreenKey}" not found in this.dom.screens.`);
+                if (this.dom.screens['projects']) { // Check if fallback screen exists
+                     this.dom.screens['projects'].classList.add('active');
+                } else {
+                    console.error("Fallback screen 'projects' also not found. Critical error.");
+                    // Potentially display a user-friendly error message in the body directly
+                    document.body.innerHTML = "<p style='padding:20px; text-align:center;'>Application Error: UI cannot be initialized.</p>";
+                    return; 
+                }
+                screenId = 'screen-projects';
+            }
+            
+            this.currentScreen = screenId;
+            window.scrollTo(0, 0);
+
+            if (this.data.activeInlinePlayer.playerElement && screenId !== 'screen-project-videos') {
+                this.pauseAndCleanupInlinePlayer();
+            }
+            if (this.data.activeMainVideoPreview.playerElement && this.data.activeMainVideoPreview.isPlaying && screenId !== 'screen-project-videos') {
+                 this.data.activeMainVideoPreview.playerElement.pause();
+                 this.data.activeMainVideoPreview.isPlaying = false;
+                 // Optionally reset main preview display to thumbnail
+                if(this.data.activeMainVideoPreview.thumbnailElement) this.data.activeMainVideoPreview.thumbnailElement.classList.remove('hidden');
+                if(this.data.activeMainVideoPreview.playButtonElement) this.data.activeMainVideoPreview.playButtonElement.classList.remove('hidden');
+                if(this.data.activeMainVideoPreview.playerElement) this.data.activeMainVideoPreview.playerElement.classList.add('hidden');
+            }
+
+
+            if (this.data.videoElement) { 
+                if (screenId === 'screen-video-logging') {
+                    this.data.videoElement.removeAttribute('controls');
+                } else {
+                    this.data.videoElement.setAttribute('controls', '');
+                    this.data.videoElement.pause(); 
+                }
+            }
+
+            switch (screenId) {
+                case 'screen-projects':
+                    this.renderProjectsScreen();
+                    break;
+                case 'screen-project-videos':
+                    if (params && params.projectId) {
+                        this.data.currentProjectId = params.projectId;
+                    } else if (!this.data.currentProjectId && this.data.projects.length > 0) {
+                         this.data.currentProjectId = this.data.projects[0].id; 
+                    } else if (!this.data.currentProjectId) {
+                        this.navigateTo('screen-projects'); return; 
+                    }
+                    this.renderProjectVideosScreen();
+                    break;
+                case 'screen-video-logging':
+                    if (params && params.videoId && params.projectId) {
+                        this.data.currentProjectId = params.projectId;
+                        this.data.currentVideoId = params.videoId;
+                    } else if (!this.data.currentProjectId || !this.data.currentVideoId) {
+                        console.error("Navigating to video logging without project/video ID!");
+                        const targetProjectId = this.data.currentProjectId || (this.data.projects.length > 0 ? this.data.projects[0].id : null);
+                        if(targetProjectId) this.navigateTo('screen-project-videos', { projectId: targetProjectId });
+                        else this.navigateTo('screen-projects');
+                        return;
+                    }
+                    this.renderVideoLoggingScreen(); 
+                    if(params && params.logIdToEdit) {
+                        this.editLogEntry(params.logIdToEdit, true);
+                    }
+                    break;
+            }
+        },
+
+        loadData() { 
+            const storedData = localStorage.getItem('logReelData');
+            if (storedData) {
+                try {
+                    const parsedData = JSON.parse(storedData);
+                    if (Array.isArray(parsedData)) {
+                        this.data.projects = parsedData;
+                        this.data.projects.forEach(project => {
+                            if (project && project.videos && Array.isArray(project.videos)) {
+                                project.videos.forEach(video => {
+                                    if (video) { // Ensure video object itself exists
+                                        if (typeof video.isImportant === 'undefined') {
+                                            video.isImportant = false;
+                                        }
+                                        if (typeof video.mainVideoThumbnail === 'undefined') {
+                                            video.mainVideoThumbnail = null;
+                                        }
+                                    }
+                                });
+                            } else if (project) { // Ensure project exists before assigning empty videos
+                                project.videos = [];
+                            }
+                        });
+                    } else {
+                         this.data.projects = []; // Handle case where stored data isn't an array
+                    }
+                } catch (e) {
+                    console.error("Error parsing data from localStorage:", e);
+                    this.showToast("Error loading data from storage. Data might be corrupted.", "error");
+                    this.data.projects = [];
+                }
+            } else {
+                this.data.projects = [];
+            }
+        },
+        saveData() { 
+            try {
+                localStorage.setItem('logReelData', JSON.stringify(this.data.projects));
+            } catch (e) {
+                console.error("Error saving data to localStorage:", e);
+                this.showToast("Could not save data. Storage might be full or disabled.", "error");
+            }
+        },
+        getProjectById(projectId) { 
+            return this.data.projects.find(p => p.id === projectId);
+        },
+        getVideoById(projectId, videoId) { 
+            const project = this.getProjectById(projectId);
+            return project ? project.videos.find(v => v.id === videoId) : null;
+        },
+        getLogById(projectId, videoId, logId) { 
+            const video = this.getVideoById(projectId, videoId);
+            return video && video.logs ? video.logs.find(l => l.id === logId) : null;
+        },
+
+        registerEventListeners() {
+            this.dom.btnNewProject.addEventListener('click', () => this.showNewProjectModal());
+            this.dom.importProjectsInput.addEventListener('change', (e) => this.importProjects(e));
+            this.dom.btnBackToProjects.addEventListener('click', () => this.navigateTo('screen-projects'));
+            this.dom.addVideosInput.addEventListener('change', (e) => this.handleAddVideos(e.target.files)); 
+            this.dom.btnExportProject.addEventListener('click', () => this.exportCurrentProject());
+            this.dom.projectVideosSearch.addEventListener('input', (e) => this.renderProjectVideosScreen(e.target.value.trim()));
+            this.dom.btnBackToProjectVideos.addEventListener('click', () => this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }));
+            
+            this.data.rewindBtn.addEventListener('click', () => this.rewindVideo());
+            this.data.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+            this.data.forwardBtn.addEventListener('click', () => this.fastForwardVideo());
+
+            this.data.videoElement.addEventListener('play', () => { 
+                if(this.data.playPauseBtn) {
+                    this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#10074;&#10074;</span>'; 
+                    this.data.playPauseBtn.setAttribute('aria-label', 'Pause video'); 
+                }
+            });
+            this.data.videoElement.addEventListener('pause', () => { 
+                if(this.data.playPauseBtn) {
+                    this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#9658;</span>'; 
+                    this.data.playPauseBtn.setAttribute('aria-label', 'Play video'); 
+                }
+            });
+            this.data.videoElement.addEventListener('loadedmetadata', () => this.updateVideoTimes());
+            this.data.videoElement.addEventListener('timeupdate', () => this.updateVideoTimes());
+            this.data.videoElement.addEventListener('durationchange', () => this.updateVideoTimes());
+            this.data.videoElement.addEventListener('error', async (e) => { 
+                console.error("Video Player Error (Screen 3):", e);
+                const videoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+                this.showToast(`Error playing ${videoData ? this.utils.escapeHtml(videoData.filename) : 'video'}. File might be corrupted or unsupported.`, 'error', 5000);
+                if (videoData) { 
+                    const cacheKey = `${this.data.currentProjectId}-${this.data.currentVideoId}`;
+                    if(this.data.videoFileCache[cacheKey]) {
+                        URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+                        delete this.data.videoFileCache[cacheKey];
+                    }
+                    this.promptForVideoFile(videoData.filename);
+                }
+            });
+            
+            this.data.timelineContainer.addEventListener('mousedown', (e) => this.handleTimelineMouseDown(e));
+            this.data.timelineContainer.addEventListener('touchstart', (e) => this.handleTimelineTouchStart(e), { passive: false });
+
+            this.data.speedSelect.addEventListener('change', (e) => { if(this.data.videoElement) this.data.videoElement.playbackRate = parseFloat(e.target.value); });
+            this.data.markInBtn.addEventListener('click', () => this.setMarkIn());
+            this.data.markOutBtn.addEventListener('click', () => this.setMarkOut());
+            this.dom.logRatingContainer.addEventListener('click', (e) => this.handleStarRating(e));
+            this.dom.saveLogBtn.addEventListener('click', () => this.saveLogEntry()); 
+            this.dom.videoFileInputLogging.addEventListener('change', (e) => this.handleVideoFileSelectionForLogging(e.target.files[0])); 
+            
+            document.querySelectorAll('.close-button').forEach(btn => {
+                btn.addEventListener('click', () => this.hideModal(btn.dataset.modalId));
+            });
+            this.dom.btnCreateProjectConfirm.addEventListener('click', () => this.createNewProject());
+            this.dom.btnConfirmActionCancel.addEventListener('click', () => this.hideModal('modal-confirm-action')); 
+            
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    Object.values(this.dom.modals).forEach(modal => {
+                        if (modal.style.display === 'block') this.hideModal(modal.id);
+                    });
+                }
+            });
+
+            this.dom.projectVideosContainer.addEventListener('click', (e) => {
+                const targetButton = e.target.closest('button');
+                if (!targetButton) return;
+
+                const videoEntryCard = targetButton.closest('article.video-entry-card');
+                if (!videoEntryCard) return; 
+                const videoId = videoEntryCard.dataset.videoId;
+
+                if (targetButton.classList.contains('btn-log-full-video')) {
+                    this.navigateTo('screen-video-logging', { projectId: this.data.currentProjectId, videoId: videoId });
+                } else if (targetButton.classList.contains('btn-delete-this-video')) {
+                    this.confirmDeleteVideo(videoId);
+                } else if (targetButton.classList.contains('btn-toggle-important')) {
+                    this.toggleVideoImportance(videoId);
+                } else if (targetButton.classList.contains('btn-play-this-clip-inline')) {
+                    const logId = targetButton.dataset.logId;
+                    this.playClipInline(videoId, logId, videoEntryCard); 
+                } else if (targetButton.classList.contains('btn-edit-this-clip')) {
+                    const logId = targetButton.dataset.logId;
+                    this.navigateTo('screen-video-logging', { projectId: this.data.currentProjectId, videoId: videoId, logIdToEdit: logId });
+                } else if (targetButton.classList.contains('btn-delete-this-log-item')) {
+                     const logId = targetButton.dataset.logId;
+                     this.confirmDeleteLogItemFromScreen2(videoId, logId);
+                } else if (targetButton.classList.contains('play-main-video-preview-btn')) {
+                    this.playMainVideoPreview(videoId, videoEntryCard);
+                } else if (targetButton.classList.contains('inline-play-pause-btn')) {
+                    this.toggleInlineClipPlayPause();
+                } else if (targetButton.classList.contains('inline-rewind-btn')) {
+                    this.rewindInlineClip();
+                } else if (targetButton.classList.contains('inline-forward-btn')) {
+                    this.forwardInlineClip();
+                }
+            });
+             this.dom.projectVideosContainer.addEventListener('mousedown', (e) => { 
+                if (e.target.closest('.inline-progress-bar-container')) {
+                    this.handleInlineProgressBarMouseDown(e);
+                }
+            });
+             this.dom.projectVideosContainer.addEventListener('touchstart', (e) => { 
+                if (e.target.closest('.inline-progress-bar-container')) {
+                    this.handleInlineProgressBarTouchStart(e);
+                }
+            }, { passive: false });
+
+
+            this.dom.projectVideosContainer.addEventListener('change', (e) => {
+                if (e.target.classList.contains('inline-clip-file-input')) {
+                    const videoEntryCard = e.target.closest('article.video-entry-card');
+                    const videoId = videoEntryCard.dataset.videoId;
+                    this.handleInlinePlayerFileSelection(e.target.files[0], videoId); 
+                } else if (e.target.classList.contains('main-video-preview-file-input')) {
+                    const videoEntryCard = e.target.closest('article.video-entry-card');
+                    const videoId = videoEntryCard.dataset.videoId;
+                    this.handleMainVideoPreviewFileSelection(e.target.files[0], videoId);
+                }
+            });
+        },
+        
+        async getVideoSource(projectId, videoId, videoFilename) {
+            const cacheKey = `${projectId}-${videoId}`;
+            if (this.data.videoFileCache[cacheKey]) {
+                try {
+                    const response = await fetch(this.data.videoFileCache[cacheKey]); 
+                    if (response.ok) { 
+                        console.log("Using cached ObjectURL for", videoFilename);
+                        return this.data.videoFileCache[cacheKey];
+                    } else { 
+                        console.log("Cached ObjectURL seems invalid, revoking from cache:", videoFilename, response.status);
+                        URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+                        delete this.data.videoFileCache[cacheKey];
+                    }
+                } catch (e) { 
+                    console.log("Error fetching cached ObjectURL, revoking from cache:", videoFilename, e);
+                    if (this.data.videoFileCache[cacheKey]) {
+                         URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+                    }
+                    delete this.data.videoFileCache[cacheKey];
+                }
+            }
+
+            try {
+                const fileFromDB = await this.idb.retrieveFile(videoId);
+                if (fileFromDB && fileFromDB.name === videoFilename) {
+                    console.log("Retrieved file from IndexedDB for", videoFilename);
+                    const objectURL = URL.createObjectURL(fileFromDB);
+                    this.data.videoFileCache[cacheKey] = objectURL; 
+                    return objectURL;
+                } else if (fileFromDB && fileFromDB.name !== videoFilename) {
+                    console.warn(`Filename mismatch from IDB. Expected ${videoFilename}, got ${fileFromDB.name}. Prompting.`);
+                } else if (!fileFromDB) {
+                    console.log("File not found in IndexedDB for", videoFilename);
+                }
+            } catch (error) {
+                console.error("Error retrieving file from IndexedDB for", videoFilename, error);
+                 if (error === "IndexedDB not supported" || error === "IndexedDB not available for retrieving file.") {
+                 } else {
+                    this.showToast(`Error accessing persistent storage for "${this.utils.escapeHtml(videoFilename)}".`, "warning");
+                 }
+            }
+            
+            console.log("No valid source found in cache or IDB for", videoFilename, ". Prompting likely.");
+            return null;
+        },
+
+        renderProjectsScreen() {
+            if (!this.dom.projectsList) { // Early exit if critical DOM element is missing
+                console.error("projectsList DOM element not found. Cannot render projects screen.");
+                return;
+            }
+            this.dom.projectsList.innerHTML = '';
+            if (this.data.projects.length === 0) {
+                this.dom.projectsList.innerHTML = '<div class="empty-state"><p>No projects yet.</p><p>Create one or import existing projects to get started!</p></div>';
+                return;
+            }
+            const fragment = document.createDocumentFragment();
+            this.data.projects.forEach(project => {
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-padding-wrapper" style="padding: 20px;">
+                        <div class="card-title">${this.utils.escapeHtml(project.name)}</div>
+                        <div class="card-meta">Contains ${project.videos ? project.videos.length : 0} video(s)</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="button button-primary btn-open-project" data-project-id="${project.id}">Open Project</button>
+                        <button class="button button-subtle btn-delete-project" data-project-id="${project.id}">Delete</button>
+                    </div>
+                `;
+                fragment.appendChild(card);
+            });
+            this.dom.projectsList.appendChild(fragment);
+
+            this.dom.projectsList.querySelectorAll('.btn-open-project').forEach(btn => {
+                btn.addEventListener('click', (e) => this.navigateTo('screen-project-videos', { projectId: e.currentTarget.dataset.projectId }));
+            });
+            this.dom.projectsList.querySelectorAll('.btn-delete-project').forEach(btn => {
+                btn.addEventListener('click', (e) => this.confirmDeleteProject(e.currentTarget.dataset.projectId));
+            });
+        },
+        showNewProjectModal() { 
+            this.dom.newProjectNameInput.value = '';
+            this.showModal('modal-new-project');
+        },
+        createNewProject() { 
+            const name = this.dom.newProjectNameInput.value.trim();
+            if (!name) { this.showToast('Project name cannot be empty.', 'warning'); return; }
+            const newProject = { id: this.utils.generateId(), name: name, videos: [], createdAt: new Date().toISOString() };
+            this.data.projects.unshift(newProject);
+            this.saveData(); this.renderProjectsScreen(); this.hideModal('modal-new-project');
+            this.showToast(`Project "${this.utils.escapeHtml(name)}" created.`, 'success');
+        },
+        confirmDeleteProject(projectId) { 
+            const project = this.getProjectById(projectId);
+            if (!project) return;
+            const message = `Are you sure you want to delete the project "<strong>${this.utils.escapeHtml(project.name)}</strong>"? <br>This action cannot be undone and will remove all associated video files from persistent storage.`;
+            this.showConfirmationModal(message, () => this.deleteProject(projectId), null, "Delete Project", "button-danger");
+        },
+        async deleteProject(projectId){ 
+            const project = this.getProjectById(projectId);
+            if (project && project.videos) {
+                for (const video of project.videos) {
+                    const cacheKey = `${projectId}-${video.id}`; 
+                    if (this.data.videoFileCache[cacheKey]) {
+                         URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+                         delete this.data.videoFileCache[cacheKey];
+                    }
+                    try {
+                        await this.idb.deleteFile(video.id);
+                        console.log(`File for videoId ${video.id} (project ${projectId}) deleted from IDB`);
+                    } catch (error) {
+                        console.error(`Failed to delete file for videoId ${video.id} from IndexedDB during project deletion:`, error);
+                    }
+                }
+            }
+
+            this.data.projects = this.data.projects.filter(p => p.id !== projectId);
+            if (this.data.currentProjectId === projectId) { this.data.currentProjectId = null; this.data.currentVideoId = null; }
+            this.saveData(); this.renderProjectsScreen();
+            if(project) this.showToast(`Project "${this.utils.escapeHtml(project.name)}" deleted.`, 'success');
+        },
+        importProjects(event) { 
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (Array.isArray(importedData) && importedData.every(p => p.id && p.name && Array.isArray(p.videos))) {
+                            importedData.forEach(p => {
+                                p.videos.forEach(v => {
+                                    if(typeof v.isImportant === 'undefined') v.isImportant = false;
+                                     if (typeof v.mainVideoThumbnail === 'undefined') v.mainVideoThumbnail = null;
+                                });
+                            });
+                            this.showConfirmationModal(
+                                "Importing will replace <strong>all current projects and their data (excluding persistently stored video files from other projects)</strong>. This action cannot be undone. Continue?",
+                                async () => { 
+                                    this.data.projects = importedData; 
+                                    this.saveData(); 
+                                    this.renderProjectsScreen(); 
+                                    this.showToast('Projects imported successfully! Video files may need to be re-added if not already persistently stored.', 'success', 5000);
+                                },
+                                null, "Import & Replace", "button-primary"
+                            );
+                        } else { this.showToast('Invalid project file format.', 'error'); }
+                    } catch (error) { this.showToast('Error reading or parsing project file.', 'error'); console.error("Import error:", error); }
+                };
+                reader.readAsText(file); event.target.value = null; 
+            }
+        },
+        exportCurrentProject() { 
+            const project = this.getProjectById(this.data.currentProjectId);
+            if (!project) { this.showToast("No project selected or found to export.", "warning"); return; }
+            const projectToExport = JSON.parse(JSON.stringify(project)); 
+            projectToExport.videos.forEach(video => { delete video.fileURL; }); 
+            const dataStr = JSON.stringify([projectToExport], null, 2); 
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = `${project.name.replace(/\s+/g, '_')}_LogReel_export.json`;
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri); linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click(); linkElement.remove();
+            this.showToast(`Project "${this.utils.escapeHtml(project.name)}" export started.`, 'success');
+        },
+        
+        // --- Screen 2 Methods ---
+        // ... (renderProjectVideosScreen and other Screen 2 specific methods from the previous good response)
+        async renderProjectVideosScreen(searchTerm = '') {
+            const project = this.getProjectById(this.data.currentProjectId);
+            if (!project) { this.navigateTo('screen-projects'); return; }
+
+            this.dom.projectNameHeader.textContent = this.utils.escapeHtml(project.name);
+            this.dom.projectVideosContainer.innerHTML = '';
+
+            this.pauseAndCleanupInlinePlayer(); 
+            if(this.data.activeMainVideoPreview.playerElement && this.data.activeMainVideoPreview.isPlaying) {
+                 this.data.activeMainVideoPreview.playerElement.pause();
+            }
+            this.data.activeMainVideoPreview = { videoId: null, playerElement: null, thumbnailElement: null, playButtonElement: null, promptElement: null, fileInputElement: null, isPlaying: false };
+
+
+            let videosToDisplay = project.videos || [];
+            let foundItems = false;
+            const fragment = document.createDocumentFragment();
+
+            if (videosToDisplay.length === 0 && !searchTerm) {
+                this.dom.projectVideosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos in this project yet.</p><p>Click "Add Videos" to begin.</p></div>';
+                return;
+            }
+            
+            videosToDisplay.forEach((video, index) => {
+                let videoMatchesSearch = false;
+                let clipsToDisplay = video.logs || [];
+
+                if (searchTerm) {
+                    const lowerSearchTerm = searchTerm.toLowerCase();
+                    if (video.filename.toLowerCase().includes(lowerSearchTerm)) {
+                        videoMatchesSearch = true;
+                    }
+                    clipsToDisplay = clipsToDisplay.filter(log =>
+                        log.notes.toLowerCase().includes(lowerSearchTerm) ||
+                        (log.keywords && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
+                    );
+                    if (!videoMatchesSearch && clipsToDisplay.length === 0) return; 
+                }
+                foundItems = true;
+
+                const videoCard = document.createElement('article');
+                videoCard.className = 'video-entry-card';
+                videoCard.dataset.videoId = video.id;
+
+                let clipsHtml = '';
+                if (clipsToDisplay.length > 0) {
+                    clipsToDisplay.sort((a,b) => a.markIn - b.markIn).forEach(log => {
+                        const ratingStars = Array(5).fill(0).map((_, i) => `<span class="star ${i < log.rating ? 'selected' : ''}" style="font-size:0.8em; color: ${i < log.rating ? 'var(--warning-color)' : 'var(--border-color)'};">&#9733;</span>`).join('');
+                        clipsHtml += `
+                            <div class="clip-item-card">
+                                <img src="${log.thumbnail || 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='}" alt="Clip thumbnail" class="clip-item-thumbnail">
+                                <div class="clip-item-info">
+                                    <p class="notes">${this.utils.escapeHtml(log.notes)}</p>
+                                    <p class="time">Time: ${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}</p>
+                                    <p class="rating">Rating: ${ratingStars}</p>
+                                    ${log.keywords && log.keywords.length > 0 ? `<p class="keywords">Keywords: ${this.utils.escapeHtml(log.keywords.join(', '))}</p>` : ''}
+                                </div>
+                                <div class="clip-item-actions">
+                                    <button class="button button-primary button-small btn-play-this-clip-inline" data-log-id="${log.id}" aria-label="Play clip: ${this.utils.escapeHtml(log.notes.substring(0,30))}"><span class="button-icon">&#9658;</span>Play</button>
+                                    <button class="button button-subtle button-small btn-edit-this-clip" data-log-id="${log.id}" aria-label="Edit clip: ${this.utils.escapeHtml(log.notes.substring(0,30))}">Edit</button>
+                                    <button class="button button-subtle button-small btn-delete-this-log-item" data-log-id="${log.id}" aria-label="Delete clip: ${this.utils.escapeHtml(log.notes.substring(0,30))}">Del</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else if (searchTerm && videoMatchesSearch) { 
+                    clipsHtml = '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No logged clips match search for this video.</p>';
+                } else if (!searchTerm) {
+                     clipsHtml = '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No clips logged for this video yet.</p>';
+                }
+
+                const mainThumbnailSrc = video.mainVideoThumbnail || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90"%3E%3Crect width="160" height="90" fill="%23e0e0e0"/%3E%3Ctext x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14px" fill="%23777"%3EVideo%3C/text%3E%3C/svg%3E';
+
+                videoCard.innerHTML = `
+                    <div class="video-entry-header">
+                        <span class="video-entry-title" title="${this.utils.escapeHtml(video.filename)}">
+                           <span class="video-card-number">${index + 1}. </span>${this.utils.escapeHtml(video.filename)}
+                        </span>
+                        <div class="video-entry-actions">
+                             <button class="button button-subtle button-small btn-toggle-important ${video.isImportant ? 'is-important' : ''}" title="${video.isImportant ? 'Unmark as important' : 'Mark as important'}" aria-pressed="${video.isImportant}">
+                                <span class="button-icon button-icon-only">${video.isImportant ? '&#9733;' : '&#9734;'}</span>
+                            </button>
+                            <button class="button button-secondary button-small btn-log-full-video" aria-label="Log full video: ${this.utils.escapeHtml(video.filename)}">Log Full Video</button>
+                            <button class="button button-subtle button-small btn-delete-this-video" aria-label="Delete video: ${this.utils.escapeHtml(video.filename)}">Delete Video</button>
+                        </div>
+                    </div>
+
+                    <div class="main-video-preview-area" id="main-preview-area-${video.id}">
+                        <img src="${mainThumbnailSrc}" class="main-video-thumbnail" id="main-thumbnail-${video.id}" alt="Video preview for ${this.utils.escapeHtml(video.filename)}">
+                        <button class="play-main-video-preview-btn" id="play-main-preview-btn-${video.id}" aria-label="Play video preview for ${this.utils.escapeHtml(video.filename)}">&#9658;</button>
+                        <video class="main-video-preview-player hidden" id="main-player-${video.id}" playsinline controls width="100%"></video>
+                        <div class="main-video-preview-prompt hidden" id="main-player-prompt-${video.id}">
+                            <p id="main-player-prompt-msg-${video.id}">Select video file to play preview.</p>
+                            <label class="button button-primary button-small mt-1">
+                                Select Video File
+                                <input type="file" class="main-video-preview-file-input" data-target-player-id="${video.id}" accept="video/*" aria-label="Select video file for main preview player">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="inline-clip-player-area" id="inline-player-area-${video.id}">
+                        <video class="inline-clip-player" id="inline-player-${video.id}" playsinline width="100%"></video>
+                        <div class="inline-clip-player-controls hidden" id="inline-controls-${video.id}">
+                            <button class="inline-rewind-btn" aria-label="Rewind clip 5 seconds">&#x23EA;</button>
+                            <button class="inline-play-pause-btn" aria-label="Play clip">&#9658;</button>
+                            <button class="inline-forward-btn" aria-label="Forward clip 5 seconds">&#x23E9;</button>
+                            <div class="inline-progress-bar-container" id="inline-progress-container-${video.id}">
+                                <div class="inline-progress-bar" id="inline-progress-${video.id}"></div>
+                            </div>
+                            <span class="inline-timecode" id="inline-timecode-${video.id}">00:00/00:00</span>
+                        </div>
+                        <div class="inline-clip-player-prompt hidden" id="inline-player-prompt-${video.id}">
+                            <p id="inline-player-prompt-msg-${video.id}">Select video file to play clip.</p>
+                            <label class="button button-primary button-small mt-1">
+                                Select Video File
+                                <input type="file" class="inline-clip-file-input" data-target-player-id="${video.id}" accept="video/*" aria-label="Select video file for inline player">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="video-clips-list-container">
+                        ${clipsToDisplay.length > 0 || (searchTerm && videoMatchesSearch) ? `<h4>Logged Clips (${clipsToDisplay.length})</h4>` : ''}
+                        ${clipsHtml}
+                    </div>
+                `;
+                fragment.appendChild(videoCard);
+            });
+            this.dom.projectVideosContainer.appendChild(fragment);
+            
+            if (!foundItems && searchTerm) {
+                 this.dom.projectVideosContainer.innerHTML = `<div class="empty-state" style="margin:20px;"><p>No videos or clips found matching "<strong>${this.utils.escapeHtml(searchTerm)}</strong>".</p></div>`;
+            } else if (!foundItems && !searchTerm && videosToDisplay.length > 0) {
+                 this.dom.projectVideosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos to display.</p></div>';
+            }
+        },
+
+        async handleAddVideos(files) { 
+            const project = this.getProjectById(this.data.currentProjectId);
+            if (!project) return;
+            if (!project.videos) project.videos = [];
+            let addedCount = 0;
+
+            for (let file of files) {
+                if (file.type.startsWith('video/')) {
+                    const videoId = this.utils.generateId();
+                    const cacheKey = `${this.data.currentProjectId}-${videoId}`;
+                    let mainThumbnail = null;
+                    
+                    try {
+                        await this.idb.storeFile(videoId, file); 
+                        console.log(`File ${file.name} stored in IDB for videoId ${videoId}`);
+                    } catch (error) {
+                        console.error(`Failed to store ${file.name} in IndexedDB:`, error);
+                        this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" for persistent access. It will need re-selection later if this session ends.`, 'warning', 6000);
+                    }
+
+                    const objectURL = URL.createObjectURL(file);
+                    this.data.videoFileCache[cacheKey] = objectURL;
+                    try {
+                        const tempVideoEl = document.createElement('video');
+                        tempVideoEl.muted = true; // Mute to avoid sound during thumbnail gen
+                        tempVideoEl.src = objectURL;
+                        mainThumbnail = await new Promise((resolve) => { // Removed reject as it's optional
+                            let timeoutId = setTimeout(() => { // Fallback timeout
+                                console.warn("Timeout generating main video thumbnail for", file.name);
+                                tempVideoEl.onloadedmetadata = null; tempVideoEl.onseeked = null; tempVideoEl.onerror = null;
+                                resolve(null);
+                            }, 3000); // 3 sec timeout
+
+                            tempVideoEl.onloadedmetadata = () => {
+                                tempVideoEl.currentTime = Math.min(0.5, tempVideoEl.duration / 2); // Seek to 0.5s or midpoint
+                            };
+                            tempVideoEl.onseeked = async () => {
+                                clearTimeout(timeoutId);
+                                try {
+                                    const thumb = await this.generateGenericThumbnail(tempVideoEl);
+                                    resolve(thumb);
+                                 } catch (thumbError) {
+                                     console.warn("Could not generate main video thumbnail (onseeked):", thumbError);
+                                     resolve(null);
+                                 }
+                            };
+                            tempVideoEl.onerror = () => {
+                                clearTimeout(timeoutId);
+                                console.warn("Error loading video for main thumbnail generation for", file.name);
+                                resolve(null);
+                            };
+                        });
+                    } catch (e) {
+                        console.warn("Error setting up main video thumbnail generation:", e);
+                        mainThumbnail = null;
+                    }
+                    
+                    const newVideo = { 
+                        id: videoId, 
+                        filename: file.name, 
+                        logs: [], 
+                        createdAt: new Date().toISOString(),
+                        isImportant: false,
+                        mainVideoThumbnail: mainThumbnail 
+                    };
+                    project.videos.push(newVideo);
+                    addedCount++;
+                } else { this.showToast(`File "${this.utils.escapeHtml(file.name)}" is not a video and was skipped.`, 'warning'); }
+            }
+            if(addedCount > 0) {
+                this.saveData(); this.renderProjectVideosScreen(); 
+                this.showToast(`${addedCount} video(s) added to project.`, 'success');
+            }
+            this.dom.addVideosInput.value = null; 
+        },
+        async generateGenericThumbnail(videoElement) {
+             return new Promise((resolve, reject) => {
+                if (!videoElement || !videoElement.src || videoElement.readyState < videoElement.HAVE_METADATA) { // HAVE_METADATA might be enough
+                    return reject("Video element not ready for thumbnail.");
+                }
+                // Ensure video has dimensions
+                if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
+                    return reject("Video dimensions are zero, cannot create thumbnail.");
+                }
+
+                const canvas = this.dom.thumbnailCanvas; 
+                const ctx = canvas.getContext('2d');
+                
+                const ar = videoElement.videoWidth / videoElement.videoHeight;
+                canvas.width = 160; 
+                canvas.height = canvas.width / ar;
+                if (isNaN(canvas.height) || !isFinite(canvas.height) || canvas.height <= 0) {
+                    canvas.height = 90; 
+                }
+                
+                try {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous content
+                    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.6)); 
+                } catch (e) {
+                    console.error("Canvas toDataURL error in generic thumbnail:", e);
+                    reject("Error creating thumbnail data.");
+                }
+            });
+        },
+        confirmDeleteVideo(videoId) { 
+            const video = this.getVideoById(this.data.currentProjectId, videoId);
+            if (!video) return;
+            const message = `Are you sure you want to delete the video "<strong>${this.utils.escapeHtml(video.filename)}</strong>" and all its logs? <br>This will also remove it from persistent storage. This cannot be undone.`;
+            this.showConfirmationModal(message, () => this.deleteVideo(videoId), null, "Delete Video", "button-danger");
+        },
+        async deleteVideo(videoId) { 
+            const project = this.getProjectById(this.data.currentProjectId);
+            if (!project || !project.videos) return;
+
+            const videoIndex = project.videos.findIndex(v => v.id === videoId);
+            if (videoIndex === -1) return;
+            const videoToDelete = project.videos[videoIndex];
+            const cacheKey = `${this.data.currentProjectId}-${videoId}`;
+
+            if (this.data.videoFileCache[cacheKey]) {
+                 URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+                 delete this.data.videoFileCache[cacheKey];
+            }
+            try {
+                await this.idb.deleteFile(videoId);
+                console.log(`File for videoId ${videoId} deleted from IDB`);
+            } catch (error) {
+                console.error(`Failed to delete file for videoId ${videoId} from IndexedDB:`, error);
+                this.showToast(`Could not remove "${this.utils.escapeHtml(videoToDelete.filename)}" from persistent storage. Manual browser data clearing might be needed if issues persist.`, 'warning', 7000);
+            }
+
+            project.videos.splice(videoIndex, 1);
+
+            if (this.data.currentVideoId === videoId) { this.data.currentVideoId = null; }
+            if (this.data.activeInlinePlayer.videoId === videoId) {
+                this.pauseAndCleanupInlinePlayer();
+            }
+             if (this.data.activeMainVideoPreview.videoId === videoId) {
+                if (this.data.activeMainVideoPreview.playerElement && this.data.activeMainVideoPreview.isPlaying) {
+                     this.data.activeMainVideoPreview.playerElement.pause();
+                }
+                this.data.activeMainVideoPreview = { videoId: null, playerElement: null, thumbnailElement: null, playButtonElement: null, promptElement: null, fileInputElement: null, isPlaying: false };
+            }
+            this.saveData(); this.renderProjectVideosScreen();
+            if (videoToDelete) this.showToast(`Video "${this.utils.escapeHtml(videoToDelete.filename)}" deleted.`, 'success');
+        },
+        toggleVideoImportance(videoId) {
+            const project = this.getProjectById(this.data.currentProjectId);
+            if (!project) return;
+            const video = project.videos.find(v => v.id === videoId);
+            if (!video) return;
+
+            video.isImportant = !video.isImportant;
+            this.saveData();
+            this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
+            this.showToast(`Video "${this.utils.escapeHtml(video.filename)}" marked as ${video.isImportant ? 'important' : 'not important'}.`, 'info');
+        },
+
+        async playMainVideoPreview(videoId, cardElement) {
+            const videoData = this.getVideoById(this.data.currentProjectId, videoId);
+            if (!videoData) return;
+
+            if (this.data.activeMainVideoPreview.videoId && this.data.activeMainVideoPreview.videoId !== videoId && this.data.activeMainVideoPreview.playerElement && this.data.activeMainVideoPreview.isPlaying) {
+                this.data.activeMainVideoPreview.playerElement.pause();
+                this.data.activeMainVideoPreview.playerElement.classList.add('hidden');
+                if(this.data.activeMainVideoPreview.thumbnailElement) this.data.activeMainVideoPreview.thumbnailElement.classList.remove('hidden');
+                if(this.data.activeMainVideoPreview.playButtonElement) this.data.activeMainVideoPreview.playButtonElement.classList.remove('hidden');
+                if(this.data.activeMainVideoPreview.promptElement) this.data.activeMainVideoPreview.promptElement.classList.add('hidden');
+            }
+            
+            this.data.activeMainVideoPreview.videoId = videoId;
+            this.data.activeMainVideoPreview.playerElement = cardElement.querySelector(`#main-player-${videoId}`);
+            this.data.activeMainVideoPreview.thumbnailElement = cardElement.querySelector(`#main-thumbnail-${videoId}`);
+            this.data.activeMainVideoPreview.playButtonElement = cardElement.querySelector(`#play-main-preview-btn-${videoId}`);
+            this.data.activeMainVideoPreview.promptElement = cardElement.querySelector(`#main-player-prompt-${videoId}`);
+            this.data.activeMainVideoPreview.fileInputElement = cardElement.querySelector(`.main-video-preview-file-input`);
+
+            const player = this.data.activeMainVideoPreview.playerElement;
+            const thumbnail = this.data.activeMainVideoPreview.thumbnailElement;
+            const playBtn = this.data.activeMainVideoPreview.playButtonElement;
+            const prompt = this.data.activeMainVideoPreview.promptElement;
+
+            thumbnail.classList.add('hidden');
+            playBtn.classList.add('hidden');
+            player.classList.remove('hidden');
+            prompt.classList.add('hidden');
+
+            player.onerror = () => {
+                this.showToast(`Error playing main preview for "${this.utils.escapeHtml(videoData.filename)}".`, 'error');
+                this.showMainVideoPreviewPrompt(videoData.filename, videoId);
+                player.onerror = null;
+            };
+            player.onplay = () => { this.data.activeMainVideoPreview.isPlaying = true; };
+            player.onpause = () => { this.data.activeMainVideoPreview.isPlaying = false; };
+            player.onended = () => { 
+                 this.data.activeMainVideoPreview.isPlaying = false;
+                 player.classList.add('hidden');
+                 thumbnail.classList.remove('hidden');
+                 playBtn.classList.remove('hidden');
+            };
+
+
+            const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
+            if (videoSrc) {
+                player.src = videoSrc;
+                player.load();
+                player.play().catch(e => {
+                    console.error("Main preview play error:", e);
+                    this.showMainVideoPreviewPrompt(videoData.filename, videoId);
+                });
+            } else {
+                this.showMainVideoPreviewPrompt(videoData.filename, videoId);
+            }
+        },
+        showMainVideoPreviewPrompt(videoFilename, videoId) {
+            if (this.data.activeMainVideoPreview.videoId === videoId) {
+                const { playerElement, thumbnailElement, playButtonElement, promptElement } = this.data.activeMainVideoPreview;
+                if (playerElement) playerElement.classList.add('hidden');
+                if (promptElement) {
+                    promptElement.querySelector(`#main-player-prompt-msg-${videoId}`).innerHTML = `Video "<strong>${this.utils.escapeHtml(videoFilename)}</strong>" needs to be selected to play the preview.`;
+                    promptElement.classList.remove('hidden');
+                    // Ensure thumbnail and play button are hidden when prompt is up
+                    if (thumbnailElement) thumbnailElement.classList.add('hidden');
+                    if (playButtonElement) playButtonElement.classList.add('hidden');
+                }
+            }
+        },
+        async handleMainVideoPreviewFileSelection(file, videoId) {
+            const videoData = this.getVideoById(this.data.currentProjectId, videoId);
+            if (!file || !videoData || this.data.activeMainVideoPreview.videoId !== videoId) return;
+
+            if (file.name !== videoData.filename) {
+                this.showToast(`Incorrect file. Expected "${this.utils.escapeHtml(videoData.filename)}".`, "warning");
+                if(this.data.activeMainVideoPreview.fileInputElement) this.data.activeMainVideoPreview.fileInputElement.value = '';
+                return;
+            }
+
+            const cacheKey = `${this.data.currentProjectId}-${videoId}`;
+            if (this.data.videoFileCache[cacheKey]) URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+            
+            try { await this.idb.storeFile(videoId, file); }
+            catch (error) { this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" for persistent access.`, 'warning');}
+            
+            const objectURL = URL.createObjectURL(file);
+            this.data.videoFileCache[cacheKey] = objectURL;
+
+            const { playerElement, promptElement, fileInputElement } = this.data.activeMainVideoPreview;
+            if (promptElement) promptElement.classList.add('hidden');
+            if (playerElement) {
+                playerElement.classList.remove('hidden');
+                playerElement.src = objectURL;
+                playerElement.load();
+                playerElement.play().catch(e => console.error("Error playing main preview after file selection:", e));
+            }
+            if(fileInputElement) fileInputElement.value = '';
+        },
+
+        pauseAndCleanupInlinePlayer() {
+            const ap = this.data.activeInlinePlayer;
+            if (ap.playerElement) {
+                ap.playerElement.pause();
+                ap.playerElement.removeAttribute('src');
+                ap.playerElement.load(); 
+
+                if(ap.boundTimeUpdateHandler) ap.playerElement.removeEventListener('timeupdate', ap.boundTimeUpdateHandler);
+                if(ap.boundLoadedMetadataHandler) ap.playerElement.removeEventListener('loadedmetadata', ap.boundLoadedMetadataHandler);
+                if(ap.boundEndedHandler) ap.playerElement.removeEventListener('ended', ap.boundEndedHandler);
+                if(ap.boundErrorHandler) ap.playerElement.removeEventListener('error', ap.boundErrorHandler);
+                if(ap.boundPlayHandler) ap.playerElement.removeEventListener('play', ap.boundPlayHandler);
+                if(ap.boundPauseHandler) ap.playerElement.removeEventListener('pause', ap.boundPauseHandler);
+
+                const playerArea = document.getElementById(`inline-player-area-${ap.videoId}`);
+                if (playerArea) playerArea.classList.remove('active');
+                if (ap.controlsContainer) ap.controlsContainer.classList.add('hidden');
+                if (ap.promptElement) ap.promptElement.classList.add('hidden');
+            }
+            this.data.activeInlinePlayer = { videoId: null, logId: null, playerElement: null, promptElement: null, fileInputElement: null, controlsContainer: null, playPauseBtn: null, rewindBtn: null, forwardBtn: null, progressBarContainer: null, progressBar: null, timecodeDisplay: null, isPlaying: false, currentClipDuration: 0, currentClipStartTime: 0, isScrubbing: false, wasPlayingBeforeScrub: false, boundTimeUpdateHandler: null, boundLoadedMetadataHandler: null, boundEndedHandler: null, boundErrorHandler: null, boundPlayHandler: null, boundPauseHandler: null };
+        },
+
+        async playClipInline(videoId, logId, cardElement) {
+            const videoData = this.getVideoById(this.data.currentProjectId, videoId);
+            const logData = this.getLogById(this.data.currentProjectId, videoId, logId);
+            if (!videoData || !logData) { this.showToast("Clip/video data not found.", "error"); return; }
+
+            if (this.data.activeInlinePlayer.videoId && (this.data.activeInlinePlayer.videoId !== videoId || this.data.activeInlinePlayer.logId !== logId)) {
+                this.pauseAndCleanupInlinePlayer();
+            }
+            if (this.data.activeMainVideoPreview.videoId === videoId && this.data.activeMainVideoPreview.isPlaying) {
+                this.data.activeMainVideoPreview.playerElement.pause();
+                this.data.activeMainVideoPreview.playerElement.classList.add('hidden');
+                if(this.data.activeMainVideoPreview.thumbnailElement) this.data.activeMainVideoPreview.thumbnailElement.classList.remove('hidden');
+                if(this.data.activeMainVideoPreview.playButtonElement) this.data.activeMainVideoPreview.playButtonElement.classList.remove('hidden');
+            }
+
+            const ap = this.data.activeInlinePlayer; 
+            ap.videoId = videoId;
+            ap.logId = logId;
+
+            const playerArea = cardElement.querySelector(`#inline-player-area-${videoId}`);
+            ap.playerElement = cardElement.querySelector(`#inline-player-${videoId}`);
+            ap.promptElement = cardElement.querySelector(`#inline-player-prompt-${videoId}`);
+            ap.fileInputElement = ap.promptElement.querySelector('.inline-clip-file-input');
+            ap.controlsContainer = cardElement.querySelector(`#inline-controls-${videoId}`);
+            ap.playPauseBtn = cardElement.querySelector(`#inline-controls-${videoId} .inline-play-pause-btn`);
+            ap.rewindBtn = cardElement.querySelector(`#inline-controls-${videoId} .inline-rewind-btn`);
+            ap.forwardBtn = cardElement.querySelector(`#inline-controls-${videoId} .inline-forward-btn`);
+            ap.progressBarContainer = cardElement.querySelector(`#inline-progress-container-${videoId}`);
+            ap.progressBar = cardElement.querySelector(`#inline-progress-${videoId}`);
+            ap.timecodeDisplay = cardElement.querySelector(`#inline-timecode-${videoId}`);
+            
+            playerArea.classList.add('active');
+            ap.controlsContainer.classList.remove('hidden');
+            ap.promptElement.classList.add('hidden');
+            
+            ap.currentClipStartTime = logData.markIn;
+            ap.currentClipDuration = logData.markOut - logData.markIn;
+
+            ap.boundErrorHandler = () => this.handleInlineClipError(videoData.filename);
+            ap.boundLoadedMetadataHandler = () => this.handleInlineClipLoadedMetadata();
+            ap.boundTimeUpdateHandler = () => this.handleInlineClipTimeUpdate();
+            ap.boundEndedHandler = () => this.handleInlineClipEnded();
+            ap.boundPlayHandler = () => { ap.isPlaying = true; ap.playPauseBtn.innerHTML = '&#10074;&#10074;'; ap.playPauseBtn.setAttribute('aria-label', 'Pause clip'); }; 
+            ap.boundPauseHandler = () => { ap.isPlaying = false; ap.playPauseBtn.innerHTML = '&#9658;'; ap.playPauseBtn.setAttribute('aria-label', 'Play clip');}; 
+
+            ap.playerElement.addEventListener('error', ap.boundErrorHandler);
+            ap.playerElement.addEventListener('loadedmetadata', ap.boundLoadedMetadataHandler);
+            ap.playerElement.addEventListener('timeupdate', ap.boundTimeUpdateHandler);
+            ap.playerElement.addEventListener('ended', ap.boundEndedHandler);
+            ap.playerElement.addEventListener('play', ap.boundPlayHandler);
+            ap.playerElement.addEventListener('pause', ap.boundPauseHandler);
+
+            const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
+            if (videoSrc) {
+                ap.playerElement.src = videoSrc; 
+                ap.playerElement.load();
+                ap.playerElement.currentTime = ap.currentClipStartTime; 
+                ap.playerElement.play().catch(e => {
+                    console.error("Inline clip play error:", e);
+                    this.showInlineClipPrompt(videoData.filename, videoId);
+                });
+            } else {
+                this.showInlineClipPrompt(videoData.filename, videoId);
+            }
+            playerArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+        handleInlineClipError(filename) {
+            this.showToast(`Error playing clip from "${this.utils.escapeHtml(filename)}". File needs reselection or is invalid.`, 'error', 5000);
+            this.showInlineClipPrompt(filename, this.data.activeInlinePlayer.videoId);
+            if(this.data.activeInlinePlayer.playerElement && this.data.activeInlinePlayer.boundErrorHandler) {
+                this.data.activeInlinePlayer.playerElement.removeEventListener('error', this.data.activeInlinePlayer.boundErrorHandler); 
+            }
+        },
+        handleInlineClipLoadedMetadata() {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.duration || isNaN(ap.playerElement.duration)) return;
+            if (Math.abs(ap.playerElement.currentTime - ap.currentClipStartTime) > 0.1) {
+                 ap.playerElement.currentTime = ap.currentClipStartTime;
+            }
+            this.updateInlineClipTimeDisplay(); 
+        },
+        handleInlineClipTimeUpdate() {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.duration || isNaN(ap.playerElement.duration) || ap.isScrubbing) return;
+
+            const currentTimeInClip = ap.playerElement.currentTime - ap.currentClipStartTime;
+            const clipEndAbsolute = ap.currentClipStartTime + ap.currentClipDuration;
+
+            if (ap.playerElement.currentTime >= clipEndAbsolute) {
+                ap.playerElement.pause();
+                ap.playerElement.currentTime = clipEndAbsolute; 
+                this.handleInlineClipEnded(); 
+                return;
+            }
+            if (currentTimeInClip < 0 && ap.playerElement.currentTime < ap.currentClipStartTime) { 
+                ap.playerElement.currentTime = ap.currentClipStartTime;
+                return;
+            }
+
+            const progress = (currentTimeInClip / ap.currentClipDuration) * 100;
+            if(ap.progressBar) ap.progressBar.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+            this.updateInlineClipTimeDisplay();
+        },
+        handleInlineClipEnded() {
+            const ap = this.data.activeInlinePlayer;
+            if(ap.playPauseBtn) {
+                ap.playPauseBtn.innerHTML = '&#9658;'; 
+                ap.playPauseBtn.setAttribute('aria-label', 'Replay clip');
+            }
+            if(ap.progressBar) ap.progressBar.style.width = '100%';
+             if(ap.playerElement) ap.playerElement.currentTime = ap.currentClipStartTime + ap.currentClipDuration - 0.01; 
+        },
+        updateInlineClipTimeDisplay() {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.timecodeDisplay || isNaN(ap.currentClipDuration) || ap.currentClipDuration < 0) return;
+            const currentTimeInClip = Math.max(0, ap.playerElement.currentTime - ap.currentClipStartTime);
+            const displayDuration = ap.currentClipDuration > 0 ? ap.currentClipDuration : 0;
+            ap.timecodeDisplay.textContent = `${this.utils.formatTime(currentTimeInClip)} / ${this.utils.formatTime(displayDuration)}`;
+        },
+        toggleInlineClipPlayPause() {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.src) {
+                this.showToast("Clip not loaded.", "warning"); return;
+            }
+            if (ap.isPlaying) {
+                ap.playerElement.pause();
+            } else {
+                const clipEndAbsolute = ap.currentClipStartTime + ap.currentClipDuration;
+                if (ap.playerElement.currentTime >= clipEndAbsolute - 0.1) { 
+                    ap.playerElement.currentTime = ap.currentClipStartTime;
+                }
+                ap.playerElement.play().catch(e => console.error("Inline clip play toggle error:", e));
+            }
+        },
+        rewindInlineClip() {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.src) return;
+            const newTime = Math.max(ap.currentClipStartTime, ap.playerElement.currentTime - this.data.skipTimeSeconds);
+            ap.playerElement.currentTime = newTime;
+        },
+        forwardInlineClip() {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.src) return;
+            const clipEndAbsolute = ap.currentClipStartTime + ap.currentClipDuration;
+            const newTime = Math.min(clipEndAbsolute, ap.playerElement.currentTime + this.data.skipTimeSeconds);
+            ap.playerElement.currentTime = newTime;
+        },
+        handleInlineProgressBarMouseDown(event) {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.src || isNaN(ap.currentClipDuration) || ap.currentClipDuration <=0 ) return;
+            event.preventDefault();
+            ap.isScrubbing = true;
+            ap.wasPlayingBeforeScrub = ap.isPlaying; // Store state before pausing
+            if (ap.isPlaying) ap.playerElement.pause(); 
+
+            this.updateInlineProgressBarOnScrub(event);
+
+            this._boundInlineMouseMove = this.updateInlineProgressBarOnScrub.bind(this);
+            this._boundInlineMouseUp = (e) => {
+                document.removeEventListener('mousemove', this._boundInlineMouseMove);
+                document.removeEventListener('mouseup', this._boundInlineMouseUp);
+                ap.isScrubbing = false;
+                if (ap.wasPlayingBeforeScrub && ap.playerElement) { // Check wasPlayingBeforeScrub
+                     ap.playerElement.play().catch(err => console.warn("Error resuming play after inline scrub:", err));
+                }
+                this.updateInlineClipTimeDisplay(); 
+            };
+            document.addEventListener('mousemove', this._boundInlineMouseMove);
+            document.addEventListener('mouseup', this._boundInlineMouseUp);
+        },
+         handleInlineProgressBarTouchStart(event) {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.playerElement || !ap.playerElement.src || isNaN(ap.currentClipDuration) || ap.currentClipDuration <=0 ) return;
+            event.preventDefault();
+            ap.isScrubbing = true;
+            ap.wasPlayingBeforeScrub = ap.isPlaying; // Store state
+            if (ap.isPlaying) ap.playerElement.pause();
+
+            this.updateInlineProgressBarOnScrub(event);
+
+            this._boundInlineTouchMove = this.updateInlineProgressBarOnScrub.bind(this);
+            this._boundInlineTouchEnd = (e) => {
+                document.removeEventListener('touchmove', this._boundInlineTouchMove);
+                document.removeEventListener('touchend', this._boundInlineTouchEnd);
+                document.removeEventListener('touchcancel', this._boundInlineTouchEnd);
+                ap.isScrubbing = false;
+                 if (ap.wasPlayingBeforeScrub && ap.playerElement) { // Check wasPlayingBeforeScrub
+                     ap.playerElement.play().catch(err => console.warn("Error resuming play after inline touch scrub:", err));
+                }
+                this.updateInlineClipTimeDisplay();
+            };
+            document.addEventListener('touchmove', this._boundInlineTouchMove, { passive: false });
+            document.addEventListener('touchend', this._boundInlineTouchEnd);
+            document.addEventListener('touchcancel', this._boundInlineTouchEnd);
+        },
+        updateInlineProgressBarOnScrub(event) {
+            const ap = this.data.activeInlinePlayer;
+            if (!ap.progressBarContainer || !ap.playerElement || ap.currentClipDuration <= 0) return;
+
+            const rect = ap.progressBarContainer.getBoundingClientRect();
+            let clientX;
+            if (event.type.startsWith('touch')) {
+                clientX = (event.touches && event.touches.length > 0) ? event.touches[0].clientX : 
+                          (event.changedTouches && event.changedTouches.length > 0) ? event.changedTouches[0].clientX : null;
+                if(clientX === null) return;
+            } else {
+                clientX = event.clientX;
+            }
+
+            const clickX = clientX - rect.left;
+            const seekRatio = Math.max(0, Math.min(1, clickX / rect.width));
+            
+            const newTimeInClip = seekRatio * ap.currentClipDuration;
+            ap.playerElement.currentTime = ap.currentClipStartTime + newTimeInClip;
+            
+            if(ap.progressBar) ap.progressBar.style.width = `${seekRatio * 100}%`;
+            this.updateInlineClipTimeDisplay();
+        },
+
+        showInlineClipPrompt(videoFilename, videoId) { 
+            const ap = this.data.activeInlinePlayer;
+            if (ap.videoId === videoId && ap.promptElement) { 
+                ap.promptElement.querySelector(`#inline-player-prompt-msg-${videoId}`).innerHTML = `Video "<strong>${this.utils.escapeHtml(videoFilename)}</strong>" needs to be selected to play this clip.`;
+                ap.promptElement.classList.remove('hidden');
+                if (ap.playerElement) { ap.playerElement.pause(); ap.playerElement.removeAttribute('src'); ap.playerElement.load(); }
+                if (ap.controlsContainer) ap.controlsContainer.classList.add('hidden');
+            }
+        },
+        async handleInlinePlayerFileSelection(file, videoIdToMatch) {
+            const project = this.getProjectById(this.data.currentProjectId);
+            if (!project) { this.showToast("Error: Current project context not found.", "error"); return; }
+            const videoData = project.videos.find(v => v.id === videoIdToMatch);
+            const ap = this.data.activeInlinePlayer;
+
+            if (!file || !videoData ) {
+                this.showToast(`Error: Video data not found for ID ${videoIdToMatch}.`, "error");
+                const inputEl = document.querySelector(`.inline-clip-file-input[data-target-player-id="${videoIdToMatch}"]`);
+                if(inputEl) inputEl.value = '';
+                return;
+            }
+            if(file.name !== videoData.filename){
+                 this.showToast(`Incorrect file selected. Expected "${this.utils.escapeHtml(videoData.filename)}", but got "${this.utils.escapeHtml(file.name)}".`, "warning");
+                const inputEl = document.querySelector(`.inline-clip-file-input[data-target-player-id="${videoIdToMatch}"]`);
+                if(inputEl) inputEl.value = '';
+                return;
+            }
+
+            const cacheKey = `${this.data.currentProjectId}-${videoIdToMatch}`;
+            if (this.data.videoFileCache[cacheKey]) {
+                URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+            }
+            try {
+                await this.idb.storeFile(videoIdToMatch, file); 
+                console.log(`File ${file.name} (re)stored in IDB for inline videoId ${videoIdToMatch}`);
+            } catch (error) {
+                console.error(`Failed to store ${file.name} in IndexedDB for inline player:`, error);
+                this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" for persistent access.`, 'warning');
+            }
+
+            const objectURL = URL.createObjectURL(file);
+            this.data.videoFileCache[cacheKey] = objectURL; 
+
+            if (ap.videoId === videoIdToMatch && ap.playerElement) {
+                ap.promptElement.classList.add('hidden');
+                ap.controlsContainer.classList.remove('hidden');
+                ap.playerElement.src = objectURL;
+                ap.playerElement.load();
+                ap.playerElement.currentTime = ap.currentClipStartTime; 
+                ap.playerElement.play().catch(e => console.error("Error playing inline clip after file selection:", e));
+            }
+             const inputEl = document.querySelector(`.inline-clip-file-input[data-target-player-id="${videoIdToMatch}"]`);
+             if(inputEl) inputEl.value = '';
+        },
+        confirmDeleteLogItemFromScreen2(videoId, logId){
+            const log = this.getLogById(this.data.currentProjectId, videoId, logId);
+            if (!log) return;
+            const message = `Are you sure you want to delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>This action cannot be undone.`;
+            this.showConfirmationModal(message, () => this.deleteLogItem(videoId, logId), null, "Delete Log", "button-danger");
+        },
+        deleteLogItem(videoId, logId) { 
+            const video = this.getVideoById(this.data.currentProjectId, videoId);
+            if (!video || !video.logs) return;
+            const logToDelete = video.logs.find(l => l.id === logId);
+            video.logs = video.logs.filter(l => l.id !== logId);
+            
+            if(this.data.activeInlinePlayer.videoId === videoId && this.data.activeInlinePlayer.logId === logId) {
+                this.pauseAndCleanupInlinePlayer();
+            }
+
+            this.saveData();
+            this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
+            if(logToDelete) this.showToast(`Log entry deleted.`, 'success');
+        },
+
+        // --- Screen 3 Methods ---
+        // ... (All existing Screen 3 methods like renderVideoLoggingScreen, saveLogEntry, etc. should be here and unmodified from your previous version unless they were broken)
+        async renderVideoLoggingScreen() { 
+            const videoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+            if (!videoData) { 
+                this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }); 
+                this.showToast("Error: Video not found for logging.", "error"); 
+                return; 
+            }
+            this.dom.videoFilenameHeader.textContent = this.utils.escapeHtml(videoData.filename);
+            this.resetLogForm(); this.renderSavedLogsList();
+            
+            this.data.videoElement.pause(); 
+            this.data.videoElement.removeAttribute('src'); 
+            this.data.videoElement.load(); 
+            this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#9658;</span>'; 
+            this.data.playPauseBtn.setAttribute('aria-label', 'Play video');
+            this.updateVideoTimes(); 
+            
+            this.dom.videoPlayerContainer.classList.remove('hidden'); 
+            this.dom.videoFilePrompt.classList.add('hidden'); 
+            this.data.videoElement.classList.add('hidden'); 
+
+            this.data.videoElement.removeAttribute('controls');
+
+            const videoSrc = await this.getVideoSource(this.data.currentProjectId, this.data.currentVideoId, videoData.filename);
+
+            if (videoSrc) {
+                this.data.videoElement.src = videoSrc; 
+                this.data.videoElement.classList.remove('hidden'); 
+                this.dom.videoFilePrompt.classList.add('hidden'); 
+            } else { 
+                this.promptForVideoFile(videoData.filename); 
+            }
+        },
+        promptForVideoFile(filename) { 
+            this.data.videoElement.classList.add('hidden'); 
+            this.dom.videoFilePrompt.classList.remove('hidden'); 
+            this.dom.videoFilePromptMessage.innerHTML = `Video "<strong>${this.utils.escapeHtml(filename)}</strong>" needs to be selected. <br>If previously added, persistent storage will be checked. Otherwise, please select the file.`;
+            this.dom.videoFileInputLogging.dataset.expectedFilename = filename; 
+        },
+        async handleVideoFileSelectionForLogging(file) { 
+            const expectedFilename = this.dom.videoFileInputLogging.dataset.expectedFilename;
+            const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+
+            if(!currentVideoData) {
+                this.showToast("Error: Video context lost.", "error");
+                this.dom.videoFileInputLogging.value = '';
+                return;
+            }
+
+            if (file && file.name === expectedFilename) {
+                const cacheKey = `${this.data.currentProjectId}-${this.data.currentVideoId}`;
+                if (this.data.videoFileCache[cacheKey]) { 
+                    URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
+                }
+                try {
+                    await this.idb.storeFile(this.data.currentVideoId, file);
+                     console.log(`File ${file.name} (re)stored in IDB for videoId ${this.data.currentVideoId}`);
+                } catch (error) {
+                    console.error(`Failed to store ${file.name} in IndexedDB during re-selection:`, error);
+                    this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" for persistent access.`, 'warning');
+                }
+
+                const objectURL = URL.createObjectURL(file); 
+                this.data.videoFileCache[cacheKey] = objectURL; 
+                this.data.videoElement.src = objectURL; 
+                this.dom.videoFilePrompt.classList.add('hidden'); 
+                this.data.videoElement.classList.remove('hidden'); 
+            } else if (file) { 
+                this.showToast(`Incorrect file. Expected "${this.utils.escapeHtml(expectedFilename)}", got "${this.utils.escapeHtml(file.name)}".`, 'warning');
+            }
+            this.dom.videoFileInputLogging.value = ''; 
+        },
+        updateVideoTimes() { 
+            if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) {
+                this.data.timecodeDisplay.textContent = '00:00 / 00:00'; 
+                this.data.timelineProgress.style.width = '0%';
+                if(this.data.markInBtn) this.data.markInBtn.textContent = `Mark In (00:00.0)`;
+                if(this.data.markOutBtn) this.data.markOutBtn.textContent = `Mark Out (00:00.0)`; 
+                return;
+            }
+            const currentTime = this.data.videoElement.currentTime; 
+            const duration = this.data.videoElement.duration;
+            this.data.timecodeDisplay.textContent = `${this.utils.formatTime(currentTime)} / ${this.utils.formatTime(duration)}`;
+            if (!this.data.isScrubbing) { 
+                 this.data.timelineProgress.style.width = `${(currentTime / duration) * 100}%`;
+            }
+            if (this.data.markInTime === 0 || (this.data.markInBtn && this.data.markInBtn.classList.contains('default-mark'))) { this.data.markInBtn.textContent = `Mark In (${this.utils.formatTime(currentTime, true)})`; }
+            if (this.data.markOutTime === null || (this.data.markOutBtn && this.data.markOutBtn.classList.contains('default-mark'))) { this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(currentTime, true)})`; }
+        },
+        async togglePlayPause() { 
+            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { 
+                const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+                this.showToast("Please select a video file first.", "warning"); 
+                this.promptForVideoFile(currentVideoData?.filename || "the video file"); return; 
+            }
+            if (this.data.videoElement.paused || this.data.videoElement.ended) { 
+                try {
+                    await this.data.videoElement.play();
+                } catch (e) {
+                     console.error("Error playing video:", e);
+                     this.showToast("Error trying to play video. It might need re-selection.", "error");
+                     const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+                     if (currentVideoData) this.promptForVideoFile(currentVideoData.filename);
+                }
+            } else { this.data.videoElement.pause(); }
+        },
+        rewindVideo() {
+            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) {
+                this.showToast("Video not ready or loaded.", "warning"); return;
+            }
+            this.data.videoElement.currentTime = Math.max(0, this.data.videoElement.currentTime - this.data.skipTimeSeconds);
+        },
+        fastForwardVideo() {
+            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) {
+                 this.showToast("Video not ready or loaded.", "warning"); return;
+            }
+            this.data.videoElement.currentTime = Math.min(this.data.videoElement.duration, this.data.videoElement.currentTime + this.data.skipTimeSeconds);
+        },
+        
+        handleTimelineMouseDown(event) {
+            if (!this.data.videoElement || !this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) {
+                this.showToast("Video not ready or loaded for scrubbing.", "warning"); return;
+            }
+            event.preventDefault(); 
+            this.data.isScrubbing = true;
+            this.data.wasPlayingBeforeScrub = !this.data.videoElement.paused;
+            if (this.data.wasPlayingBeforeScrub) {
+                this.data.videoElement.pause();
+            }
+            this.updateTimelineOnScrub(event); 
+
+            document.addEventListener('mousemove', this.boundHandleTimelineMouseMove);
+            document.addEventListener('mouseup', this.boundHandleTimelineMouseUp);
+        },
+        handleTimelineMouseMove(event) {
+            if (!this.data.isScrubbing) return;
+            this.updateTimelineOnScrub(event);
+        },
+        handleTimelineMouseUp(event) {
+            if (!this.data.isScrubbing) return;
+            this.data.isScrubbing = false;
+            this.updateTimelineOnScrub(event); 
+
+            document.removeEventListener('mousemove', this.boundHandleTimelineMouseMove);
+            document.removeEventListener('mouseup', this.boundHandleTimelineMouseUp);
+
+            if (this.data.wasPlayingBeforeScrub) {
+                this.data.videoElement.play().catch(e => console.warn("Error resuming play after scrub:", e));
+            }
+            this.updateVideoTimes(); 
+        },
+
+        handleTimelineTouchStart(event) {
+            if (!this.data.videoElement || !this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) {
+                this.showToast("Video not ready or loaded for scrubbing.", "warning"); return;
+            }
+            event.preventDefault(); 
+            this.data.isScrubbing = true;
+            this.data.wasPlayingBeforeScrub = !this.data.videoElement.paused;
+            if (this.data.wasPlayingBeforeScrub) {
+                this.data.videoElement.pause();
+            }
+            this.updateTimelineOnScrub(event); 
+
+            document.addEventListener('touchmove', this.boundHandleTimelineTouchMove, { passive: false });
+            document.addEventListener('touchend', this.boundHandleTimelineTouchEnd);
+            document.addEventListener('touchcancel', this.boundHandleTimelineTouchEnd); 
+        },
+        handleTimelineTouchMove(event) {
+            if (!this.data.isScrubbing) return;
+            event.preventDefault(); 
+            this.updateTimelineOnScrub(event);
+        },
+        handleTimelineTouchEnd(event) {
+            if (!this.data.isScrubbing) return;
+            this.data.isScrubbing = false;
+            if (event.changedTouches && event.changedTouches.length > 0) {
+                 this.updateTimelineOnScrub(event);
+            }
+
+            document.removeEventListener('touchmove', this.boundHandleTimelineTouchMove);
+            document.removeEventListener('touchend', this.boundHandleTimelineTouchEnd);
+            document.removeEventListener('touchcancel', this.boundHandleTimelineTouchEnd);
+
+            if (this.data.wasPlayingBeforeScrub) {
+                this.data.videoElement.play().catch(e => console.warn("Error resuming play after touch scrub:", e));
+            }
+            this.updateVideoTimes(); 
+        },
+        
+        updateTimelineOnScrub(event) {
+            if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) return; 
+            
+            const timelineRect = this.data.timelineContainer.getBoundingClientRect();
+            let clientX;
+
+            if (event.type.startsWith('touch')) {
+                if (event.touches && event.touches.length > 0) { 
+                    clientX = event.touches[0].clientX;
+                } else if (event.changedTouches && event.changedTouches.length > 0) { 
+                    clientX = event.changedTouches[0].clientX;
+                } else {
+                    console.warn("Could not determine clientX from touch event", event);
+                    return; 
+                }
+            } else { 
+                clientX = event.clientX;
+            }
+
+            const clickX = clientX - timelineRect.left;
+            const seekRatio = Math.max(0, Math.min(1, clickX / timelineRect.width));
+            
+            const newTime = seekRatio * this.data.videoElement.duration;
+            this.data.videoElement.currentTime = newTime;
+            
+            this.data.timelineProgress.style.width = `${seekRatio * 100}%`;
+            this.data.timecodeDisplay.textContent = `${this.utils.formatTime(newTime)} / ${this.utils.formatTime(this.data.videoElement.duration)}`;
+        },
+
+        setMarkIn() { 
+            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { this.showToast("Load video first.", "warning"); return; }
+            this.data.markInTime = this.data.videoElement.currentTime;
+            this.data.markInBtn.textContent = `Mark In (${this.utils.formatTime(this.data.markInTime, true)})`;
+            this.data.markInBtn.classList.remove('default-mark', 'button-secondary'); this.data.markInBtn.classList.add('button-primary'); 
+            setTimeout(() => { this.data.markInBtn.classList.remove('button-primary'); this.data.markInBtn.classList.add('button-secondary');}, 1000);
+            if (this.data.markOutTime !== null && this.data.markOutTime < this.data.markInTime) {
+                this.data.markOutTime = null; this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(this.data.videoElement.currentTime, true)})`;
+                this.data.markOutBtn.classList.add('default-mark');
+            }
+        },
+        setMarkOut() { 
+            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { this.showToast("Load video first.", "warning"); return; }
+            const currentTime = this.data.videoElement.currentTime;
+            if (currentTime <= this.data.markInTime) { this.showToast("Mark Out time must be after Mark In time.", "warning"); return; }
+            this.data.markOutTime = currentTime;
+            this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(this.data.markOutTime, true)})`;
+            this.data.markOutBtn.classList.remove('default-mark', 'button-secondary'); this.data.markOutBtn.classList.add('button-primary');
+            setTimeout(() => { this.data.markOutBtn.classList.remove('button-primary'); this.data.markOutBtn.classList.add('button-secondary'); }, 1000);
+        },
+        handleStarRating(event) { 
+            const starButton = event.target.closest('button.star');
+            if (starButton) { 
+                this.data.currentRating = parseInt(starButton.dataset.value); 
+                this.updateStarDisplay(); 
+            }
+        },
+        updateStarDisplay() { 
+            this.dom.logRatingContainer.querySelectorAll('button.star').forEach(star => {
+                const selected = parseInt(star.dataset.value) <= this.data.currentRating;
+                star.classList.toggle('selected', selected);
+                star.setAttribute('aria-pressed', selected ? 'true' : 'false');
+            });
+        },
+        async saveLogEntry() { 
+            const notes = this.dom.logNotes.value.trim();
+            const keywordsRaw = this.dom.logKeywords.value.trim();
+            const keywords = keywordsRaw ? keywordsRaw.split(',').map(k => k.trim()).filter(k => k) : [];
+            if (this.data.markOutTime === null || this.data.markOutTime <= this.data.markInTime) { this.showToast("Please set valid Mark In and Mark Out times.", "warning"); return; }
+            if (!notes) { this.showToast("Notes cannot be empty.", "warning"); return; }
+            if (this.data.currentRating === 0) { this.showToast("Please provide a rating.", "warning"); return; }
+            this.dom.saveLogBtn.disabled = true; this.dom.saveLogBtn.textContent = 'Saving...';
+            let thumbnail = null;
+            try {
+                if (this.data.videoElement.src && this.data.videoElement.readyState >= 2 && this.dom.videoFilePrompt.classList.contains('hidden')) { 
+                    thumbnail = await this.generateLogThumbnail(this.data.markInTime); 
+                } 
+                else { console.warn("Video not ready or available for thumbnail generation."); }
+            } catch (error) { console.error("Error generating thumbnail:", error); this.showToast("Could not generate thumbnail.", "warning");}
+            const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+            if (!video) { this.showToast("Error: Video not found.", "error"); this.dom.saveLogBtn.disabled = false; this.dom.saveLogBtn.textContent = 'Save Log'; return; }
+            if (!video.logs) video.logs = [];
+            const editingLogId = this.dom.editingLogIdInput.value;
+            const logData = { markIn: this.data.markInTime, markOut: this.data.markOutTime, notes: notes, rating: this.data.currentRating, keywords: keywords, thumbnail: thumbnail };
+            if (editingLogId) { 
+                const log = video.logs.find(l => l.id === editingLogId);
+                if (log) { Object.assign(log, logData, { updatedAt: new Date().toISOString() }); }
+                this.showToast("Log entry updated.", "success");
+            } else { 
+                video.logs.push({ ...logData, id: this.utils.generateId(), createdAt: new Date().toISOString() }); 
+                this.showToast("Log entry saved.", "success");
+            }
+            this.saveData(); this.renderSavedLogsList(); this.resetLogForm();
+            this.dom.saveLogBtn.disabled = false; this.dom.saveLogBtn.textContent = 'Save Log';
+        },
+        generateLogThumbnail(time) { 
+            return new Promise((resolve, reject) => {
+                if (!this.data.videoElement || !this.data.videoElement.src || this.data.videoElement.readyState < 2 || !this.dom.videoFilePrompt.classList.contains('hidden')) { return reject("Video not ready or available for thumbnail."); }
+                const video = this.data.videoElement; const canvas = this.dom.thumbnailCanvas; const ctx = canvas.getContext('2d');
+                if (video.videoWidth === 0 || video.videoHeight === 0) return reject("Video dimensions are zero for thumbnail.");
+
+                const originalTime = video.currentTime; const originalPaused = video.paused; const originalMuted = video.muted; video.muted = true;
+                let seekTimeout;
+
+                const cleanup = () => {
+                    video.removeEventListener('seeked', onSeeked); 
+                    video.removeEventListener('error', onError);
+                    clearTimeout(seekTimeout);
+                    video.currentTime = originalTime; 
+                    if (!originalPaused) video.play().catch(e=>console.warn("Resume play fail in cleanup:",e)); 
+                    video.muted = originalMuted;
+                };
+
+                const onSeeked = () => {
+                    cleanup();
+                    const ar = video.videoWidth / video.videoHeight; canvas.width = 160; canvas.height = canvas.width / ar; if (isNaN(canvas.height) || !isFinite(canvas.height) || canvas.height <= 0) canvas.height = 90; 
+                    ctx.clearRect(0,0, canvas.width, canvas.height);
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    try { resolve(canvas.toDataURL('image/jpeg', 0.6)); } catch (e) { console.error("Canvas toDataURL err:", e); reject("Err creating thumb."); }
+                };
+                const onError = (e) => {
+                    cleanup();
+                    console.error("Seek err thumb:", e); reject("Err seek thumb.");
+                };
+                video.addEventListener('seeked', onSeeked, { once: true }); 
+                video.addEventListener('error', onError, { once: true });
+                if (!originalPaused) video.pause(); 
+                video.currentTime = time;
+
+                seekTimeout = setTimeout(() => {
+                    if (video.seeking) { 
+                        console.warn("Thumbnail generation using timeout fallback due to prolonged seek.");
+                        onSeeked(); 
+                    } else if (Math.abs(video.currentTime - time) < 0.5 && video.readyState >= video.HAVE_CURRENT_DATA){
+                         console.warn("Thumbnail generation using timeout fallback (seeked but event missed or fast).");
+                         onSeeked();
+                    }
+                     else {
+                        console.error("Thumbnail generation failed after timeout (readyState or currentTime issue).");
+                        onError(new Error("Seek timeout or video state issue"));
+                    }
+                }, 1500); 
+            });
+        },
+        resetLogForm() { 
+            this.dom.logNotes.value = ''; this.dom.logKeywords.value = ''; this.data.currentRating = 0; this.updateStarDisplay();
+            this.data.markInTime = 0; this.data.markOutTime = null;
+            const defaultTime = (this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) ? this.data.videoElement.currentTime : 0;
+            this.data.markInBtn.textContent = `Mark In (${this.utils.formatTime(defaultTime, true)})`; this.data.markInBtn.classList.add('default-mark');
+            this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(defaultTime, true)})`; this.data.markOutBtn.classList.add('default-mark');
+            this.dom.editingLogIdInput.value = ''; this.dom.saveLogBtn.textContent = 'Save Log';
+        },
+        renderSavedLogsList() { 
+            const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+            this.dom.savedLogsList.innerHTML = '';
+            if (!video || !video.logs || video.logs.length === 0) {
+                this.dom.savedLogsList.innerHTML = '<div class="empty-state" style="padding:20px; font-size:0.9em;"><p>No logs saved for this video yet.</p></div>';
+                return;
+            }
+            const fragment = document.createDocumentFragment();
+            const sortedLogs = [...video.logs].sort((a, b) => a.markIn - b.markIn);
+            sortedLogs.forEach(log => {
+                const item = document.createElement('article'); 
+                item.className = 'log-item'; item.id = `log-item-${log.id}`;
+                const ratingStars = Array(5).fill(0).map((_, i) => `<span class="star ${i < log.rating ? 'selected' : ''}" style="font-size:0.8em; color: ${i < log.rating ? 'var(--warning-color)' : 'var(--border-color)'};">&#9733;</span>`).join('');
+                item.innerHTML = `
+                    <div class="log-item-header">
+                        <span class="log-item-time">${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}</span>
+                        <div class="log-item-rating">${ratingStars}</div>
+                    </div>
+                    <p class="log-item-notes">${this.utils.escapeHtml(log.notes)}</p>
+                    ${log.keywords && log.keywords.length > 0 ? `<p class="log-item-keywords">Keywords: ${this.utils.escapeHtml(log.keywords.join(', '))}</p>` : ''}
+                    ${log.thumbnail ? `<img src="${log.thumbnail}" alt="Log thumbnail">` : ''}
+                    <div class="card-actions" style="margin-top:10px;">
+                        <button class="button button-subtle button-small btn-go-to-log-time" data-time="${log.markIn}" aria-label="Go to time ${this.utils.formatTime(log.markIn)}">Go to</button>
+                        <button class="button button-secondary button-small btn-edit-log" data-log-id="${log.id}" aria-label="Edit log: ${this.utils.escapeHtml(log.notes.substring(0,30))}">Edit</button>
+                        <button class="button button-subtle button-small btn-delete-log" data-log-id="${log.id}" aria-label="Delete log: ${this.utils.escapeHtml(log.notes.substring(0,30))}">Delete</button>
+                    </div>
+                `;
+                fragment.appendChild(item);
+            });
+            this.dom.savedLogsList.appendChild(fragment);
+
+            this.dom.savedLogsList.querySelectorAll('.btn-go-to-log-time').forEach(btn => {
+                btn.addEventListener('click', (e) => this.goToLogTime(parseFloat(e.currentTarget.dataset.time)));
+            });
+            this.dom.savedLogsList.querySelectorAll('.btn-edit-log').forEach(btn => { 
+                btn.addEventListener('click', (e) => this.editLogEntry(e.currentTarget.dataset.logId));
+            });
+            this.dom.savedLogsList.querySelectorAll('.btn-delete-log').forEach(btn => { 
+                btn.addEventListener('click', (e) => this.confirmDeleteLogOnScreen3(e.currentTarget.dataset.logId));
+            });
+        },
+        async goToLogTime(time) { 
+            if(this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) {
+                this.data.videoElement.currentTime = time; 
+                try {
+                    await this.data.videoElement.play();
+                } catch(e) {
+                     console.error("Play error on goToLogTime:", e);
+                     this.showToast("Error trying to play video at specified time.", "error");
+                }
+                this.data.videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else { 
+                const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+                this.showToast("Video file not loaded. Please select it first.", "warning"); 
+                this.promptForVideoFile(currentVideoData?.filename || "the video file"); 
+            }
+        },
+        editLogEntry(logId, fromNavigation = false) { 
+            const videoIdForLog = this.data.currentVideoId; 
+            const log = this.getLogById(this.data.currentProjectId, videoIdForLog, logId);
+            if (!log) return;
+
+            this.dom.logNotes.value = log.notes;
+            this.dom.logKeywords.value = log.keywords ? log.keywords.join(', ') : '';
+            this.data.currentRating = log.rating; this.updateStarDisplay();
+            this.data.markInTime = log.markIn; this.data.markOutTime = log.markOut;
+            if (this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) { this.data.videoElement.currentTime = log.markIn; }
+            this.data.markInBtn.textContent = `Mark In (${this.utils.formatTime(log.markIn, true)})`;
+            this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(log.markOut, true)})`;
+            this.data.markInBtn.classList.remove('default-mark'); this.data.markOutBtn.classList.remove('default-mark');
+            this.dom.editingLogIdInput.value = log.id; this.dom.saveLogBtn.textContent = 'Update Log';
+            this.dom.logNotes.focus();
+            const logFormCard = this.dom.logNotes.closest('article.card');
+            if (logFormCard) logFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
+        confirmDeleteLogOnScreen3(logId) { 
+            const log = this.getLogById(this.data.currentProjectId, this.data.currentVideoId, logId);
+            if (!log) return;
+            const message = `Are you sure you want to delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>This action cannot be undone.`;
+            this.showConfirmationModal(message, () => this.deleteLogOnScreen3(logId), null, "Delete Log", "button-danger");
+        },
+        deleteLogOnScreen3(logId) { 
+            const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
+            if (!video || !video.logs) return;
+            video.logs = video.logs.filter(l => l.id !== logId); this.saveData(); this.renderSavedLogsList();
+            if(this.dom.editingLogIdInput.value === logId) { this.resetLogForm(); }
+            this.showToast("Log entry deleted.", "success");
+        },
+
+        // --- Modal and Toast Methods ---
+        showModal(modalId) { 
+            const modal = document.getElementById(modalId); 
+            if (modal) {
+                this.data.previouslyFocusedElement = document.activeElement;
+                modal.style.display = 'block';
+                const firstFocusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (firstFocusable) firstFocusable.focus();
+            }
+        },
+        hideModal(modalId) { 
+            const modal = document.getElementById(modalId); 
+            if (modal) modal.style.display = 'none'; 
+            if (this.data.previouslyFocusedElement) {
+                try { 
+                    this.data.previouslyFocusedElement.focus();
+                } catch (e) { console.warn("Could not focus previously focused element:", e); }
+                this.data.previouslyFocusedElement = null;
+            }
+        },
+        showToast(message, type = 'info', duration = 3000) {
+            if (!this.dom.toastContainer) { 
+                this.dom.toastContainer = document.getElementById('toast-container');
+                if (!this.dom.toastContainer) { // Still couldn't find it
+                    console.error("Toast container not found! Cannot show toast:", message); 
+                    alert(`${type.toUpperCase()}: ${message}`); // Fallback to alert
+                    return;
+                }
+            }
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            toast.textContent = message;
+            toast.setAttribute('role', 'alert');
+            this.dom.toastContainer.appendChild(toast);
+            requestAnimationFrame(() => { 
+                toast.classList.add('show');
+            });
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => {
+                    if (toast.parentNode === this.dom.toastContainer) {
+                         this.dom.toastContainer.removeChild(toast);
+                    }
+                }, { once: true });
+            }, duration);
+        },
+        showConfirmationModal(message, onConfirm, onCancel = null, confirmButtonText = 'Confirm', confirmButtonClass = 'button-danger', title = 'Confirm Action') {
+            this.dom.modals.confirmAction.querySelector('.modal-title').textContent = title;
+            this.dom.confirmActionMessage.innerHTML = message;
+            this.dom.btnConfirmActionConfirm.textContent = confirmButtonText;
+            this.dom.btnConfirmActionConfirm.className = `button ${confirmButtonClass}`; 
+
+            this.dom.btnConfirmActionConfirm.onclick = () => {
+                onConfirm(); 
+                this.hideModal('modal-confirm-action');
+            };
+            
+            this.dom.btnConfirmActionCancel.onclick = () => {
+                if (onCancel) onCancel();
+                this.hideModal('modal-confirm-action');
+            };
+            this.showModal('modal-confirm-action');
+        },
+
+    };
+
+    document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
