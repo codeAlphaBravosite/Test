@@ -482,8 +482,10 @@
         /* Scrollable Logged Clips List - Screen 2 */
         .video-clips-list-container {
             padding: 15px 20px; 
-            min-height: 350px; 
+            min-height: 400px;
+            max-height: 600px;
             overflow-y: auto;
+            scroll-behavior: smooth;
         }
         .video-clips-list-container h4 { /* Logged Clips Header - NOT STICKY */
             font-size: 1em; font-weight: 500; color: var(--text-color-light);
