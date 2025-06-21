@@ -172,18 +172,17 @@
             background-color: var(--card-bg-color);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            /* padding: 20px; /* Base padding removed as children will manage */
-            margin-bottom: 20px; /* Default margin */
+            margin-bottom: 20px; 
             box-shadow: var(--box-shadow);
         }
          article.video-entry-card {
-             padding: 0; /* Let children control padding */
-             margin-bottom: 25px; /* Increased spacing for screen 2 video cards */
+             padding: 0; 
+             margin-bottom: 25px; 
          }
-         article.log-item { padding: 20px; } /* Log items on Screen 3 need their padding */
+         article.log-item { padding: 20px; } 
 
 
-        .card-title { /* Can be used inside article.card or standalone */
+        .card-title { 
             font-size: 1.3em;
             font-weight: 600;
             margin-bottom: 15px;
@@ -201,8 +200,8 @@
             flex-wrap: wrap;
         }
          article.card .card-actions, article.log-item .card-actions { 
-             padding: 0 20px 20px; /* Padding for actions in generic .card or .log-item */
-             margin-top: 15px; /* Adjust margin if needed */
+             padding: 0 20px 20px; 
+             margin-top: 15px; 
         }
         
         .card-actions .button { flex-grow: 1; }
@@ -285,7 +284,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-width: calc(100% - 40px); /* Ensure toasts don't overflow small screens */
+            max-width: calc(100% - 40px); 
         }
         .toast-message {
             padding: 12px 18px;
@@ -295,7 +294,7 @@
             box-shadow: var(--box-shadow);
             font-size: 0.9em;
             opacity: 0;
-            transform: translateX(110%); /* Start further off-screen */
+            transform: translateX(110%); 
             transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .toast-message.show {
@@ -337,7 +336,8 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            gap: 10px; /* Increased from 10px for title/actions wrapper */
+            gap: 10px; 
+            margin-bottom: 15px; /* Added for spacing */
         }
         .video-entry-title {
             font-size: 1.1em;
@@ -357,7 +357,7 @@
         .video-entry-actions {
             display: flex;
             align-items: center;
-            gap: 10px; /* Increased from 8px */
+            gap: 10px; 
             flex-shrink: 0;
         }
         .video-entry-actions .button { margin-left: 0; }
@@ -375,6 +375,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden; 
+            margin-bottom: 15px; /* Added for spacing */
         }
         .main-video-thumbnail {
             width: 100%; 
@@ -409,7 +410,7 @@
         .play-main-video-preview-btn:hover { background: rgba(0,0,0,0.6); }
         .play-main-video-preview-btn.hidden { display: none; }
 
-        .main-video-preview-player { /* The <video> element */
+        .main-video-preview-player { 
             width: 100%;
             display: block;
             max-height: 300px; 
@@ -480,25 +481,15 @@
 
         /* Scrollable Logged Clips List - Screen 2 */
         .video-clips-list-container {
-            padding: 20px 20px 15px 20px; /* Increased top padding */
-            max-height: 250px; /* Increased from 190px */
+            padding: 15px 20px; 
+            max-height: 250px; 
             overflow-y: auto;
-            position: relative; /* For sticky header context */
         }
-        .video-clips-list-container h4 { /* Sticky Header for Logged Clips */
+        .video-clips-list-container h4 { /* Logged Clips Header - NOT STICKY */
             font-size: 1em; font-weight: 500; color: var(--text-color-light);
-            margin-bottom: 15px;
-            position: sticky; top: -1px; /* -1px to ensure border is visible if parent has border */
-            background-color: var(--card-bg-color); 
-            z-index: 10; /* Ensure it's above clip items */
-            padding-top: 10px; /* Increased */
-            padding-bottom: 12px; /* Increased */
+            margin-bottom: 10px; 
+            padding: 0 0 8px 0; /* Padding bottom for border spacing */
             border-bottom: 1px solid var(--border-color); 
-            /* To make background span full width within its padded parent, if needed:
-             margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; 
-             But this might not be needed if top:0 sticks to padding box correctly.
-             The sticky element will be offset by the parent's padding, so top:0 is fine.
-            */
         }
         .clip-item-card {
             display: flex;
@@ -571,7 +562,6 @@
         .star-rating .star.selected, .star-rating .star:hover, .star-rating .star:focus { color: var(--warning-color); outline: none; }
         .star-rating .star:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
         
-        /* .log-item is an article.card, padding set above */
         .log-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .log-item-time { font-weight: 600; font-size: 0.95em; }
         .log-item-notes { margin-bottom: 8px; font-size:0.95em; color: var(--text-color-light); }
@@ -579,7 +569,6 @@
         .log-item-rating .star { font-size: 0.8em; }
         .log-item img { max-width:100px; max-height:60px; border-radius:4px; margin-top:8px; border:1px solid var(--border-color); }
 
-        /* File input styling */
         .file-input-label {
             display: inline-flex; align-items: center; justify-content: center;
             padding: 10px 18px; font-size: 0.95em; font-weight: 500;
@@ -614,26 +603,30 @@
             
             /* Screen 2 Mobile Adjustments */
             .video-entry-header { 
+                padding: 15px; /* Reduced padding for mobile */
                 flex-direction: column; 
                 align-items: flex-start; 
-                gap: 12px; /* Increased from 10px */
+                gap: 12px; 
             }
-            .video-entry-title { font-size: 1.05em; }
+            .video-entry-title { font-size: 1.05em; /* width: 100%; /* Ensure it takes full width if needed */ }
             .video-entry-actions { 
                 width: 100%; 
                 display: flex; 
-                justify-content: space-around; 
-                /* gap: 8px; /* Optional: if space-around is not enough */
+                justify-content: space-between; /* Changed from space-around */
+                gap: 8px; /* Added gap for when space-between isn't enough (e.g. if buttons shrink) */
             }
             .video-entry-actions .button { flex-grow: 0 !important; margin-left: 0 !important; }
             
+            .video-clips-list-container {
+                 padding: 15px; /* Consistent padding for mobile */
+            }
+
             .clip-item-card { flex-direction: column; align-items: flex-start; }
             .clip-item-thumbnail { width: 100%; height: auto; max-height: 150px; margin-bottom:10px; }
             .clip-item-actions { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 10px; }
             .clip-item-actions .button-small { flex-grow: 1; }
             .clip-item-actions .button-small + .button-small { margin-left: 5px;}
 
-            /* Responsive main player custom controls */
             .main-player-custom-controls { flex-wrap: wrap; justify-content: center; padding: 5px; }
             .main-player-progress-bar-container { order: 1; width: 100%; margin: 8px 0 5px; } 
             .main-player-timecode { order: 2; margin-left: auto; font-size: 0.75em;}
@@ -832,51 +825,43 @@
             currentRating: 0,
             videoFileCache: {}, 
             
-            // State for the active video player on a Screen 2 card
             activeCardPlayer: {
-                videoId: null, // ID of the video this player is for
-                cardElement: null, // The parent article.video-entry-card element
-
-                playerElement: null, // The <video> DOM element
+                videoId: null, 
+                cardElement: null, 
+                playerElement: null, 
                 thumbnailElement: null,
-                bigPlayButtonElement: null, // Large play button overlaying thumbnail
-                promptElement: null, // File selection prompt
+                bigPlayButtonElement: null, 
+                promptElement: null, 
                 fileInputElement: null, 
-
-                controlsContainerElement: null, // Div holding custom controls
-                playPauseBtnElement: null, // Play/pause in custom controls
+                controlsContainerElement: null, 
+                playPauseBtnElement: null, 
                 rewindBtnElement: null,
                 forwardBtnElement: null,
                 progressBarContainerElement: null,
                 progressBarElement: null,
-                timecodeElement: null, // Timecode display in custom controls
-                stopBtnElement: null, // Stop button in custom controls
-
+                timecodeElement: null, 
+                stopBtnElement: null, 
                 isPlaying: false,
                 isScrubbing: false,
                 wasPlayingBeforeScrub: false,
-                
-                currentSegment: { // Defines the current playback segment (clip or full video)
+                currentSegment: { 
                     startTime: 0, 
                     endTime: 0, 
                     duration: 0 
                 }, 
-                
-                // Bound event handlers for the card player
                 boundPlayerTimeUpdate: null,
                 boundPlayerLoadedMetadata: null,
                 boundPlayerEnded: null,
                 boundPlayerError: null,
                 boundPlayerPlay: null,
                 boundPlayerPause: null,
-                // Bound event handlers for custom controls
                 _boundCardPlayerScrubMove: null,
                 _boundCardPlayerScrubEnd: null,
             },
             previouslyFocusedElement: null,
             skipTimeSeconds: 5, 
-            isScrubbing: false, // For Screen 3 timeline
-            wasPlayingBeforeScrub: false, // For Screen 3 timeline
+            isScrubbing: false, 
+            wasPlayingBeforeScrub: false, 
         },
         dom: {}, 
         idb: {
@@ -1092,7 +1077,7 @@
             this.dom.btnBackToProjectVideos = document.getElementById('btn-back-to-project-videos');
             this.dom.videoFilenameHeader = document.getElementById('video-filename-header');
             this.dom.videoLoggingHeaderSpacer = document.getElementById('video-logging-header-spacer');
-            this.data.videoElement = document.getElementById('video-player'); // Screen 3
+            this.data.videoElement = document.getElementById('video-player'); 
             this.dom.videoPlayerContainer = document.getElementById('video-player-container'); 
             this.dom.videoFilePrompt = document.getElementById('video-file-prompt');
             this.dom.videoFilePromptMessage = document.getElementById('video-file-prompt-message');
@@ -1147,15 +1132,12 @@
             this.currentScreen = screenId;
             window.scrollTo(0, 0);
 
-            // If navigating away from project videos screen, reset the active card player
             if (this.data.activeCardPlayer.playerElement && screenId !== 'screen-project-videos') {
-                this.resetActiveCardPlayerUI(false); // false means don't try to find it again
+                this.resetActiveCardPlayerUI(false); 
             }
 
-
-            if (this.data.videoElement) { // Screen 3 player
+            if (this.data.videoElement) { 
                 if (screenId === 'screen-video-logging') {
-                    // Custom controls are handled by logic, no 'controls' attribute needed
                     this.data.videoElement.removeAttribute('controls');
                 } else {
                     this.data.videoElement.pause(); 
@@ -1259,7 +1241,6 @@
             this.dom.projectVideosSearch.addEventListener('input', (e) => this.renderProjectVideosScreen(e.target.value.trim()));
             this.dom.btnBackToProjectVideos.addEventListener('click', () => this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }));
             
-            // Screen 3 Video Player Listeners
             if(this.data.videoElement) { 
                 this.data.rewindBtn.addEventListener('click', () => this.rewindVideo());
                 this.data.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
@@ -1320,7 +1301,6 @@
                 }
             });
 
-            // Screen 2 - Project Videos Container Event Delegation
             this.dom.projectVideosContainer.addEventListener('click', (e) => {
                 const targetButton = e.target.closest('button');
                 if (!targetButton) return;
@@ -1350,7 +1330,6 @@
                 } else if (targetButton.classList.contains('play-main-video-preview-btn')) { 
                     this.playVideoOnCard(videoId, videoEntryCard); 
                 } 
-                // Custom controls for card player
                 else if (targetButton.classList.contains('main-player-play-pause-btn')) {
                     this.toggleCardPlayerPlayPause();
                 } else if (targetButton.classList.contains('main-player-rewind-btn')) {
@@ -1361,7 +1340,6 @@
                     this.stopAndResetCardPlayer();
                 }
             });
-            // Screen 2 - Progress Bar Scrubbing for Card Player
              this.dom.projectVideosContainer.addEventListener('mousedown', (e) => { 
                 if (e.target.closest('.main-player-progress-bar-container')) {
                     this.handleCardPlayerProgressBarMouseDown(e);
@@ -1373,7 +1351,6 @@
                 }
             }, { passive: false });
 
-            // Screen 2 - File input for card player
             this.dom.projectVideosContainer.addEventListener('change', (e) => {
                 if (e.target.classList.contains('main-video-preview-file-input')) {
                     const videoId = e.target.dataset.targetPlayerId; 
@@ -1552,7 +1529,6 @@
             this.showToast(`Project "${this.utils.escapeHtml(project.name)}" export started.`, 'success');
         },
         
-        // --- Screen 2 Methods ---
         async renderProjectVideosScreen(searchTerm = '') {
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project) { this.navigateTo('screen-projects'); return; }
@@ -1560,7 +1536,6 @@
             this.dom.projectNameHeader.textContent = this.utils.escapeHtml(project.name);
             this.dom.projectVideosContainer.innerHTML = '';
 
-            // Reset any active card player if it exists from a previous render
             if (this.data.activeCardPlayer.playerElement) {
                 this.resetActiveCardPlayerUI(false); 
             }
@@ -1833,7 +1808,6 @@
             this.showToast(`Video "${this.utils.escapeHtml(video.filename)}" marked as ${video.isImportant ? 'important' : 'not important'}.`, 'info');
         },
 
-        // --- Screen 2 Card Player Logic ---
         resetActiveCardPlayerUI(findNewPlayerElements = true) {
             const acp = this.data.activeCardPlayer;
             if (acp.playerElement) {
@@ -2196,7 +2170,7 @@
             
             if (this.data.activeCardPlayer.videoId === videoId && 
                 this.data.activeCardPlayer.currentSegment &&
-                this.data.activeCardPlayer.currentSegment.startTime === this.getLogById(this.data.currentProjectId, videoId, logId)?.markIn) {
+                this.getLogById(this.data.currentProjectId, videoId, logId)?.markIn === this.data.activeCardPlayer.currentSegment.startTime ) { // check if this exact log was playing
                 this.resetActiveCardPlayerUI(true);
             }
             
@@ -2209,7 +2183,6 @@
         },
 
 
-        // --- Screen 3 Methods ---
         async renderVideoLoggingScreen() { 
             const videoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             if (!videoData) { 
@@ -2640,7 +2613,6 @@
             this.showToast("Log entry deleted.", "success");
         },
 
-        // --- Modal and Toast Methods ---
         showModal(modalId) { 
             const modal = document.getElementById(modalId); 
             if (modal) {
