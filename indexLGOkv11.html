@@ -44,7 +44,7 @@
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px; /* Default container padding */
         }
 
         .screen { display: none; }
@@ -172,17 +172,17 @@
             background-color: var(--card-bg-color);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            margin-bottom: 20px; 
+            margin-bottom: 20px;
             box-shadow: var(--box-shadow);
         }
          article.video-entry-card {
-             padding: 0; 
-             margin-bottom: 25px; 
+             padding: 0;
+             margin-bottom: 25px;
          }
-         article.log-item { padding: 20px; } 
+         article.log-item { padding: 20px; }
 
 
-        .card-title { 
+        .card-title {
             font-size: 1.3em;
             font-weight: 600;
             margin-bottom: 15px;
@@ -199,15 +199,12 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-         article.card .card-actions, article.log-item .card-actions { 
-             padding: 0 20px 20px; 
-             margin-top: 15px; 
+         article.card .card-actions, article.log-item .card-actions {
+             padding: 0 20px 20px;
+             margin-top: 15px;
         }
-        
+
         .card-actions .button { flex-grow: 1; }
-        @media (max-width: 480px) {
-            .card-actions .button { min-width: 100%; }
-        }
 
 
         /* Forms */
@@ -284,7 +281,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-width: calc(100% - 40px); 
+            max-width: calc(100% - 40px);
         }
         .toast-message {
             padding: 12px 18px;
@@ -294,7 +291,7 @@
             box-shadow: var(--box-shadow);
             font-size: 0.9em;
             opacity: 0;
-            transform: translateX(110%); 
+            transform: translateX(110%);
             transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .toast-message.show {
@@ -314,7 +311,7 @@
             flex-wrap: wrap;
         }
         .actions-bar .button { flex: 1; min-width: calc(50% - 10px); }
-        @media (max-width: 480px) { .actions-bar .button { min-width: 100%; } }
+
 
         .section-title {
             font-size: 1.2em; font-weight: 600; margin-top: 30px;
@@ -336,7 +333,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            gap: 10px; 
+            gap: 10px;
             margin-bottom: 15px;
         }
         .video-entry-title {
@@ -357,7 +354,7 @@
         .video-entry-actions {
             display: flex;
             align-items: center;
-            gap: 10px; 
+            gap: 10px;
             flex-shrink: 0;
         }
         .video-entry-actions .button { margin-left: 0; }
@@ -366,37 +363,36 @@
 
         /* Consolidated Player Area on Card - Screen 2 */
         .main-video-preview-area {
-            padding: 0; 
-            background-color: #000; 
+            padding: 0;
+            background-color: #000;
             border-bottom: 1px solid var(--border-color);
             position: relative;
-            min-height: 150px; 
+            min-height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; 
-            /* margin-bottom: 15px; /* Removed, spacing handled by controls block below */
+            overflow: hidden;
         }
         .main-video-thumbnail {
-            width: 100%; 
+            width: 100%;
             height: auto;
-            max-height: 300px; 
-            object-fit: contain; 
+            max-height: 300px;
+            object-fit: contain;
             cursor: pointer;
-            display: block; 
+            display: block;
         }
          .main-video-thumbnail.hidden { display: none; }
 
-        .play-main-video-preview-btn { 
+        .play-main-video-preview-btn {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3em; 
+            font-size: 3em;
             background: rgba(0,0,0,0.4);
             color: white;
             border-radius: 50%;
-            width: 70px; 
+            width: 70px;
             height: 70px;
             padding: 0;
             border: none;
@@ -405,42 +401,40 @@
             justify-content: center;
             cursor: pointer;
             transition: background-color 0.2s;
-            z-index: 10; 
+            z-index: 10;
         }
         .play-main-video-preview-btn:hover { background: rgba(0,0,0,0.6); }
         .play-main-video-preview-btn.hidden { display: none; }
 
-        .main-video-preview-player { 
+        .main-video-preview-player {
             width: 100%;
             display: block;
-            max-height: 300px; 
+            max-height: 300px;
             background-color: #000;
         }
         .main-video-preview-player.hidden { display: none; }
 
-        /* Custom Controls for Main Player on Card - Screen 2 (MODIFIED) */
+        /* Custom Controls for Main Player on Card - Screen 2 */
         .main-player-custom-controls {
-            /* REMOVED: position: absolute; bottom: 0; left: 0; width: 100%; z-index: 20; */
             display: flex;
             align-items: center;
-            gap: 6px; 
-            padding: 10px 15px; 
-            background-color: var(--card-bg-color); /* CHANGED from rgba(0,0,0,0.75) */
-            border: 1px solid var(--border-color); /* ADDED */
-            border-radius: var(--border-radius); /* ADDED */
-            margin-top: 15px; /* ADDED */
-            margin-bottom: 15px; /* ADDED for space before clips list */
-            color: var(--text-color); /* CHANGED from white */
-            /* transition: opacity 0.3s ease; /* Not strictly needed with display:none toggle */
+            gap: 6px;
+            padding: 10px 15px; /* Default desktop padding */
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            margin-bottom: 15px; /* Space before clips list */
+            color: var(--text-color);
         }
         .main-player-custom-controls.hidden { display: none; }
-        
+
         .main-player-ctrl-btn {
             background: none;
             border: none;
-            color: var(--text-color-light); /* CHANGED from white */
-            font-size: 1.1em; 
-            padding: 6px; 
+            color: var(--text-color-light);
+            font-size: 1.1em;
+            padding: 6px;
             cursor: pointer;
             line-height: 1;
         }
@@ -449,11 +443,11 @@
         .main-player-progress-bar-container {
             flex-grow: 1;
             height: 8px;
-            background-color: #ddd; /* CHANGED from rgba(255,255,255,0.3) */
+            background-color: #ddd;
             border-radius: 4px;
             cursor: pointer;
             margin: 0 5px;
-            position: relative; 
+            position: relative;
         }
         .main-player-progress-bar {
             height: 100%;
@@ -463,54 +457,66 @@
         }
         .main-player-timecode {
             font-size: 0.8em;
-            color: var(--text-color-light); /* CHANGED from white */
+            color: var(--text-color-light);
             font-family: monospace;
-            min-width: 85px; 
+            min-width: 85px;
             text-align: right;
             padding-left: 5px;
         }
 
-        .main-video-preview-prompt { 
+        .main-video-preview-prompt {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background-color: rgba(0,0,0,0.85); color: white; padding: 20px; text-align: center;
-            z-index: 30; 
+            z-index: 30;
         }
         .main-video-preview-prompt.hidden { display: none; }
         .main-video-preview-prompt p { margin-bottom: 15px; font-size: 0.95em; line-height: 1.4; }
 
 
-        /* Scrollable Logged Clips List - Screen 2 */
+        /* Scrollable Logged Clips List - Screen 2 (MOBILE FIRST PADDING) */
         .video-clips-list-container {
-            padding: 15px 20px; 
+            padding: 15px; /* MOBILE DEFAULT: Provides overall side padding for content within */
             min-height: 350px;
             max-height: 405px;
             overflow-y: auto;
             scroll-behavior: smooth;
         }
-        .video-clips-list-container h4 { /* Logged Clips Header - NOT STICKY */
+        .video-clips-list-container h4 { /* Logged Clips Header - STICKY */
             font-size: 1em; font-weight: 500; color: var(--text-color-light);
-            margin-bottom: 10px; 
-            padding: 8px 0 8px 0; /* Padding bottom for border spacing */
-            position: sticky;
-            top: 0;
+            margin-bottom: 10px;
+            /* MOBILE DEFAULT: Top padding provided by container, bottom for border, L/R from container */
+            padding: 0 0 8px 0;
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0; /* Sticks to top of parent's content box (after parent's 15px top padding) */
             background-color: var(--card-bg-color);
             z-index: 10;
         }
         .clip-item-card {
             display: flex;
             gap: 15px;
-            padding: 12px;
+            /* MOBILE DEFAULT: Vertical padding, L/R padding from container */
+            padding: 12px 0;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             margin-bottom: 12px;
             background-color: #fdfdfd;
-            align-items: center;
+            align-items: center; /* Default for desktop, overridden for mobile */
         }
         .clip-item-card:last-child { margin-bottom: 0; }
+        
+        /* Placeholder for JS-generated messages in clips list */
+        .clips-list-placeholder {
+            /* MOBILE DEFAULT: Vertical padding, L/R from container */
+            padding: 10px 0;
+            text-align: center;
+            color: var(--text-color-light);
+            font-size: 0.9em;
+        }
+
         .clip-item-thumbnail {
-            width: 80px; height: 50px;
+            width: 80px; height: 50px; /* Default for desktop */
             background-color: var(--border-color); object-fit: cover;
             border-radius: 4px; flex-shrink: 0;
         }
@@ -519,8 +525,9 @@
         .clip-item-info .time, .clip-item-info .keywords, .clip-item-info .rating {
             font-size: 0.8em; color: var(--text-color-very-light); margin-bottom: 2px;
         }
-        .clip-item-actions { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; flex-shrink:0; }
+        .clip-item-actions { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; flex-shrink:0; } /* Default for desktop */
         .clip-item-actions .button-small { padding: 5px 8px; font-size: 0.8em; }
+
 
         /* Screen 3: Video Logging */
         #video-player-container {
@@ -536,7 +543,7 @@
         }
         #video-file-prompt p { margin-bottom: 15px; line-height: 1.4; font-size: 0.95em;}
         #video-file-prompt strong { color: var(--secondary-color); }
-        
+
         .video-controls { /* Styles for Screen 3 controls */
             display: flex;
             flex-wrap: wrap;
@@ -554,7 +561,7 @@
         .video-controls .timecode-display { font-family: monospace; font-size: 0.9em; color: var(--text-color-light); text-align: center; flex-grow: 1; min-width: 130px; }
         .video-controls .speed-control-group { display: flex; align-items: center; }
         .video-controls .speed-control-group select { min-width: 70px; }
-        
+
         #timeline-container {
             width: 100%; height: 8px; background-color: #ddd; cursor: pointer;
             border-radius: 4px; margin-bottom: 8px; overflow: hidden;
@@ -563,12 +570,12 @@
         #timeline-progress { height: 100%; background-color: var(--primary-color); border-radius: 4px; }
         .mark-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
         .mark-buttons .button { flex-grow: 1; }
-        
+
         .star-rating { display: flex; gap: 6px; cursor: pointer; margin-bottom: 10px; }
         .star-rating .star { background: none; border: none; padding: 0; font-size: 2em; color: var(--border-color); line-height: 1; cursor: pointer; }
         .star-rating .star.selected, .star-rating .star:hover, .star-rating .star:focus { color: var(--warning-color); outline: none; }
         .star-rating .star:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-        
+
         .log-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .log-item-time { font-weight: 600; font-size: 0.95em; }
         .log-item-notes { margin-bottom: 8px; font-size:0.95em; color: var(--text-color-light); }
@@ -586,19 +593,26 @@
         }
         .file-input-label:hover { background-color: var(--primary-color-dark); border-color: var(--primary-color-dark); }
         input[type="file"] { display: none; }
-        
+
         .hidden { display: none !important; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
         .mt-1 { margin-top: 10px; }
         .mb-1 { margin-bottom: 10px; }
 
+
+        /* MOBILE STYLES (max-width: 600px) */
         @media (max-width: 600px) {
-            .container { padding: 15px; }
+            .container { padding: 15px; } /* Adjust main container padding for mobile */
             .app-header h1 { font-size: 1.5em; }
             .header-with-back h2 { font-size: 1.2em; }
             .header-with-back .back-button { font-size: 1.6em; padding: 5px 10px 5px 0px;}
             .header-spacer-right { min-width: 30px; }
+
+            @media (max-width: 480px) {
+                 .card-actions .button { min-width: 100%; }
+                 .actions-bar .button { min-width: 100%; }
+            }
 
             /* Screen 3 Mobile Video Controls */
             .video-controls { flex-direction: column; align-items: stretch; }
@@ -608,52 +622,106 @@
             .video-controls .speed-control-group select { width: 100%; }
 
             .mark-buttons { flex-direction: column; }
-            
+
             /* Screen 2 Mobile Adjustments */
-            .video-entry-header { 
-                padding: 15px; /* Reduced padding for mobile */
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 12px; 
+            .video-entry-header {
+                padding: 15px; /* Reduced padding for mobile on this specific header */
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
             .video-entry-title { font-size: 1.05em; }
-            .video-entry-actions { 
-                width: 100%; 
-                display: flex; 
+            .video-entry-actions {
+                width: 100%;
+                display: flex;
                 justify-content: space-between;
                 gap: 8px;
             }
             .video-entry-actions .button { flex-grow: 0 !important; margin-left: 0 !important; }
-            
-            .video-clips-list-container {
-                 padding: 15px;
-            }
 
-            .clip-item-card { flex-direction: column; align-items: flex-start; }
-            .clip-item-thumbnail { width: 100%; height: auto; max-height: 150px; margin-bottom:10px; }
-            .clip-item-actions { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 10px; }
+            /* .video-clips-list-container padding is handled by base style for mobile */
+
+            .clip-item-card { /* Specific mobile layout for clip items */
+                flex-direction: column;
+                align-items: flex-start;
+                /* padding: 12px 0; is base style, already mobile friendly */
+            }
+            .clip-item-thumbnail { /* Mobile specific thumbnail size */
+                width: 100%;
+                height: auto;
+                max-height: 150px;
+                margin-bottom:10px;
+            }
+            .clip-item-actions { /* Mobile specific actions layout */
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center; /* Align items center for row */
+                margin-top: 10px;
+            }
             .clip-item-actions .button-small { flex-grow: 1; }
             .clip-item-actions .button-small + .button-small { margin-left: 5px;}
 
             /* Screen 2 Mobile Custom Player Controls */
-            .main-player-custom-controls { 
-                flex-wrap: wrap; 
-                justify-content: center; 
-                padding: 8px 10px; /* Adjusted padding */
+            .main-player-custom-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 8px 10px; /* Adjusted padding for mobile */
             }
-            .main-player-progress-bar-container { 
+            .main-player-progress-bar-container {
                 order: 1; /* Progress bar below buttons */
-                width: 100%; 
-                margin: 8px 0 5px; 
-            } 
-            .main-player-timecode { 
+                width: 100%;
+                margin: 8px 0 5px;
+            }
+            .main-player-timecode {
                 order: 2; /* Timecode after progress bar */
                 margin-left: auto; /* Pushes to the right if space allows */
                 font-size: 0.75em;
             }
-            .main-player-ctrl-btn { 
+            .main-player-ctrl-btn {
                 font-size: 1em; /* Slightly smaller icons/buttons on mobile */
-                padding: 4px; 
+                padding: 4px;
+            }
+        }
+
+        /* DESKTOP STYLES (min-width: 601px) */
+        @media (min-width: 601px) {
+            .container {
+                 padding: 20px; /* Restore desktop container padding */
+            }
+
+            /* Screen 2 Desktop padding overrides for full-width sticky header */
+            .video-clips-list-container {
+                padding: 0; /* Remove parent padding so h4 can control its own full width */
+            }
+            .video-clips-list-container h4 { /* Logged Clips Header - STICKY */
+                /* Desktop: h4 creates its own horizontal padding for text, bg spans full width */
+                padding: 15px 20px 8px 20px;
+            }
+            .clip-item-card {
+                /* Desktop: clip items also need their own horizontal padding */
+                padding: 12px 20px;
+                flex-direction: row; /* Ensure desktop layout if overridden by mobile */
+                align-items: center; /* Ensure desktop layout */
+            }
+            .clip-item-thumbnail { /* Restore desktop thumbnail size */
+                 width: 80px;
+                 height: 50px;
+                 margin-bottom:0;
+            }
+            .clip-item-actions { /* Restore desktop actions layout */
+                 width: auto;
+                 flex-direction: column;
+                 align-items: flex-end;
+                 margin-top: 0;
+            }
+             .clip-item-actions .button-small { flex-grow: 0; }
+             .clip-item-actions .button-small + .button-small { margin-left: 0;}
+
+
+            .clips-list-placeholder {
+                 /* Desktop: placeholder needs its own horizontal padding */
+                padding: 10px 20px;
             }
         }
     </style>
@@ -699,7 +767,7 @@
                     </button>
                 </div>
                 <input type="search" id="project-videos-search" placeholder="Search videos or clips by name, notes, tags..." aria-label="Search videos and clips">
-                
+
                 <div id="project-videos-container" aria-live="polite" aria-atomic="true">
                     <!-- Video Entry Cards will be rendered here with new structure -->
                 </div>
@@ -715,8 +783,8 @@
             </header>
             <div class="container">
                 <div id="video-player-container">
-                    <video id="video-player" playsinline></video> 
-                     <div id="video-file-prompt" class="hidden"> 
+                    <video id="video-player" playsinline></video>
+                     <div id="video-file-prompt" class="hidden">
                         <p id="video-file-prompt-message">Please select the video file.</p>
                         <label class="button button-primary mt-1">
                             Select Video File
@@ -726,17 +794,17 @@
                 </div>
 
                 <div id="timeline-container" class="mb-1" aria-label="Video timeline"><div id="timeline-progress"></div></div>
-                
+
                 <div class="video-controls">
                     <div class="main-controls">
                         <button id="rewind-btn" class="button button-subtle" aria-label="Rewind 5 seconds">
-                            <span class="button-icon">&#x23EA;</span> 
+                            <span class="button-icon">&#x23EA;</span>
                         </button>
                         <button id="play-pause-btn" class="button button-subtle" aria-label="Play or Pause video">
-                            <span class="button-icon">&#9658;</span> 
+                            <span class="button-icon">&#9658;</span>
                         </button>
                         <button id="forward-btn" class="button button-subtle" aria-label="Forward 5 seconds">
-                            <span class="button-icon">&#x23E9;</span> 
+                            <span class="button-icon">&#x23E9;</span>
                         </button>
                     </div>
                     <div id="timecode-display" class="timecode-display" aria-live="off">00:00 / 00:00</div>
@@ -785,7 +853,7 @@
                     <div class="card-actions" style="padding-top:0;">
                          <button id="save-log-btn" class="button button-primary button-full-width">Save Log</button>
                     </div>
-                    <input type="hidden" id="editing-log-id"> 
+                    <input type="hidden" id="editing-log-id">
                 </article>
 
                 <h3 class="section-title mt-2">Saved Logs for this Video</h3>
@@ -833,7 +901,7 @@
         data: {
             projects: [],
             currentProjectId: null,
-            currentVideoId: null, 
+            currentVideoId: null,
             videoElement: null, // Screen 3 main video player
             timelineProgress: null,
             timelineContainer: null,
@@ -847,32 +915,32 @@
             markInTime: 0,
             markOutTime: null,
             currentRating: 0,
-            videoFileCache: {}, 
-            
+            videoFileCache: {},
+
             activeCardPlayer: {
-                videoId: null, 
-                cardElement: null, 
-                playerElement: null, 
+                videoId: null,
+                cardElement: null,
+                playerElement: null,
                 thumbnailElement: null,
-                bigPlayButtonElement: null, 
-                promptElement: null, 
-                fileInputElement: null, 
-                controlsContainerElement: null, 
-                playPauseBtnElement: null, 
+                bigPlayButtonElement: null,
+                promptElement: null,
+                fileInputElement: null,
+                controlsContainerElement: null,
+                playPauseBtnElement: null,
                 rewindBtnElement: null,
                 forwardBtnElement: null,
                 progressBarContainerElement: null,
                 progressBarElement: null,
-                timecodeElement: null, 
-                stopBtnElement: null, 
+                timecodeElement: null,
+                stopBtnElement: null,
                 isPlaying: false,
                 isScrubbing: false,
                 wasPlayingBeforeScrub: false,
-                currentSegment: { 
-                    startTime: 0, 
-                    endTime: 0, 
-                    duration: 0 
-                }, 
+                currentSegment: {
+                    startTime: 0,
+                    endTime: 0,
+                    duration: 0
+                },
                 boundPlayerTimeUpdate: null,
                 boundPlayerLoadedMetadata: null,
                 boundPlayerEnded: null,
@@ -883,11 +951,11 @@
                 _boundCardPlayerScrubEnd: null,
             },
             previouslyFocusedElement: null,
-            skipTimeSeconds: 5, 
-            isScrubbing: false, 
-            wasPlayingBeforeScrub: false, 
+            skipTimeSeconds: 5,
+            isScrubbing: false,
+            wasPlayingBeforeScrub: false,
         },
-        dom: {}, 
+        dom: {},
         idb: {
             db: null,
             dbName: 'LogReelFilesDB',
@@ -931,15 +999,15 @@
             storeFile(videoId, file) {
                 return new Promise(async (resolve, reject) => {
                     try {
-                        if (!app.idb.db) { 
+                        if (!app.idb.db) {
                              try {
                                 await app.idb.initDB();
                             } catch (initError) {
-                                reject(initError); 
+                                reject(initError);
                                 return;
                             }
                         }
-                        if (!app.idb.db) { 
+                        if (!app.idb.db) {
                            reject("IndexedDB not available for storing file.");
                            return;
                         }
@@ -1028,18 +1096,18 @@
             }
         },
         utils: {
-            generateId() { 
+            generateId() {
                 return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
             },
-            formatTime(seconds, includeMillis = false) { 
+            formatTime(seconds, includeMillis = false) {
                 if (isNaN(seconds) || seconds < 0) return includeMillis ? '00:00.0' : '00:00';
                 const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60);
-                const s = Math.floor(seconds % 60); const ms = Math.floor((seconds - Math.floor(seconds)) * 10); 
+                const s = Math.floor(seconds % 60); const ms = Math.floor((seconds - Math.floor(seconds)) * 10);
                 let timeStr = ''; if (h > 0) timeStr += `${String(h).padStart(2, '0')}:`;
                 timeStr += `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
                 if (includeMillis) timeStr += `.${ms}`; return timeStr;
             },
-            escapeHtml(unsafe) { 
+            escapeHtml(unsafe) {
                 if (typeof unsafe !== 'string') return String(unsafe);
                 return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
             }
@@ -1051,7 +1119,7 @@
             this.boundHandleTimelineMouseUp = this.handleTimelineMouseUp.bind(this);
             this.boundHandleTimelineTouchMove = this.handleTimelineTouchMove.bind(this);
             this.boundHandleTimelineTouchEnd = this.handleTimelineTouchEnd.bind(this);
-            
+
             this.idb.initDB().catch(error => {
                 console.warn("Failed to initialize IndexedDB. App will rely on file selection prompts.", error);
                 this.showToast("Persistent file storage unavailable. Files may need re-selection each session.", "warning", 7000);
@@ -1089,7 +1157,7 @@
             this.dom.projectsList = document.getElementById('projects-list');
             this.dom.btnNewProject = document.getElementById('btn-new-project');
             this.dom.importProjectsInput = document.getElementById('import-projects-input');
-            
+
             this.dom.btnBackToProjects = document.getElementById('btn-back-to-projects');
             this.dom.projectNameHeader = document.getElementById('project-name-header');
             this.dom.projectVideosHeaderSpacer = document.getElementById('project-videos-header-spacer');
@@ -1101,8 +1169,8 @@
             this.dom.btnBackToProjectVideos = document.getElementById('btn-back-to-project-videos');
             this.dom.videoFilenameHeader = document.getElementById('video-filename-header');
             this.dom.videoLoggingHeaderSpacer = document.getElementById('video-logging-header-spacer');
-            this.data.videoElement = document.getElementById('video-player'); 
-            this.dom.videoPlayerContainer = document.getElementById('video-player-container'); 
+            this.data.videoElement = document.getElementById('video-player');
+            this.dom.videoPlayerContainer = document.getElementById('video-player-container');
             this.dom.videoFilePrompt = document.getElementById('video-file-prompt');
             this.dom.videoFilePromptMessage = document.getElementById('video-file-prompt-message');
             this.dom.videoFileInputLogging = document.getElementById('video-file-input-logging');
@@ -1114,7 +1182,7 @@
             this.data.forwardBtn = document.getElementById('forward-btn');
             this.data.timecodeDisplay = document.getElementById('timecode-display');
             this.data.speedSelect = document.getElementById('speed-select');
-            
+
             this.data.markInBtn = document.getElementById('mark-in-btn');
             this.data.markOutBtn = document.getElementById('mark-out-btn');
             this.dom.logNotes = document.getElementById('log-notes');
@@ -1134,11 +1202,11 @@
 
         navigateTo(screenId, params = {}) {
             const targetScreenKey = screenId.replace('screen-', '');
-            
+
             Object.values(this.dom.screens).forEach(screen => {
                 if (screen) screen.classList.remove('active');
             });
-            
+
             if (this.dom.screens[targetScreenKey]) {
                 this.dom.screens[targetScreenKey].classList.add('active');
             } else {
@@ -1148,23 +1216,23 @@
                 } else {
                     console.error("Fallback screen 'projects' also not found. Critical error.");
                     document.body.innerHTML = "<p style='padding:20px; text-align:center;'>Application Error: UI cannot be initialized.</p>";
-                    return; 
+                    return;
                 }
                 screenId = 'screen-projects';
             }
-            
+
             this.currentScreen = screenId;
             window.scrollTo(0, 0);
 
             if (this.data.activeCardPlayer.playerElement && screenId !== 'screen-project-videos') {
-                this.resetActiveCardPlayerUI(false); 
+                this.resetActiveCardPlayerUI(false);
             }
 
-            if (this.data.videoElement) { 
+            if (this.data.videoElement) {
                 if (screenId === 'screen-video-logging') {
                     this.data.videoElement.removeAttribute('controls');
                 } else {
-                    this.data.videoElement.pause(); 
+                    this.data.videoElement.pause();
                 }
             }
 
@@ -1176,9 +1244,9 @@
                     if (params && params.projectId) {
                         this.data.currentProjectId = params.projectId;
                     } else if (!this.data.currentProjectId && this.data.projects.length > 0) {
-                         this.data.currentProjectId = this.data.projects[0].id; 
+                         this.data.currentProjectId = this.data.projects[0].id;
                     } else if (!this.data.currentProjectId) {
-                        this.navigateTo('screen-projects'); return; 
+                        this.navigateTo('screen-projects'); return;
                     }
                     this.renderProjectVideosScreen();
                     break;
@@ -1193,7 +1261,7 @@
                         else this.navigateTo('screen-projects');
                         return;
                     }
-                    this.renderVideoLoggingScreen(); 
+                    this.renderVideoLoggingScreen();
                     if(params && params.logIdToEdit) {
                         this.editLogEntry(params.logIdToEdit, true);
                     }
@@ -1201,7 +1269,7 @@
             }
         },
 
-        loadData() { 
+        loadData() {
             const storedData = localStorage.getItem('logReelData');
             if (storedData) {
                 try {
@@ -1211,7 +1279,7 @@
                         this.data.projects.forEach(project => {
                             if (project && project.videos && Array.isArray(project.videos)) {
                                 project.videos.forEach(video => {
-                                    if (video) { 
+                                    if (video) {
                                         if (typeof video.isImportant === 'undefined') {
                                             video.isImportant = false;
                                         }
@@ -1220,12 +1288,12 @@
                                         }
                                     }
                                 });
-                            } else if (project) { 
+                            } else if (project) {
                                 project.videos = [];
                             }
                         });
                     } else {
-                         this.data.projects = []; 
+                         this.data.projects = [];
                     }
                 } catch (e) {
                     console.error("Error parsing data from localStorage:", e);
@@ -1236,7 +1304,7 @@
                 this.data.projects = [];
             }
         },
-        saveData() { 
+        saveData() {
             try {
                 localStorage.setItem('logReelData', JSON.stringify(this.data.projects));
             } catch (e) {
@@ -1244,14 +1312,14 @@
                 this.showToast("Could not save data. Storage might be full or disabled.", "error");
             }
         },
-        getProjectById(projectId) { 
+        getProjectById(projectId) {
             return this.data.projects.find(p => p.id === projectId);
         },
-        getVideoById(projectId, videoId) { 
+        getVideoById(projectId, videoId) {
             const project = this.getProjectById(projectId);
             return project ? project.videos.find(v => v.id === videoId) : null;
         },
-        getLogById(projectId, videoId, logId) { 
+        getLogById(projectId, videoId, logId) {
             const video = this.getVideoById(projectId, videoId);
             return video && video.logs ? video.logs.find(l => l.id === logId) : null;
         },
@@ -1260,37 +1328,37 @@
             this.dom.btnNewProject.addEventListener('click', () => this.showNewProjectModal());
             this.dom.importProjectsInput.addEventListener('change', (e) => this.importProjects(e));
             this.dom.btnBackToProjects.addEventListener('click', () => this.navigateTo('screen-projects'));
-            this.dom.addVideosInput.addEventListener('change', (e) => this.handleAddVideos(e.target.files)); 
+            this.dom.addVideosInput.addEventListener('change', (e) => this.handleAddVideos(e.target.files));
             this.dom.btnExportProject.addEventListener('click', () => this.exportCurrentProject());
             this.dom.projectVideosSearch.addEventListener('input', (e) => this.renderProjectVideosScreen(e.target.value.trim()));
             this.dom.btnBackToProjectVideos.addEventListener('click', () => this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }));
-            
-            if(this.data.videoElement) { 
+
+            if(this.data.videoElement) {
                 this.data.rewindBtn.addEventListener('click', () => this.rewindVideo());
                 this.data.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
                 this.data.forwardBtn.addEventListener('click', () => this.fastForwardVideo());
 
-                this.data.videoElement.addEventListener('play', () => { 
+                this.data.videoElement.addEventListener('play', () => {
                     if(this.data.playPauseBtn && this.currentScreen === 'screen-video-logging') {
-                        this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#10074;&#10074;</span>'; 
-                        this.data.playPauseBtn.setAttribute('aria-label', 'Pause video'); 
+                        this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#10074;&#10074;</span>';
+                        this.data.playPauseBtn.setAttribute('aria-label', 'Pause video');
                     }
                 });
-                this.data.videoElement.addEventListener('pause', () => { 
+                this.data.videoElement.addEventListener('pause', () => {
                     if(this.data.playPauseBtn && this.currentScreen === 'screen-video-logging') {
-                        this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#9658;</span>'; 
-                        this.data.playPauseBtn.setAttribute('aria-label', 'Play video'); 
+                        this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#9658;</span>';
+                        this.data.playPauseBtn.setAttribute('aria-label', 'Play video');
                     }
                 });
                 this.data.videoElement.addEventListener('loadedmetadata', () => { if(this.currentScreen === 'screen-video-logging') this.updateVideoTimes(); });
                 this.data.videoElement.addEventListener('timeupdate', () => { if(this.currentScreen === 'screen-video-logging') this.updateVideoTimes(); });
                 this.data.videoElement.addEventListener('durationchange', () => { if(this.currentScreen === 'screen-video-logging') this.updateVideoTimes(); });
-                this.data.videoElement.addEventListener('error', async (e) => { 
+                this.data.videoElement.addEventListener('error', async (e) => {
                     if(this.currentScreen !== 'screen-video-logging') return;
                     console.error("Video Player Error (Screen 3):", e);
                     const videoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
                     this.showToast(`Error playing ${videoData ? this.utils.escapeHtml(videoData.filename) : 'video'}. File might be corrupted or unsupported.`, 'error', 5000);
-                    if (videoData) { 
+                    if (videoData) {
                         const cacheKey = `${this.data.currentProjectId}-${this.data.currentVideoId}`;
                         if(this.data.videoFileCache[cacheKey]) {
                             URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
@@ -1299,7 +1367,7 @@
                         this.promptForVideoFile(videoData.filename);
                     }
                 });
-            
+
                 this.data.timelineContainer.addEventListener('mousedown', (e) => this.handleTimelineMouseDown(e));
                 this.data.timelineContainer.addEventListener('touchstart', (e) => this.handleTimelineTouchStart(e), { passive: false });
 
@@ -1308,15 +1376,15 @@
             this.data.markInBtn.addEventListener('click', () => this.setMarkIn());
             this.data.markOutBtn.addEventListener('click', () => this.setMarkOut());
             this.dom.logRatingContainer.addEventListener('click', (e) => this.handleStarRating(e));
-            this.dom.saveLogBtn.addEventListener('click', () => this.saveLogEntry()); 
-            this.dom.videoFileInputLogging.addEventListener('change', (e) => this.handleVideoFileSelectionForLogging(e.target.files[0])); 
-            
+            this.dom.saveLogBtn.addEventListener('click', () => this.saveLogEntry());
+            this.dom.videoFileInputLogging.addEventListener('change', (e) => this.handleVideoFileSelectionForLogging(e.target.files[0]));
+
             document.querySelectorAll('.close-button').forEach(btn => {
                 btn.addEventListener('click', () => this.hideModal(btn.dataset.modalId));
             });
             this.dom.btnCreateProjectConfirm.addEventListener('click', () => this.createNewProject());
-            this.dom.btnConfirmActionCancel.addEventListener('click', () => this.hideModal('modal-confirm-action')); 
-            
+            this.dom.btnConfirmActionCancel.addEventListener('click', () => this.hideModal('modal-confirm-action'));
+
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     Object.values(this.dom.modals).forEach(modal => {
@@ -1330,7 +1398,7 @@
                 if (!targetButton) return;
 
                 const videoEntryCard = targetButton.closest('article.video-entry-card');
-                if (!videoEntryCard) return; 
+                if (!videoEntryCard) return;
                 const videoId = videoEntryCard.dataset.videoId;
 
                 if (targetButton.classList.contains('btn-log-full-video')) {
@@ -1339,7 +1407,7 @@
                     this.confirmDeleteVideo(videoId);
                 } else if (targetButton.classList.contains('btn-toggle-important')) {
                     this.toggleVideoImportance(videoId);
-                } else if (targetButton.classList.contains('btn-play-clip-on-card')) { 
+                } else if (targetButton.classList.contains('btn-play-clip-on-card')) {
                     const logId = targetButton.dataset.logId;
                     const logData = this.getLogById(this.data.currentProjectId, videoId, logId);
                     if (logData) {
@@ -1351,9 +1419,9 @@
                 } else if (targetButton.classList.contains('btn-delete-this-log-item')) {
                      const logId = targetButton.dataset.logId;
                      this.confirmDeleteLogItemFromScreen2(videoId, logId);
-                } else if (targetButton.classList.contains('play-main-video-preview-btn')) { 
-                    this.playVideoOnCard(videoId, videoEntryCard); 
-                } 
+                } else if (targetButton.classList.contains('play-main-video-preview-btn')) {
+                    this.playVideoOnCard(videoId, videoEntryCard);
+                }
                 else if (targetButton.classList.contains('main-player-play-pause-btn')) {
                     this.toggleCardPlayerPlayPause();
                 } else if (targetButton.classList.contains('main-player-rewind-btn')) {
@@ -1364,12 +1432,12 @@
                     this.stopAndResetCardPlayer();
                 }
             });
-             this.dom.projectVideosContainer.addEventListener('mousedown', (e) => { 
+             this.dom.projectVideosContainer.addEventListener('mousedown', (e) => {
                 if (e.target.closest('.main-player-progress-bar-container')) {
                     this.handleCardPlayerProgressBarMouseDown(e);
                 }
             });
-             this.dom.projectVideosContainer.addEventListener('touchstart', (e) => { 
+             this.dom.projectVideosContainer.addEventListener('touchstart', (e) => {
                 if (e.target.closest('.main-player-progress-bar-container')) {
                     this.handleCardPlayerProgressBarTouchStart(e);
                 }
@@ -1377,7 +1445,7 @@
 
             this.dom.projectVideosContainer.addEventListener('change', (e) => {
                 if (e.target.classList.contains('main-video-preview-file-input')) {
-                    const videoId = e.target.dataset.targetPlayerId; 
+                    const videoId = e.target.dataset.targetPlayerId;
                     if (this.data.activeCardPlayer.videoId === videoId) {
                          this.handleCardPlayerFileSelection(e.target.files[0], videoId);
                     } else {
@@ -1386,21 +1454,21 @@
                 }
             });
         },
-        
+
         async getVideoSource(projectId, videoId, videoFilename) {
             const cacheKey = `${projectId}-${videoId}`;
             if (this.data.videoFileCache[cacheKey]) {
                 try {
-                    const response = await fetch(this.data.videoFileCache[cacheKey]); 
-                    if (response.ok) { 
+                    const response = await fetch(this.data.videoFileCache[cacheKey]);
+                    if (response.ok) {
                         console.log("Using cached ObjectURL for", videoFilename);
                         return this.data.videoFileCache[cacheKey];
-                    } else { 
+                    } else {
                         console.log("Cached ObjectURL seems invalid, revoking from cache:", videoFilename, response.status);
                         URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
                         delete this.data.videoFileCache[cacheKey];
                     }
-                } catch (e) { 
+                } catch (e) {
                     console.log("Error fetching cached ObjectURL, revoking from cache:", videoFilename, e);
                     if (this.data.videoFileCache[cacheKey]) {
                          URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
@@ -1414,7 +1482,7 @@
                 if (fileFromDB && fileFromDB.name === videoFilename) {
                     console.log("Retrieved file from IndexedDB for", videoFilename);
                     const objectURL = URL.createObjectURL(fileFromDB);
-                    this.data.videoFileCache[cacheKey] = objectURL; 
+                    this.data.videoFileCache[cacheKey] = objectURL;
                     return objectURL;
                 } else if (fileFromDB && fileFromDB.name !== videoFilename) {
                     console.warn(`Filename mismatch from IDB. Expected ${videoFilename}, got ${fileFromDB.name}. Prompting.`);
@@ -1428,13 +1496,13 @@
                     this.showToast(`Error accessing persistent storage for "${this.utils.escapeHtml(videoFilename)}".`, "warning");
                  }
             }
-            
+
             console.log("No valid source found in cache or IDB for", videoFilename, ". Prompting likely.");
             return null;
         },
 
         renderProjectsScreen() {
-            if (!this.dom.projectsList) { 
+            if (!this.dom.projectsList) {
                 console.error("projectsList DOM element not found. Cannot render projects screen.");
                 return;
             }
@@ -1468,11 +1536,11 @@
                 btn.addEventListener('click', (e) => this.confirmDeleteProject(e.currentTarget.dataset.projectId));
             });
         },
-        showNewProjectModal() { 
+        showNewProjectModal() {
             this.dom.newProjectNameInput.value = '';
             this.showModal('modal-new-project');
         },
-        createNewProject() { 
+        createNewProject() {
             const name = this.dom.newProjectNameInput.value.trim();
             if (!name) { this.showToast('Project name cannot be empty.', 'warning'); return; }
             const newProject = { id: this.utils.generateId(), name: name, videos: [], createdAt: new Date().toISOString() };
@@ -1480,17 +1548,17 @@
             this.saveData(); this.renderProjectsScreen(); this.hideModal('modal-new-project');
             this.showToast(`Project "${this.utils.escapeHtml(name)}" created.`, 'success');
         },
-        confirmDeleteProject(projectId) { 
+        confirmDeleteProject(projectId) {
             const project = this.getProjectById(projectId);
             if (!project) return;
             const message = `Are you sure you want to delete the project "<strong>${this.utils.escapeHtml(project.name)}</strong>"? <br>This action cannot be undone and will remove all associated video files from persistent storage.`;
             this.showConfirmationModal(message, () => this.deleteProject(projectId), null, "Delete Project", "button-danger");
         },
-        async deleteProject(projectId){ 
+        async deleteProject(projectId){
             const project = this.getProjectById(projectId);
             if (project && project.videos) {
                 for (const video of project.videos) {
-                    const cacheKey = `${projectId}-${video.id}`; 
+                    const cacheKey = `${projectId}-${video.id}`;
                     if (this.data.videoFileCache[cacheKey]) {
                          URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
                          delete this.data.videoFileCache[cacheKey];
@@ -1509,7 +1577,7 @@
             this.saveData(); this.renderProjectsScreen();
             if(project) this.showToast(`Project "${this.utils.escapeHtml(project.name)}" deleted.`, 'success');
         },
-        importProjects(event) { 
+        importProjects(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -1525,10 +1593,10 @@
                             });
                             this.showConfirmationModal(
                                 "Importing will replace <strong>all current projects and their data (excluding persistently stored video files from other projects)</strong>. This action cannot be undone. Continue?",
-                                async () => { 
-                                    this.data.projects = importedData; 
-                                    this.saveData(); 
-                                    this.renderProjectsScreen(); 
+                                async () => {
+                                    this.data.projects = importedData;
+                                    this.saveData();
+                                    this.renderProjectsScreen();
                                     this.showToast('Projects imported successfully! Video files may need to be re-added if not already persistently stored.', 'success', 5000);
                                 },
                                 null, "Import & Replace", "button-primary"
@@ -1536,15 +1604,15 @@
                         } else { this.showToast('Invalid project file format.', 'error'); }
                     } catch (error) { this.showToast('Error reading or parsing project file.', 'error'); console.error("Import error:", error); }
                 };
-                reader.readAsText(file); event.target.value = null; 
+                reader.readAsText(file); event.target.value = null;
             }
         },
-        exportCurrentProject() { 
+        exportCurrentProject() {
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project) { this.showToast("No project selected or found to export.", "warning"); return; }
-            const projectToExport = JSON.parse(JSON.stringify(project)); 
-            projectToExport.videos.forEach(video => { delete video.fileURL; }); 
-            const dataStr = JSON.stringify([projectToExport], null, 2); 
+            const projectToExport = JSON.parse(JSON.stringify(project));
+            projectToExport.videos.forEach(video => { delete video.fileURL; });
+            const dataStr = JSON.stringify([projectToExport], null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const exportFileDefaultName = `${project.name.replace(/\s+/g, '_')}_LogReel_export.json`;
             const linkElement = document.createElement('a');
@@ -1552,7 +1620,7 @@
             linkElement.click(); linkElement.remove();
             this.showToast(`Project "${this.utils.escapeHtml(project.name)}" export started.`, 'success');
         },
-        
+
         async renderProjectVideosScreen(searchTerm = '') {
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project) { this.navigateTo('screen-projects'); return; }
@@ -1561,7 +1629,7 @@
             this.dom.projectVideosContainer.innerHTML = '';
 
             if (this.data.activeCardPlayer.playerElement) {
-                this.resetActiveCardPlayerUI(false); 
+                this.resetActiveCardPlayerUI(false);
             }
 
             let videosToDisplay = project.videos || [];
@@ -1572,7 +1640,7 @@
                 this.dom.projectVideosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos in this project yet.</p><p>Click "Add Videos" to begin.</p></div>';
                 return;
             }
-            
+
             videosToDisplay.forEach((video, index) => {
                 let videoMatchesSearch = false;
                 let clipsToDisplay = video.logs || [];
@@ -1586,7 +1654,7 @@
                         log.notes.toLowerCase().includes(lowerSearchTerm) ||
                         (log.keywords && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
                     );
-                    if (!videoMatchesSearch && clipsToDisplay.length === 0) return; 
+                    if (!videoMatchesSearch && clipsToDisplay.length === 0) return;
                 }
                 foundItems = true;
 
@@ -1615,15 +1683,14 @@
                             </div>
                         `;
                     });
-                } else if (searchTerm && videoMatchesSearch) { 
-                    clipsHtml = '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No logged clips match search for this video.</p>';
+                } else if (searchTerm && videoMatchesSearch) {
+                    clipsHtml = `<p class="clips-list-placeholder">No logged clips match search for this video.</p>`;
                 } else if (!searchTerm) {
-                     clipsHtml = '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No clips logged for this video yet.</p>';
+                     clipsHtml = `<p class="clips-list-placeholder">No clips logged for this video yet.</p>`;
                 }
 
                 const mainThumbnailSrc = video.mainVideoThumbnail || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90"%3E%3Crect width="160" height="90" fill="%23e0e0e0"/%3E%3Ctext x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14px" fill="%23777"%3EVideo%3C/text%3E%3C/svg%3E';
 
-                // HTML structure change: main-player-custom-controls moved outside main-video-preview-area
                 videoCard.innerHTML = `
                     <div class="video-entry-header">
                         <span class="video-entry-title" title="${this.utils.escapeHtml(video.filename)}">
@@ -1670,15 +1737,15 @@
                 fragment.appendChild(videoCard);
             });
             this.dom.projectVideosContainer.appendChild(fragment);
-            
+
             if (!foundItems && searchTerm) {
                  this.dom.projectVideosContainer.innerHTML = `<div class="empty-state" style="margin:20px;"><p>No videos or clips found matching "<strong>${this.utils.escapeHtml(searchTerm)}</strong>".</p></div>`;
-            } else if (!foundItems && !searchTerm && videosToDisplay.length > 0) { 
-                 this.dom.projectVideosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos to display.</p></div>'; 
+            } else if (!foundItems && !searchTerm && videosToDisplay.length > 0) {
+                 this.dom.projectVideosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos to display.</p></div>';
             }
         },
 
-        async handleAddVideos(files) { 
+        async handleAddVideos(files) {
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project) return;
             if (!project.videos) project.videos = [];
@@ -1689,9 +1756,9 @@
                     const videoId = this.utils.generateId();
                     const cacheKey = `${this.data.currentProjectId}-${videoId}`;
                     let mainThumbnail = null;
-                    
+
                     try {
-                        await this.idb.storeFile(videoId, file); 
+                        await this.idb.storeFile(videoId, file);
                         console.log(`File ${file.name} stored in IDB for videoId ${videoId}`);
                     } catch (error) {
                         console.error(`Failed to store ${file.name} in IndexedDB:`, error);
@@ -1702,17 +1769,17 @@
                     this.data.videoFileCache[cacheKey] = objectURL;
                     try {
                         const tempVideoEl = document.createElement('video');
-                        tempVideoEl.muted = true; 
+                        tempVideoEl.muted = true;
                         tempVideoEl.src = objectURL;
                         mainThumbnail = await new Promise((resolve) => {
-                            let timeoutId = setTimeout(() => { 
+                            let timeoutId = setTimeout(() => {
                                 console.warn("Timeout generating main video thumbnail for", file.name);
                                 tempVideoEl.onloadedmetadata = null; tempVideoEl.onseeked = null; tempVideoEl.onerror = null;
                                 resolve(null);
-                            }, 3000); 
+                            }, 3000);
 
                             tempVideoEl.onloadedmetadata = () => {
-                                tempVideoEl.currentTime = Math.min(0.5, tempVideoEl.duration / 2); 
+                                tempVideoEl.currentTime = Math.min(0.5, tempVideoEl.duration / 2);
                             };
                             tempVideoEl.onseeked = async () => {
                                 clearTimeout(timeoutId);
@@ -1734,24 +1801,24 @@
                         console.warn("Error setting up main video thumbnail generation:", e);
                         mainThumbnail = null;
                     }
-                    
-                    const newVideo = { 
-                        id: videoId, 
-                        filename: file.name, 
-                        logs: [], 
+
+                    const newVideo = {
+                        id: videoId,
+                        filename: file.name,
+                        logs: [],
                         createdAt: new Date().toISOString(),
                         isImportant: false,
-                        mainVideoThumbnail: mainThumbnail 
+                        mainVideoThumbnail: mainThumbnail
                     };
                     project.videos.push(newVideo);
                     addedCount++;
                 } else { this.showToast(`File "${this.utils.escapeHtml(file.name)}" is not a video and was skipped.`, 'warning'); }
             }
             if(addedCount > 0) {
-                this.saveData(); this.renderProjectVideosScreen(); 
+                this.saveData(); this.renderProjectVideosScreen();
                 this.showToast(`${addedCount} video(s) added to project.`, 'success');
             }
-            this.dom.addVideosInput.value = null; 
+            this.dom.addVideosInput.value = null;
         },
         async generateGenericThumbnail(videoElement) {
              return new Promise((resolve, reject) => {
@@ -1762,33 +1829,33 @@
                     return reject("Video dimensions are zero, cannot create thumbnail.");
                 }
 
-                const canvas = this.dom.thumbnailCanvas; 
+                const canvas = this.dom.thumbnailCanvas;
                 const ctx = canvas.getContext('2d');
-                
+
                 const ar = videoElement.videoWidth / videoElement.videoHeight;
-                canvas.width = 160; 
+                canvas.width = 160;
                 canvas.height = canvas.width / ar;
                 if (isNaN(canvas.height) || !isFinite(canvas.height) || canvas.height <= 0) {
-                    canvas.height = 90; 
+                    canvas.height = 90;
                 }
-                
+
                 try {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.6)); 
+                    resolve(canvas.toDataURL('image/jpeg', 0.6));
                 } catch (e) {
                     console.error("Canvas toDataURL error in generic thumbnail:", e);
                     reject("Error creating thumbnail data.");
                 }
             });
         },
-        confirmDeleteVideo(videoId) { 
+        confirmDeleteVideo(videoId) {
             const video = this.getVideoById(this.data.currentProjectId, videoId);
             if (!video) return;
             const message = `Are you sure you want to delete the video "<strong>${this.utils.escapeHtml(video.filename)}</strong>" and all its logs? <br>This will also remove it from persistent storage. This cannot be undone.`;
             this.showConfirmationModal(message, () => this.deleteVideo(videoId), null, "Delete Video", "button-danger");
         },
-        async deleteVideo(videoId) { 
+        async deleteVideo(videoId) {
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project || !project.videos) return;
 
@@ -1798,7 +1865,7 @@
             const cacheKey = `${this.data.currentProjectId}-${videoId}`;
 
             if (this.data.activeCardPlayer.videoId === videoId) {
-                this.resetActiveCardPlayerUI(false); 
+                this.resetActiveCardPlayerUI(false);
             }
 
             if (this.data.videoFileCache[cacheKey]) {
@@ -1827,7 +1894,7 @@
 
             video.isImportant = !video.isImportant;
             this.saveData();
-            this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
+            this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim());
             this.showToast(`Video "${this.utils.escapeHtml(video.filename)}" marked as ${video.isImportant ? 'important' : 'not important'}.`, 'info');
         },
 
@@ -1836,8 +1903,8 @@
             if (acp.playerElement) {
                 acp.playerElement.pause();
                 acp.playerElement.removeAttribute('src');
-                acp.playerElement.load(); 
-                
+                acp.playerElement.load();
+
                 if (acp.boundPlayerTimeUpdate) acp.playerElement.removeEventListener('timeupdate', acp.boundPlayerTimeUpdate);
                 if (acp.boundPlayerLoadedMetadata) acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
                 if (acp.boundPlayerEnded) acp.playerElement.removeEventListener('ended', acp.boundPlayerEnded);
@@ -1845,8 +1912,6 @@
                 if (acp.boundPlayerPlay) acp.playerElement.removeEventListener('play', acp.boundPlayerPlay);
                 if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
 
-                // No need to unbind control listeners here as they are attached via general event delegation on projectVideosContainer
-                // or specific methods like playVideoOnCard which would re-setup if needed.
 
                 if (acp.playerElement) acp.playerElement.classList.add('hidden');
                 if (acp.controlsContainerElement) acp.controlsContainerElement.classList.add('hidden');
@@ -1857,7 +1922,7 @@
                 if (acp.timecodeElement) acp.timecodeElement.textContent = '00:00 / 00:00';
                 if (acp.progressBarElement) acp.progressBarElement.style.width = '0%';
             }
-            
+
             this.data.activeCardPlayer = {
                 videoId: null, cardElement: null, playerElement: null, thumbnailElement: null,
                 bigPlayButtonElement: null, promptElement: null, fileInputElement: null,
@@ -1876,21 +1941,20 @@
             if (!videoData) return;
 
             if (this.data.activeCardPlayer.videoId && (this.data.activeCardPlayer.videoId !== videoId || (segmentData && this.data.activeCardPlayer.currentSegment.startTime !== segmentData.startTime))) {
-                this.resetActiveCardPlayerUI(false); 
+                this.resetActiveCardPlayerUI(false);
             }
-            
+
             const acp = this.data.activeCardPlayer;
             acp.videoId = videoId;
             acp.cardElement = cardElement;
 
-            // Re-query elements each time to ensure they are current, especially after re-renders
             acp.playerElement = cardElement.querySelector(`#main-player-${videoId}`);
             acp.thumbnailElement = cardElement.querySelector(`#main-thumbnail-${videoId}`);
             acp.bigPlayButtonElement = cardElement.querySelector(`#play-main-preview-btn-${videoId}`);
             acp.promptElement = cardElement.querySelector(`#main-player-prompt-${videoId}`);
             if(acp.promptElement) acp.fileInputElement = acp.promptElement.querySelector('.main-video-preview-file-input');
             acp.controlsContainerElement = cardElement.querySelector(`#main-player-controls-${videoId}`);
-            
+
             if(acp.controlsContainerElement){
                 acp.playPauseBtnElement = acp.controlsContainerElement.querySelector('.main-player-play-pause-btn');
                 acp.rewindBtnElement = acp.controlsContainerElement.querySelector('.main-player-rewind-btn');
@@ -1914,7 +1978,6 @@
             acp.controlsContainerElement.classList.remove('hidden');
             acp.promptElement.classList.add('hidden');
 
-            // Remove old listeners before adding new ones to prevent duplication
             if (acp.boundPlayerError) acp.playerElement.removeEventListener('error', acp.boundPlayerError);
             if (acp.boundPlayerLoadedMetadata) acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
             if (acp.boundPlayerTimeUpdate) acp.playerElement.removeEventListener('timeupdate', acp.boundPlayerTimeUpdate);
@@ -1925,18 +1988,18 @@
             acp.boundPlayerError = () => this.handleCardPlayerError(videoData.filename);
             acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData);
             acp.boundPlayerTimeUpdate = () => this.handleCardPlayerTimeUpdate();
-            acp.boundPlayerEnded = () => this.handleCardPlayerEnded(); 
-            acp.boundPlayerPlay = () => { 
-                acp.isPlaying = true; 
+            acp.boundPlayerEnded = () => this.handleCardPlayerEnded();
+            acp.boundPlayerPlay = () => {
+                acp.isPlaying = true;
                 if(acp.playPauseBtnElement) {
-                    acp.playPauseBtnElement.innerHTML = '&#10074;&#10074;'; 
+                    acp.playPauseBtnElement.innerHTML = '&#10074;&#10074;';
                     acp.playPauseBtnElement.setAttribute('aria-label', 'Pause');
                 }
             };
-            acp.boundPlayerPause = () => { 
-                acp.isPlaying = false; 
-                if(acp.playPauseBtnElement && !acp.isScrubbing) { 
-                    acp.playPauseBtnElement.innerHTML = '&#9658;'; 
+            acp.boundPlayerPause = () => {
+                acp.isPlaying = false;
+                if(acp.playPauseBtnElement && !acp.isScrubbing) {
+                    acp.playPauseBtnElement.innerHTML = '&#9658;';
                     acp.playPauseBtnElement.setAttribute('aria-label', 'Play');
                 }
             };
@@ -1950,12 +2013,11 @@
 
             const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
             if (videoSrc) {
-                if(acp.playerElement.src !== videoSrc) { 
+                if(acp.playerElement.src !== videoSrc) {
                     acp.playerElement.src = videoSrc;
-                    acp.playerElement.load(); 
-                } else { 
-                     // If src is the same, metadata might already be loaded, manually trigger handler
-                    this.handleCardPlayerLoadedMetadata(segmentData); 
+                    acp.playerElement.load();
+                } else {
+                    this.handleCardPlayerLoadedMetadata(segmentData);
                 }
                  acp.playerElement.play().catch(e => {
                     console.error("Card player play error:", e);
@@ -1967,7 +2029,6 @@
             } else {
                 this.showCardPlayerPrompt(videoData.filename);
             }
-             // Scroll the entire card into view, ensuring controls are visible
             const controlsRect = acp.controlsContainerElement.getBoundingClientRect();
             const cardRect = acp.cardElement.getBoundingClientRect();
             if (controlsRect.bottom > window.innerHeight || cardRect.top < 0 ) {
@@ -1979,21 +2040,21 @@
             const acp = this.data.activeCardPlayer;
             if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration)) return;
 
-            if (segmentData && segmentData.endTime > segmentData.startTime) { 
+            if (segmentData && segmentData.endTime > segmentData.startTime) {
                 acp.currentSegment.startTime = segmentData.startTime;
-                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration); 
+                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration);
                 acp.currentSegment.duration = acp.currentSegment.endTime - acp.currentSegment.startTime;
                 acp.playerElement.currentTime = acp.currentSegment.startTime;
-            } else { 
+            } else {
                 acp.currentSegment.startTime = 0;
                 acp.currentSegment.endTime = acp.playerElement.duration;
                 acp.currentSegment.duration = acp.playerElement.duration;
-                if(acp.playerElement.currentTime >= acp.playerElement.duration - 0.1 && acp.playerElement.duration > 0) { 
+                if(acp.playerElement.currentTime >= acp.playerElement.duration - 0.1 && acp.playerElement.duration > 0) {
                     acp.playerElement.currentTime = 0;
                 }
             }
             this.updateCardPlayerTimeDisplay();
-             if (acp.isPlaying) { // Resume play if it was supposed to be playing
+             if (acp.isPlaying) { 
                 acp.playerElement.play().catch(e=>console.warn("Card player resume play error", e));
             }
         },
@@ -2003,46 +2064,44 @@
             if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration) || acp.isScrubbing) return;
 
             const currentTimeAbsolute = acp.playerElement.currentTime;
-            
-            if (acp.currentSegment.duration > 0 && currentTimeAbsolute >= acp.currentSegment.endTime - 0.05) { 
+
+            if (acp.currentSegment.duration > 0 && currentTimeAbsolute >= acp.currentSegment.endTime - 0.05) {
                 acp.playerElement.pause();
-                acp.playerElement.currentTime = acp.currentSegment.endTime; 
+                acp.playerElement.currentTime = acp.currentSegment.endTime;
                 this.handleCardPlayerSegmentEnd();
                 return;
             }
             if (currentTimeAbsolute < acp.currentSegment.startTime) {
-                // This case should ideally not happen if segment seeking is correct
-                // but as a fallback, ensure it doesn't play before start.
-                acp.playerElement.currentTime = acp.currentSegment.startTime; 
+                acp.playerElement.currentTime = acp.currentSegment.startTime;
             }
 
             const currentTimeInSegment = Math.max(0, currentTimeAbsolute - acp.currentSegment.startTime);
             const progress = (acp.currentSegment.duration > 0) ? (currentTimeInSegment / acp.currentSegment.duration) * 100 : 0;
-            
+
             if(acp.progressBarElement) acp.progressBarElement.style.width = `${Math.max(0, Math.min(100, progress))}%`;
             this.updateCardPlayerTimeDisplay();
         },
-        
-        handleCardPlayerSegmentEnd() { 
-            const acp = this.data.activeCardPlayer;
-             acp.isPlaying = false; // Explicitly set isPlaying to false
-            if(acp.playPauseBtnElement) {
-                acp.playPauseBtnElement.innerHTML = '&#9658;'; 
-                acp.playPauseBtnElement.setAttribute('aria-label', 'Replay');
-            }
-            if(acp.progressBarElement) acp.progressBarElement.style.width = '100%';
-            this.updateCardPlayerTimeDisplay(); 
-        },
 
-        handleCardPlayerEnded() { 
+        handleCardPlayerSegmentEnd() {
             const acp = this.data.activeCardPlayer;
-             acp.isPlaying = false; // Explicitly set isPlaying to false
+             acp.isPlaying = false; 
             if(acp.playPauseBtnElement) {
                 acp.playPauseBtnElement.innerHTML = '&#9658;';
                 acp.playPauseBtnElement.setAttribute('aria-label', 'Replay');
             }
             if(acp.progressBarElement) acp.progressBarElement.style.width = '100%';
-            if(acp.playerElement) acp.playerElement.currentTime = acp.currentSegment.endTime; 
+            this.updateCardPlayerTimeDisplay();
+        },
+
+        handleCardPlayerEnded() {
+            const acp = this.data.activeCardPlayer;
+             acp.isPlaying = false; 
+            if(acp.playPauseBtnElement) {
+                acp.playPauseBtnElement.innerHTML = '&#9658;';
+                acp.playPauseBtnElement.setAttribute('aria-label', 'Replay');
+            }
+            if(acp.progressBarElement) acp.progressBarElement.style.width = '100%';
+            if(acp.playerElement) acp.playerElement.currentTime = acp.currentSegment.endTime;
             this.updateCardPlayerTimeDisplay();
         },
 
@@ -2052,7 +2111,6 @@
             this.showToast(`Error playing video/clip from "${this.utils.escapeHtml(filename)}".`, 'error', 5000);
             this.showCardPlayerPrompt(filename);
 
-            // Attempt to clear from cache and IDB if error is persistent
             const cacheKey = `${this.data.currentProjectId}-${acp.videoId}`;
             if(this.data.videoFileCache[cacheKey]) {
                 URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
@@ -2067,7 +2125,7 @@
                 if(acp.timecodeElement) acp.timecodeElement.textContent = '00:00 / 00:00';
                 return;
             }
-            
+
             const currentTimeInSegment = Math.max(0, Math.min(acp.playerElement.currentTime - acp.currentSegment.startTime, acp.currentSegment.duration));
             const displayDuration = acp.currentSegment.duration > 0 ? acp.currentSegment.duration : 0;
             acp.timecodeElement.textContent = `${this.utils.formatTime(currentTimeInSegment)} / ${this.utils.formatTime(displayDuration)}`;
@@ -2078,14 +2136,13 @@
             if (!acp.playerElement || !acp.playerElement.src) {
                 const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId);
                 if(videoData) this.showCardPlayerPrompt(videoData.filename);
-                else this.showToast("Video not loaded for card player.", "warning"); 
+                else this.showToast("Video not loaded for card player.", "warning");
                 return;
             }
             if (acp.isPlaying) {
                 acp.playerElement.pause();
             } else {
-                // If at the end of the segment, replay from the start of the segment
-                if (acp.playerElement.currentTime >= acp.currentSegment.endTime - 0.1) { 
+                if (acp.playerElement.currentTime >= acp.currentSegment.endTime - 0.1) {
                     acp.playerElement.currentTime = acp.currentSegment.startTime;
                 }
                 acp.playerElement.play().catch(e => {
@@ -2110,9 +2167,9 @@
             const newTime = Math.min(acp.currentSegment.endTime, acp.playerElement.currentTime + this.data.skipTimeSeconds);
             acp.playerElement.currentTime = newTime;
         },
-        
+
         stopAndResetCardPlayer() {
-            this.resetActiveCardPlayerUI(true); // true to re-find elements if necessary, though usually not if on same screen
+            this.resetActiveCardPlayerUI(true); 
         },
 
         handleCardPlayerProgressBarMouseDown(event) {
@@ -2120,8 +2177,8 @@
             if (!acp.playerElement || !acp.playerElement.src || isNaN(acp.currentSegment.duration) || acp.currentSegment.duration <=0 ) return;
             event.preventDefault();
             acp.isScrubbing = true;
-            acp.wasPlayingBeforeScrub = acp.isPlaying; 
-            if (acp.isPlaying) acp.playerElement.pause(); 
+            acp.wasPlayingBeforeScrub = acp.isPlaying;
+            if (acp.isPlaying) acp.playerElement.pause();
 
             this.updateCardPlayerProgressBarOnScrub(event);
 
@@ -2130,10 +2187,10 @@
                 document.removeEventListener('mousemove', acp._boundCardPlayerScrubMove);
                 document.removeEventListener('mouseup', acp._boundCardPlayerScrubEnd);
                 acp.isScrubbing = false;
-                if (acp.wasPlayingBeforeScrub && acp.playerElement) { 
+                if (acp.wasPlayingBeforeScrub && acp.playerElement) {
                      acp.playerElement.play().catch(err => console.warn("Error resuming play after card player scrub:", err));
                 }
-                this.updateCardPlayerTimeDisplay(); 
+                this.updateCardPlayerTimeDisplay();
             };
             document.addEventListener('mousemove', acp._boundCardPlayerScrubMove);
             document.addEventListener('mouseup', acp._boundCardPlayerScrubEnd);
@@ -2141,15 +2198,14 @@
         handleCardPlayerProgressBarTouchStart(event) {
             const acp = this.data.activeCardPlayer;
             if (!acp.playerElement || !acp.playerElement.src || isNaN(acp.currentSegment.duration) || acp.currentSegment.duration <=0 ) return;
-            // event.preventDefault(); // only preventDefault if the target is the progress bar itself
             acp.isScrubbing = true;
             acp.wasPlayingBeforeScrub = acp.isPlaying;
             if (acp.isPlaying) acp.playerElement.pause();
 
-            this.updateCardPlayerProgressBarOnScrub(event.touches[0] || event.changedTouches[0]); 
+            this.updateCardPlayerProgressBarOnScrub(event.touches[0] || event.changedTouches[0]);
 
             acp._boundCardPlayerScrubMove = (e) => {
-                e.preventDefault(); // Prevent scroll during scrub
+                e.preventDefault(); 
                 this.updateCardPlayerProgressBarOnScrub(e.touches[0] || e.changedTouches[0]);
             }
             acp._boundCardPlayerScrubEnd = (e) => {
@@ -2157,7 +2213,7 @@
                 document.removeEventListener('touchend', acp._boundCardPlayerScrubEnd);
                 document.removeEventListener('touchcancel', acp._boundCardPlayerScrubEnd);
                 acp.isScrubbing = false;
-                 if (acp.wasPlayingBeforeScrub && acp.playerElement) { 
+                 if (acp.wasPlayingBeforeScrub && acp.playerElement) {
                      acp.playerElement.play().catch(err => console.warn("Error resuming play after card player touch scrub:", err));
                 }
                 this.updateCardPlayerTimeDisplay();
@@ -2166,33 +2222,33 @@
             document.addEventListener('touchend', acp._boundCardPlayerScrubEnd);
             document.addEventListener('touchcancel', acp._boundCardPlayerScrubEnd);
         },
-        updateCardPlayerProgressBarOnScrub(event) { 
+        updateCardPlayerProgressBarOnScrub(event) {
             const acp = this.data.activeCardPlayer;
             if (!acp.progressBarContainerElement || !acp.playerElement || acp.currentSegment.duration <= 0) return;
 
             const rect = acp.progressBarContainerElement.getBoundingClientRect();
-            const clientX = event.clientX; 
+            const clientX = event.clientX;
 
             const clickX = clientX - rect.left;
             const seekRatio = Math.max(0, Math.min(1, clickX / rect.width));
-            
+
             const newTimeInSegment = seekRatio * acp.currentSegment.duration;
             acp.playerElement.currentTime = acp.currentSegment.startTime + newTimeInSegment;
-            
+
             if(acp.progressBarElement) acp.progressBarElement.style.width = `${seekRatio * 100}%`;
             this.updateCardPlayerTimeDisplay();
         },
 
-        showCardPlayerPrompt(videoFilename) { 
+        showCardPlayerPrompt(videoFilename) {
             const acp = this.data.activeCardPlayer;
-            if (acp.promptElement) { 
+            if (acp.promptElement) {
                 const promptMsgElement = acp.promptElement.querySelector('p');
                 if(promptMsgElement) promptMsgElement.innerHTML = `Video "<strong>${this.utils.escapeHtml(videoFilename)}</strong>" needs to be selected.`;
                 acp.promptElement.classList.remove('hidden');
-                
+
                 if (acp.playerElement) acp.playerElement.classList.add('hidden');
                 if (acp.controlsContainerElement) acp.controlsContainerElement.classList.add('hidden');
-                if (acp.thumbnailElement) acp.thumbnailElement.classList.add('hidden'); 
+                if (acp.thumbnailElement) acp.thumbnailElement.classList.add('hidden');
                 if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.add('hidden');
             }
         },
@@ -2221,23 +2277,22 @@
                 URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
             }
             try {
-                await this.idb.storeFile(acp.videoId, file); 
+                await this.idb.storeFile(acp.videoId, file);
                  this.showToast(`"${this.utils.escapeHtml(file.name)}" selected and saved for faster access.`, 'info', 4000);
             } catch (error) {
                 this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" for persistent access.`, 'warning');
             }
 
             const objectURL = URL.createObjectURL(file);
-            this.data.videoFileCache[cacheKey] = objectURL; 
+            this.data.videoFileCache[cacheKey] = objectURL;
 
             if (acp.playerElement && acp.promptElement && acp.controlsContainerElement) {
                 acp.promptElement.classList.add('hidden');
                 acp.playerElement.classList.remove('hidden');
                 acp.controlsContainerElement.classList.remove('hidden');
-                
+
                 acp.playerElement.src = objectURL;
-                acp.playerElement.load(); 
-                // Metadata loading will trigger play if acp.isPlaying, or be ready for user interaction
+                acp.playerElement.load();
                 acp.playerElement.play().catch(e => {
                      console.error("Error playing card player after file selection:", e);
                      if(e.name === "NotAllowedError"){
@@ -2253,68 +2308,67 @@
             const message = `Are you sure you want to delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>This action cannot be undone.`;
             this.showConfirmationModal(message, () => this.deleteLogItem(videoId, logId), null, "Delete Log", "button-danger");
         },
-        deleteLogItem(videoId, logId) { // This is called from Screen 2
+        deleteLogItem(videoId, logId) { 
             const video = this.getVideoById(this.data.currentProjectId, videoId);
             if (!video || !video.logs) return;
-            
-            const logToDelete = video.logs.find(l => l.id === logId); 
-            
-            // If the deleted log was the one actively playing or cued in the card player
+
+            const logToDelete = video.logs.find(l => l.id === logId);
+
             if (this.data.activeCardPlayer.videoId === videoId && logToDelete &&
                 this.data.activeCardPlayer.currentSegment &&
                 logToDelete.markIn === this.data.activeCardPlayer.currentSegment.startTime &&
                 logToDelete.markOut === this.data.activeCardPlayer.currentSegment.endTime ) {
-                this.resetActiveCardPlayerUI(true); 
+                this.resetActiveCardPlayerUI(true);
             }
-            
+
             video.logs = video.logs.filter(l => l.id !== logId);
-            
+
             this.saveData();
-            this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
+            this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim());
             if(logToDelete) this.showToast(`Log entry deleted.`, 'success');
         },
 
 
-        async renderVideoLoggingScreen() { 
+        async renderVideoLoggingScreen() {
             const videoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
-            if (!videoData) { 
-                this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }); 
-                this.showToast("Error: Video not found for logging.", "error"); 
-                return; 
+            if (!videoData) {
+                this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId });
+                this.showToast("Error: Video not found for logging.", "error");
+                return;
             }
             this.dom.videoFilenameHeader.textContent = this.utils.escapeHtml(videoData.filename);
             this.resetLogForm(); this.renderSavedLogsList();
-            
-            this.data.videoElement.pause(); 
-            this.data.videoElement.removeAttribute('src'); 
-            this.data.videoElement.load(); 
-            this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#9658;</span>'; 
+
+            this.data.videoElement.pause();
+            this.data.videoElement.removeAttribute('src');
+            this.data.videoElement.load();
+            this.data.playPauseBtn.innerHTML = '<span class="button-icon">&#9658;</span>';
             this.data.playPauseBtn.setAttribute('aria-label', 'Play video');
-            this.updateVideoTimes(); 
-            
-            this.dom.videoPlayerContainer.classList.remove('hidden'); 
-            this.dom.videoFilePrompt.classList.add('hidden'); 
-            this.data.videoElement.classList.add('hidden'); 
+            this.updateVideoTimes();
+
+            this.dom.videoPlayerContainer.classList.remove('hidden');
+            this.dom.videoFilePrompt.classList.add('hidden');
+            this.data.videoElement.classList.add('hidden');
 
             this.data.videoElement.removeAttribute('controls');
 
             const videoSrc = await this.getVideoSource(this.data.currentProjectId, this.data.currentVideoId, videoData.filename);
 
             if (videoSrc) {
-                this.data.videoElement.src = videoSrc; 
-                this.data.videoElement.classList.remove('hidden'); 
-                this.dom.videoFilePrompt.classList.add('hidden'); 
-            } else { 
-                this.promptForVideoFile(videoData.filename); 
+                this.data.videoElement.src = videoSrc;
+                this.data.videoElement.classList.remove('hidden');
+                this.dom.videoFilePrompt.classList.add('hidden');
+            } else {
+                this.promptForVideoFile(videoData.filename);
             }
         },
-        promptForVideoFile(filename) { 
-            this.data.videoElement.classList.add('hidden'); 
-            this.dom.videoFilePrompt.classList.remove('hidden'); 
+        promptForVideoFile(filename) {
+            this.data.videoElement.classList.add('hidden');
+            this.dom.videoFilePrompt.classList.remove('hidden');
             this.dom.videoFilePromptMessage.innerHTML = `Video "<strong>${this.utils.escapeHtml(filename)}</strong>" needs to be selected. <br>If previously added, persistent storage will be checked. Otherwise, please select the file.`;
-            this.dom.videoFileInputLogging.dataset.expectedFilename = filename; 
+            this.dom.videoFileInputLogging.dataset.expectedFilename = filename;
         },
-        async handleVideoFileSelectionForLogging(file) { 
+        async handleVideoFileSelectionForLogging(file) {
             const expectedFilename = this.dom.videoFileInputLogging.dataset.expectedFilename;
             const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
 
@@ -2326,7 +2380,7 @@
 
             if (file && file.name === expectedFilename) {
                 const cacheKey = `${this.data.currentProjectId}-${this.data.currentVideoId}`;
-                if (this.data.videoFileCache[cacheKey]) { 
+                if (this.data.videoFileCache[cacheKey]) {
                     URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
                 }
                 try {
@@ -2338,40 +2392,40 @@
                     this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" for persistent access.`, 'warning');
                 }
 
-                const objectURL = URL.createObjectURL(file); 
-                this.data.videoFileCache[cacheKey] = objectURL; 
-                this.data.videoElement.src = objectURL; 
-                this.dom.videoFilePrompt.classList.add('hidden'); 
-                this.data.videoElement.classList.remove('hidden'); 
-            } else if (file) { 
+                const objectURL = URL.createObjectURL(file);
+                this.data.videoFileCache[cacheKey] = objectURL;
+                this.data.videoElement.src = objectURL;
+                this.dom.videoFilePrompt.classList.add('hidden');
+                this.data.videoElement.classList.remove('hidden');
+            } else if (file) {
                 this.showToast(`Incorrect file. Expected "${this.utils.escapeHtml(expectedFilename)}", got "${this.utils.escapeHtml(file.name)}".`, 'warning');
             }
-            this.dom.videoFileInputLogging.value = ''; 
+            this.dom.videoFileInputLogging.value = '';
         },
-        updateVideoTimes() { 
+        updateVideoTimes() {
             if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) {
-                this.data.timecodeDisplay.textContent = '00:00 / 00:00'; 
+                this.data.timecodeDisplay.textContent = '00:00 / 00:00';
                 this.data.timelineProgress.style.width = '0%';
                 if(this.data.markInBtn) this.data.markInBtn.textContent = `Mark In (00:00.0)`;
-                if(this.data.markOutBtn) this.data.markOutBtn.textContent = `Mark Out (00:00.0)`; 
+                if(this.data.markOutBtn) this.data.markOutBtn.textContent = `Mark Out (00:00.0)`;
                 return;
             }
-            const currentTime = this.data.videoElement.currentTime; 
+            const currentTime = this.data.videoElement.currentTime;
             const duration = this.data.videoElement.duration;
             this.data.timecodeDisplay.textContent = `${this.utils.formatTime(currentTime)} / ${this.utils.formatTime(duration)}`;
-            if (!this.data.isScrubbing) { 
+            if (!this.data.isScrubbing) {
                  this.data.timelineProgress.style.width = `${(currentTime / duration) * 100}%`;
             }
             if (this.data.markInTime === 0 || (this.data.markInBtn && this.data.markInBtn.classList.contains('default-mark'))) { this.data.markInBtn.textContent = `Mark In (${this.utils.formatTime(currentTime, true)})`; }
             if (this.data.markOutTime === null || (this.data.markOutBtn && this.data.markOutBtn.classList.contains('default-mark'))) { this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(currentTime, true)})`; }
         },
-        async togglePlayPause() { 
-            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { 
+        async togglePlayPause() {
+            if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) {
                 const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
-                this.showToast("Please select a video file first.", "warning"); 
-                this.promptForVideoFile(currentVideoData?.filename || "the video file"); return; 
+                this.showToast("Please select a video file first.", "warning");
+                this.promptForVideoFile(currentVideoData?.filename || "the video file"); return;
             }
-            if (this.data.videoElement.paused || this.data.videoElement.ended) { 
+            if (this.data.videoElement.paused || this.data.videoElement.ended) {
                 try {
                     await this.data.videoElement.play();
                 } catch (e) {
@@ -2394,18 +2448,18 @@
             }
             this.data.videoElement.currentTime = Math.min(this.data.videoElement.duration, this.data.videoElement.currentTime + this.data.skipTimeSeconds);
         },
-        
+
         handleTimelineMouseDown(event) {
             if (!this.data.videoElement || !this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) {
                 this.showToast("Video not ready or loaded for scrubbing.", "warning"); return;
             }
-            event.preventDefault(); 
+            event.preventDefault();
             this.data.isScrubbing = true;
             this.data.wasPlayingBeforeScrub = !this.data.videoElement.paused;
             if (this.data.wasPlayingBeforeScrub) {
                 this.data.videoElement.pause();
             }
-            this.updateTimelineOnScrub(event); 
+            this.updateTimelineOnScrub(event);
 
             document.addEventListener('mousemove', this.boundHandleTimelineMouseMove);
             document.addEventListener('mouseup', this.boundHandleTimelineMouseUp);
@@ -2417,7 +2471,7 @@
         handleTimelineMouseUp(event) {
             if (!this.data.isScrubbing) return;
             this.data.isScrubbing = false;
-            this.updateTimelineOnScrub(event); 
+            this.updateTimelineOnScrub(event);
 
             document.removeEventListener('mousemove', this.boundHandleTimelineMouseMove);
             document.removeEventListener('mouseup', this.boundHandleTimelineMouseUp);
@@ -2425,28 +2479,27 @@
             if (this.data.wasPlayingBeforeScrub) {
                 this.data.videoElement.play().catch(e => console.warn("Error resuming play after scrub:", e));
             }
-            this.updateVideoTimes(); 
+            this.updateVideoTimes();
         },
 
         handleTimelineTouchStart(event) {
             if (!this.data.videoElement || !this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) {
                 this.showToast("Video not ready or loaded for scrubbing.", "warning"); return;
             }
-             // event.preventDefault(); // Only prevent if the target is the timeline itself
             this.data.isScrubbing = true;
             this.data.wasPlayingBeforeScrub = !this.data.videoElement.paused;
             if (this.data.wasPlayingBeforeScrub) {
                 this.data.videoElement.pause();
             }
-            this.updateTimelineOnScrub(event); 
+            this.updateTimelineOnScrub(event);
 
             document.addEventListener('touchmove', this.boundHandleTimelineTouchMove, { passive: false });
             document.addEventListener('touchend', this.boundHandleTimelineTouchEnd);
-            document.addEventListener('touchcancel', this.boundHandleTimelineTouchEnd); 
+            document.addEventListener('touchcancel', this.boundHandleTimelineTouchEnd);
         },
         handleTimelineTouchMove(event) {
             if (!this.data.isScrubbing) return;
-            event.preventDefault(); 
+            event.preventDefault();
             this.updateTimelineOnScrub(event);
         },
         handleTimelineTouchEnd(event) {
@@ -2463,50 +2516,50 @@
             if (this.data.wasPlayingBeforeScrub) {
                 this.data.videoElement.play().catch(e => console.warn("Error resuming play after touch scrub:", e));
             }
-            this.updateVideoTimes(); 
+            this.updateVideoTimes();
         },
-        
+
         updateTimelineOnScrub(event) {
-            if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) return; 
-            
+            if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) return;
+
             const timelineRect = this.data.timelineContainer.getBoundingClientRect();
             let clientX;
 
             if (event.type.startsWith('touch')) {
-                if (event.touches && event.touches.length > 0) { 
+                if (event.touches && event.touches.length > 0) {
                     clientX = event.touches[0].clientX;
-                } else if (event.changedTouches && event.changedTouches.length > 0) { 
+                } else if (event.changedTouches && event.changedTouches.length > 0) {
                     clientX = event.changedTouches[0].clientX;
                 } else {
                     console.warn("Could not determine clientX from touch event", event);
-                    return; 
+                    return;
                 }
-            } else { 
+            } else {
                 clientX = event.clientX;
             }
 
             const clickX = clientX - timelineRect.left;
             const seekRatio = Math.max(0, Math.min(1, clickX / timelineRect.width));
-            
+
             const newTime = seekRatio * this.data.videoElement.duration;
             this.data.videoElement.currentTime = newTime;
-            
+
             this.data.timelineProgress.style.width = `${seekRatio * 100}%`;
             this.data.timecodeDisplay.textContent = `${this.utils.formatTime(newTime)} / ${this.utils.formatTime(this.data.videoElement.duration)}`;
         },
 
-        setMarkIn() { 
+        setMarkIn() {
             if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { this.showToast("Load video first.", "warning"); return; }
             this.data.markInTime = this.data.videoElement.currentTime;
             this.data.markInBtn.textContent = `Mark In (${this.utils.formatTime(this.data.markInTime, true)})`;
-            this.data.markInBtn.classList.remove('default-mark', 'button-secondary'); this.data.markInBtn.classList.add('button-primary'); 
+            this.data.markInBtn.classList.remove('default-mark', 'button-secondary'); this.data.markInBtn.classList.add('button-primary');
             setTimeout(() => { this.data.markInBtn.classList.remove('button-primary'); this.data.markInBtn.classList.add('button-secondary');}, 1000);
             if (this.data.markOutTime !== null && this.data.markOutTime < this.data.markInTime) {
                 this.data.markOutTime = null; this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(this.data.videoElement.currentTime, true)})`;
                 this.data.markOutBtn.classList.add('default-mark');
             }
         },
-        setMarkOut() { 
+        setMarkOut() {
             if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { this.showToast("Load video first.", "warning"); return; }
             const currentTime = this.data.videoElement.currentTime;
             if (currentTime <= this.data.markInTime) { this.showToast("Mark Out time must be after Mark In time.", "warning"); return; }
@@ -2515,21 +2568,21 @@
             this.data.markOutBtn.classList.remove('default-mark', 'button-secondary'); this.data.markOutBtn.classList.add('button-primary');
             setTimeout(() => { this.data.markOutBtn.classList.remove('button-primary'); this.data.markOutBtn.classList.add('button-secondary'); }, 1000);
         },
-        handleStarRating(event) { 
+        handleStarRating(event) {
             const starButton = event.target.closest('button.star');
-            if (starButton) { 
-                this.data.currentRating = parseInt(starButton.dataset.value); 
-                this.updateStarDisplay(); 
+            if (starButton) {
+                this.data.currentRating = parseInt(starButton.dataset.value);
+                this.updateStarDisplay();
             }
         },
-        updateStarDisplay() { 
+        updateStarDisplay() {
             this.dom.logRatingContainer.querySelectorAll('button.star').forEach(star => {
                 const selected = parseInt(star.dataset.value) <= this.data.currentRating;
                 star.classList.toggle('selected', selected);
                 star.setAttribute('aria-pressed', selected ? 'true' : 'false');
             });
         },
-        async saveLogEntry() { 
+        async saveLogEntry() {
             const notes = this.dom.logNotes.value.trim();
             const keywordsRaw = this.dom.logKeywords.value.trim();
             const keywords = keywordsRaw ? keywordsRaw.split(',').map(k => k.trim()).filter(k => k) : [];
@@ -2539,9 +2592,9 @@
             this.dom.saveLogBtn.disabled = true; this.dom.saveLogBtn.textContent = 'Saving...';
             let thumbnail = null;
             try {
-                if (this.data.videoElement.src && this.data.videoElement.readyState >= 2 && this.dom.videoFilePrompt.classList.contains('hidden')) { 
-                    thumbnail = await this.generateLogThumbnail(this.data.markInTime); 
-                } 
+                if (this.data.videoElement.src && this.data.videoElement.readyState >= 2 && this.dom.videoFilePrompt.classList.contains('hidden')) {
+                    thumbnail = await this.generateLogThumbnail(this.data.markInTime);
+                }
                 else { console.warn("Video not ready or available for thumbnail generation."); }
             } catch (error) { console.error("Error generating thumbnail:", error); this.showToast("Could not generate thumbnail.", "warning");}
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
@@ -2549,18 +2602,18 @@
             if (!video.logs) video.logs = [];
             const editingLogId = this.dom.editingLogIdInput.value;
             const logData = { markIn: this.data.markInTime, markOut: this.data.markOutTime, notes: notes, rating: this.data.currentRating, keywords: keywords, thumbnail: thumbnail };
-            if (editingLogId) { 
+            if (editingLogId) {
                 const log = video.logs.find(l => l.id === editingLogId);
                 if (log) { Object.assign(log, logData, { updatedAt: new Date().toISOString() }); }
                 this.showToast("Log entry updated.", "success");
-            } else { 
-                video.logs.push({ ...logData, id: this.utils.generateId(), createdAt: new Date().toISOString() }); 
+            } else {
+                video.logs.push({ ...logData, id: this.utils.generateId(), createdAt: new Date().toISOString() });
                 this.showToast("Log entry saved.", "success");
             }
             this.saveData(); this.renderSavedLogsList(); this.resetLogForm();
             this.dom.saveLogBtn.disabled = false; this.dom.saveLogBtn.textContent = 'Save Log';
         },
-        generateLogThumbnail(time) { 
+        generateLogThumbnail(time) {
             return new Promise((resolve, reject) => {
                 if (!this.data.videoElement || !this.data.videoElement.src || this.data.videoElement.readyState < 2 || !this.dom.videoFilePrompt.classList.contains('hidden')) { return reject("Video not ready or available for thumbnail."); }
                 const video = this.data.videoElement; const canvas = this.dom.thumbnailCanvas; const ctx = canvas.getContext('2d');
@@ -2570,52 +2623,49 @@
                 let seekTimeout;
 
                 const cleanup = () => {
-                    video.removeEventListener('seeked', onSeeked); 
+                    video.removeEventListener('seeked', onSeeked);
                     video.removeEventListener('error', onError);
                     clearTimeout(seekTimeout);
-                    if (Math.abs(video.currentTime - originalTime) > 0.1) video.currentTime = originalTime; // Restore time only if changed significantly
-                    if (!originalPaused) video.play().catch(e=>console.warn("Resume play fail in cleanup:",e)); 
+                    if (Math.abs(video.currentTime - originalTime) > 0.1) video.currentTime = originalTime; 
+                    if (!originalPaused) video.play().catch(e=>console.warn("Resume play fail in cleanup:",e));
                     video.muted = originalMuted;
                 };
 
                 const onSeeked = () => {
-                    clearTimeout(seekTimeout); // Clear timeout as seeked event fired
-                    const ar = video.videoWidth / video.videoHeight; canvas.width = 160; canvas.height = canvas.width / ar; if (isNaN(canvas.height) || !isFinite(canvas.height) || canvas.height <= 0) canvas.height = 90; 
+                    clearTimeout(seekTimeout); 
+                    const ar = video.videoWidth / video.videoHeight; canvas.width = 160; canvas.height = canvas.width / ar; if (isNaN(canvas.height) || !isFinite(canvas.height) || canvas.height <= 0) canvas.height = 90;
                     ctx.clearRect(0,0, canvas.width, canvas.height);
-                    try { 
+                    try {
                         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.6)); 
-                    } catch (e) { 
-                        console.error("Canvas toDataURL err:", e); 
-                        reject("Err creating thumb."); 
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    } catch (e) {
+                        console.error("Canvas toDataURL err:", e);
+                        reject("Err creating thumb.");
                     } finally {
-                        cleanup(); // Ensure cleanup happens after drawing
+                        cleanup(); 
                     }
                 };
                 const onError = (e) => {
                     cleanup();
                     console.error("Seek err thumb:", e); reject("Err seek thumb.");
                 };
-                video.addEventListener('seeked', onSeeked, { once: true }); 
+                video.addEventListener('seeked', onSeeked, { once: true });
                 video.addEventListener('error', onError, { once: true });
-                if (!originalPaused) video.pause(); 
-                
-                // Set currentTime. This will trigger 'seeking' and then 'seeked' or 'error'.
+                if (!originalPaused) video.pause();
+
                 video.currentTime = time;
 
-                // Fallback timeout in case 'seeked' doesn't fire (e.g., if already at that time or browser quirk)
                 seekTimeout = setTimeout(() => {
                     console.warn("Thumbnail generation: seeked event timeout, trying to capture frame directly.");
-                    // Check if video is roughly at the target time and has data
                     if (Math.abs(video.currentTime - time) < 0.5 && video.readyState >= video.HAVE_CURRENT_DATA) {
-                        onSeeked(); // Manually trigger onSeeked logic
+                        onSeeked(); 
                     } else {
                         onError(new Error("Seek timeout or video state issue"));
                     }
-                }, 1500); 
+                }, 1500);
             });
         },
-        resetLogForm() { 
+        resetLogForm() {
             this.dom.logNotes.value = ''; this.dom.logKeywords.value = ''; this.data.currentRating = 0; this.updateStarDisplay();
             this.data.markInTime = 0; this.data.markOutTime = null;
             const defaultTime = (this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) ? this.data.videoElement.currentTime : 0;
@@ -2623,7 +2673,7 @@
             this.data.markOutBtn.textContent = `Mark Out (${this.utils.formatTime(defaultTime, true)})`; this.data.markOutBtn.classList.add('default-mark');
             this.dom.editingLogIdInput.value = ''; this.dom.saveLogBtn.textContent = 'Save Log';
         },
-        renderSavedLogsList() { 
+        renderSavedLogsList() {
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             this.dom.savedLogsList.innerHTML = '';
             if (!video || !video.logs || video.logs.length === 0) {
@@ -2633,7 +2683,7 @@
             const fragment = document.createDocumentFragment();
             const sortedLogs = [...video.logs].sort((a, b) => a.markIn - b.markIn);
             sortedLogs.forEach(log => {
-                const item = document.createElement('article'); 
+                const item = document.createElement('article');
                 item.className = 'log-item'; item.id = `log-item-${log.id}`;
                 const ratingStars = Array(5).fill(0).map((_, i) => `<span class="star ${i < log.rating ? 'selected' : ''}" style="font-size:0.8em; color: ${i < log.rating ? 'var(--warning-color)' : 'var(--border-color)'};">&#9733;</span>`).join('');
                 item.innerHTML = `
@@ -2657,16 +2707,16 @@
             this.dom.savedLogsList.querySelectorAll('.btn-go-to-log-time').forEach(btn => {
                 btn.addEventListener('click', (e) => this.goToLogTime(parseFloat(e.currentTarget.dataset.time)));
             });
-            this.dom.savedLogsList.querySelectorAll('.btn-edit-log').forEach(btn => { 
+            this.dom.savedLogsList.querySelectorAll('.btn-edit-log').forEach(btn => {
                 btn.addEventListener('click', (e) => this.editLogEntry(e.currentTarget.dataset.logId));
             });
-            this.dom.savedLogsList.querySelectorAll('.btn-delete-log').forEach(btn => { 
+            this.dom.savedLogsList.querySelectorAll('.btn-delete-log').forEach(btn => {
                 btn.addEventListener('click', (e) => this.confirmDeleteLogOnScreen3(e.currentTarget.dataset.logId));
             });
         },
-        async goToLogTime(time) { 
+        async goToLogTime(time) {
             if(this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) {
-                this.data.videoElement.currentTime = time; 
+                this.data.videoElement.currentTime = time;
                 try {
                     await this.data.videoElement.play();
                 } catch(e) {
@@ -2674,14 +2724,14 @@
                      this.showToast("Error trying to play video at specified time.", "error");
                 }
                 this.data.videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else { 
+            } else {
                 const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
-                this.showToast("Video file not loaded. Please select it first.", "warning"); 
-                this.promptForVideoFile(currentVideoData?.filename || "the video file"); 
+                this.showToast("Video file not loaded. Please select it first.", "warning");
+                this.promptForVideoFile(currentVideoData?.filename || "the video file");
             }
         },
-        editLogEntry(logId, fromNavigation = false) { 
-            const videoIdForLog = this.data.currentVideoId; 
+        editLogEntry(logId, fromNavigation = false) {
+            const videoIdForLog = this.data.currentVideoId;
             const log = this.getLogById(this.data.currentProjectId, videoIdForLog, logId);
             if (!log) return;
 
@@ -2698,13 +2748,13 @@
             const logFormCard = this.dom.logNotes.closest('article.card');
             if (logFormCard) logFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         },
-        confirmDeleteLogOnScreen3(logId) { 
+        confirmDeleteLogOnScreen3(logId) {
             const log = this.getLogById(this.data.currentProjectId, this.data.currentVideoId, logId);
             if (!log) return;
             const message = `Are you sure you want to delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>This action cannot be undone.`;
             this.showConfirmationModal(message, () => this.deleteLogOnScreen3(logId), null, "Delete Log", "button-danger");
         },
-        deleteLogOnScreen3(logId) { 
+        deleteLogOnScreen3(logId) {
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             if (!video || !video.logs) return;
             video.logs = video.logs.filter(l => l.id !== logId); this.saveData(); this.renderSavedLogsList();
@@ -2712,8 +2762,8 @@
             this.showToast("Log entry deleted.", "success");
         },
 
-        showModal(modalId) { 
-            const modal = document.getElementById(modalId); 
+        showModal(modalId) {
+            const modal = document.getElementById(modalId);
             if (modal) {
                 this.data.previouslyFocusedElement = document.activeElement;
                 modal.style.display = 'block';
@@ -2721,22 +2771,22 @@
                 if (firstFocusable) firstFocusable.focus();
             }
         },
-        hideModal(modalId) { 
-            const modal = document.getElementById(modalId); 
-            if (modal) modal.style.display = 'none'; 
+        hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
             if (this.data.previouslyFocusedElement) {
-                try { 
+                try {
                     this.data.previouslyFocusedElement.focus();
                 } catch (e) { console.warn("Could not focus previously focused element:", e); }
                 this.data.previouslyFocusedElement = null;
             }
         },
         showToast(message, type = 'info', duration = 3000) {
-            if (!this.dom.toastContainer) { 
+            if (!this.dom.toastContainer) {
                 this.dom.toastContainer = document.getElementById('toast-container');
-                if (!this.dom.toastContainer) { 
-                    console.error("Toast container not found! Cannot show toast:", message); 
-                    alert(`${type.toUpperCase()}: ${message}`); 
+                if (!this.dom.toastContainer) {
+                    console.error("Toast container not found! Cannot show toast:", message);
+                    alert(`${type.toUpperCase()}: ${message}`);
                     return;
                 }
             }
@@ -2745,7 +2795,7 @@
             toast.textContent = message;
             toast.setAttribute('role', 'alert');
             this.dom.toastContainer.appendChild(toast);
-            requestAnimationFrame(() => { 
+            requestAnimationFrame(() => {
                 toast.classList.add('show');
             });
             setTimeout(() => {
@@ -2761,13 +2811,13 @@
             this.dom.modals.confirmAction.querySelector('.modal-title').textContent = title;
             this.dom.confirmActionMessage.innerHTML = message;
             this.dom.btnConfirmActionConfirm.textContent = confirmButtonText;
-            this.dom.btnConfirmActionConfirm.className = `button ${confirmButtonClass}`; 
+            this.dom.btnConfirmActionConfirm.className = `button ${confirmButtonClass}`;
 
             this.dom.btnConfirmActionConfirm.onclick = () => {
-                onConfirm(); 
+                onConfirm();
                 this.hideModal('modal-confirm-action');
             };
-            
+
             this.dom.btnConfirmActionCancel.onclick = () => {
                 if (onCancel) onCancel();
                 this.hideModal('modal-confirm-action');
