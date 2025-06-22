@@ -304,7 +304,7 @@
         .form-group textarea:focus,
         .form-group select:focus {
             border-color: var(--primary-color);
-            box-shadow: var(--input-focus-ring);
+            /*box-shadow: var(--input-focus-ring);*/
             outline: none;
         }
         .form-group textarea { min-height: 120px; resize: vertical; }
@@ -686,7 +686,7 @@
         .mark-buttons .button { flex-grow: 1; }
         .mark-buttons .button.active-mark { background-color: var(--primary-color); color: white; }
         
-        .star-rating { display: flex; gap: 8px; cursor: pointer; margin-bottom: 16px; }
+        .star-rating { display: flex; gap: 8px; /*cursor: pointer;*/ margin-bottom: 16px; -webkit-tap-highlight-color: transparent; }
         .star-rating .star { background: none; border: none; padding: 0; font-size: 1em; /* SVG will control */ color: var(--border-color); line-height: 1; cursor: pointer; transition: color var(--transition-fast), transform var(--transition-fast); }
         .star-rating .star svg { width: 32px; height: 32px; } /* Larger stars */
         .star-rating .star.selected svg, .star-rating .star:hover svg { color: var(--warning-color); }
@@ -706,12 +706,12 @@
             min-height: 46px; /* Match input height */
         }
 
-        
+        /*
         .tag-input-container:focus-within {
             border-color: var(--primary-color);
             box-shadow: var(--input-focus-ring);
         }
-        
+        */
         .tag-input-container .tag-item {
             display: inline-flex;
             align-items: center;
