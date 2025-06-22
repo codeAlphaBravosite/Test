@@ -304,7 +304,7 @@
         .form-group textarea:focus,
         .form-group select:focus {
             border-color: var(--primary-color);
-            box-shadow: var(--input-focus-ring);
+            /*box-shadow: var(--input-focus-ring);*/
             outline: none;
         }
         .form-group textarea { min-height: 120px; resize: vertical; }
@@ -735,6 +735,10 @@
             font-size: 1em;
             background-color: transparent;
             min-width: 150px; /* Minimum width before wrapping */
+        }
+
+        .tag-input-container #log-keywords-input-field:focus {
+            box-shadow: none;
         }
 
         .log-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
