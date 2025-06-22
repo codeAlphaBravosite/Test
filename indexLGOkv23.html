@@ -304,7 +304,7 @@
         .form-group textarea:focus,
         .form-group select:focus {
             border-color: var(--primary-color);
-            /*box-shadow: var(--input-focus-ring);*/
+            box-shadow: var(--input-focus-ring);
             outline: none;
         }
         .form-group textarea { min-height: 120px; resize: vertical; }
@@ -706,12 +706,12 @@
             min-height: 46px; /* Match input height */
         }
 
-        /*
+        
         .tag-input-container:focus-within {
-            border-color: none;
-            box-shadow: none;
+            border-color: var(--primary-color);
+            box-shadow: var(--input-focus-ring);
         }
-        */
+        
         .tag-input-container .tag-item {
             display: inline-flex;
             align-items: center;
