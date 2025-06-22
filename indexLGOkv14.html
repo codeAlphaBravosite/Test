@@ -496,7 +496,7 @@
             z-index: 10; 
             box-shadow: var(--shadow-lg);
         }
-        .play-main-video-preview-btn svg { width: 40px; height: 40px; }
+        .play-main-video-preview-btn svg { width: 40px; height: 40px; } /* SVG size for play-circle */
         .play-main-video-preview-btn:hover { background: rgba(0,0,0,0.7); transform: translate(-50%, -50%) scale(1.05); }
         .play-main-video-preview-btn.hidden { display: none; }
 
@@ -1072,9 +1072,9 @@
         injectAllIcons() {
             document.querySelectorAll('[data-icon]').forEach(el => {
                 const iconName = el.dataset.icon;
-                const existingContent = el.innerHTML;
-                el.innerHTML = this.getIcon(iconName) + existingContent; // Prepend icon
-                el.removeAttribute('data-icon'); // Prevent re-injection
+                const existingContent = el.innerHTML; // Keep existing text if any
+                el.innerHTML = this.getIcon(iconName) + existingContent; 
+                el.removeAttribute('data-icon'); 
             });
         },
         data: {
@@ -1106,57 +1106,187 @@
                 boundPlayerTimeUpdate: null, boundPlayerLoadedMetadata: null, boundPlayerEnded: null,
                 boundPlayerError: null, boundPlayerPlay: null, boundPlayerPause: null,
                 _boundCardPlayerScrubMove: null, _boundCardPlayerScrubEnd: null,
-                controlsHideTimer: null, // For auto-hide logic
+                controlsHideTimer: null, 
             },
             previouslyFocusedElement: null,
             skipTimeSeconds: 5, 
             isScrubbing: false, 
             wasPlayingBeforeScrub: false, 
-            scrollPositions: { projectVideos: 0, videoLogsList: 0 }, // For scroll retention
-            currentEditingProjectId: null, // For project renaming
-            logKeywordsData: [], // For tag input on Screen 3
+            scrollPositions: { projectVideos: 0, videoLogsList: 0 },
+            currentEditingProjectId: null,
+            logKeywordsData: [],
         },
         dom: {}, 
         idb: {
-            db: null, dbName: 'LogReelFilesDB_v2', storeName: 'videoFiles', version: 1, // DB name can be changed if schema changes
-            initDB() { /* ... (no changes from original) ... */ return app.original_idb_initDB.apply(this, arguments); },
-            storeFile(videoId, file) { /* ... (no changes from original) ... */ return app.original_idb_storeFile.apply(this, arguments); },
-            retrieveFile(videoId) { /* ... (no changes from original) ... */ return app.original_idb_retrieveFile.apply(this, arguments); },
-            deleteFile(videoId) { /* ... (no changes from original) ... */ return app.original_idb_deleteFile.apply(this, arguments); }
-        },
-        utils: { /* ... (no changes from original for generateId, formatTime, escapeHtml) ... */ },
+            db: null,
+            dbName: 'LogReelFilesDB_v2', // Updated DB name
+            storeName: 'videoFiles',
+            version: 1,
 
-        init() {
-            // Preserve original IDB methods
-            app.original_idb_initDB = app.idb.initDB;
-            app.original_idb_storeFile = app.idb.storeFile;
-            app.original_idb_retrieveFile = app.idb.retrieveFile;
-            app.original_idb_deleteFile = app.idb.deleteFile;
-            app.idb.initDB = function() { // Modified to use new DB name if needed
+            initDB() { // Direct, correct implementation
                 return new Promise((resolve, reject) => {
-                    if (app.idb.db) { resolve(app.idb.db); return; }
-                    if (!window.indexedDB) { console.warn("IndexedDB not supported."); reject("IndexedDB not supported"); return; }
+                    if (app.idb.db) {
+                        resolve(app.idb.db);
+                        return;
+                    }
+                    if (!window.indexedDB) {
+                        console.warn("IndexedDB not supported by this browser.");
+                        reject("IndexedDB not supported");
+                        return;
+                    }
+                    // Uses app.idb.dbName directly from this object's properties
                     const request = indexedDB.open(app.idb.dbName, app.idb.version);
-                    request.onerror = (event) => { console.error("IndexedDB error:", event.target.error); reject("IndexedDB error: " + event.target.error); };
-                    request.onsuccess = (event) => { app.idb.db = event.target.result; console.log("IndexedDB initialized."); resolve(app.idb.db); };
+
+                    request.onerror = (event) => {
+                        console.error("IndexedDB error:", event.target.error);
+                        reject("IndexedDB error: " + event.target.error);
+                    };
+
+                    request.onsuccess = (event) => {
+                        app.idb.db = event.target.result;
+                        console.log("IndexedDB initialized successfully for:", app.idb.dbName);
+                        resolve(app.idb.db);
+                    };
+
                     request.onupgradeneeded = (event) => {
                         const db = event.target.result;
                         if (!db.objectStoreNames.contains(app.idb.storeName)) {
                             db.createObjectStore(app.idb.storeName, { keyPath: 'videoId' });
-                            console.log("IndexedDB object store created.");
+                            console.log("IndexedDB object store created for:", app.idb.dbName);
                         }
                     };
                 });
-            };
+            },
 
+            storeFile(videoId, file) { // Direct, correct implementation
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        if (!app.idb.db) { 
+                             try {
+                                await app.idb.initDB();
+                            } catch (initError) {
+                                reject(initError); 
+                                return;
+                            }
+                        }
+                        if (!app.idb.db) { 
+                           reject("IndexedDB not available for storing file.");
+                           return;
+                        }
+                        const transaction = app.idb.db.transaction([app.idb.storeName], 'readwrite');
+                        const store = transaction.objectStore(app.idb.storeName);
+                        const request = store.put({ videoId: videoId, file: file });
+
+                        request.onsuccess = () => resolve();
+                        request.onerror = (event) => {
+                            console.error("Error storing file in IndexedDB:", event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error("Exception in storeFile:", error);
+                        reject(error);
+                    }
+                });
+            },
+
+            retrieveFile(videoId) { // Direct, correct implementation (removed unused 'file' param)
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        if (!app.idb.db) {
+                            try {
+                                await app.idb.initDB();
+                            } catch (initError) {
+                                reject(initError);
+                                return;
+                            }
+                        }
+                         if (!app.idb.db) {
+                           reject("IndexedDB not available for retrieving file.");
+                           return;
+                        }
+                        const transaction = app.idb.db.transaction([app.idb.storeName], 'readonly');
+                        const store = transaction.objectStore(app.idb.storeName);
+                        const request = store.get(videoId);
+
+                        request.onsuccess = (event) => {
+                            if (event.target.result) {
+                                resolve(event.target.result.file);
+                            } else {
+                                resolve(null); // File not found
+                            }
+                        };
+                        request.onerror = (event) => {
+                            console.error("Error retrieving file from IndexedDB:", event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error("Exception in retrieveFile:", error);
+                        reject(error);
+                    }
+                });
+            },
+
+            deleteFile(videoId) { // Direct, correct implementation
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        if (!app.idb.db) {
+                             try {
+                                await app.idb.initDB();
+                            } catch (initError) {
+                                reject(initError);
+                                return;
+                            }
+                        }
+                        if (!app.idb.db) {
+                           reject("IndexedDB not available for deleting file.");
+                           return;
+                        }
+                        const transaction = app.idb.db.transaction([app.idb.storeName], 'readwrite');
+                        const store = transaction.objectStore(app.idb.storeName);
+                        const request = store.delete(videoId);
+
+                        request.onsuccess = () => resolve();
+                        request.onerror = (event) => {
+                            console.error("Error deleting file from IndexedDB:", event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error("Exception in deleteFile:", error);
+                        reject(error);
+                    }
+                });
+            }
+        },
+        utils: {
+            generateId() { 
+                return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+            },
+            formatTime(seconds, includeMillis = false) { 
+                if (isNaN(seconds) || seconds < 0) return includeMillis ? '00:00.0' : '00:00';
+                const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60);
+                const s = Math.floor(seconds % 60); const ms = Math.floor((seconds - Math.floor(seconds)) * 10); 
+                let timeStr = ''; if (h > 0) timeStr += `${String(h).padStart(2, '0')}:`;
+                timeStr += `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                if (includeMillis) timeStr += `.${ms}`; return timeStr;
+            },
+            escapeHtml(unsafe) { 
+                if (typeof unsafe !== 'string') return String(unsafe);
+                return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+        },
+
+        init() {
+            // Removed the problematic IDB method preservation and reassignment block.
+            // app.idb methods are now defined directly and correctly.
 
             this.cacheDomElements();
-            this.injectAllIcons(); // Inject SVGs early
+            this.injectAllIcons(); 
             this.boundHandleTimelineMouseMove = this.handleTimelineMouseMove.bind(this);
             this.boundHandleTimelineMouseUp = this.handleTimelineMouseUp.bind(this);
             this.boundHandleTimelineTouchMove = this.handleTimelineTouchMove.bind(this);
             this.boundHandleTimelineTouchEnd = this.handleTimelineTouchEnd.bind(this);
             
+            // This now calls the correct app.idb.initDB directly.
             this.idb.initDB().catch(error => {
                 console.warn("Failed to initialize IndexedDB. App will rely on file selection prompts.", error);
                 this.showToast("Persistent file storage unavailable.", "warning", 7000, 'alert-triangle');
@@ -1168,8 +1298,8 @@
             console.log("LogReel Pro App Initialized");
         },
 
-        adjustHeaderSpacers() { /* ... (no changes from original, but ensure button is measured after icon injection) ... */
-            requestAnimationFrame(() => { // Ensure icons are rendered
+        adjustHeaderSpacers() {
+            requestAnimationFrame(() => { 
                  const adjustSpacer = (buttonId, spacerId) => {
                     const button = document.getElementById(buttonId);
                     const spacer = document.getElementById(spacerId);
@@ -1183,7 +1313,6 @@
         },
 
         cacheDomElements() {
-            // ... (original caching) ...
             this.dom.screens = {
                 'projects': document.getElementById('screen-projects'),
                 'project-videos': document.getElementById('screen-project-videos'),
@@ -1191,7 +1320,7 @@
             };
             this.dom.modals = {
                 newProject: document.getElementById('modal-new-project'),
-                renameProject: document.getElementById('modal-rename-project'), // New modal
+                renameProject: document.getElementById('modal-rename-project'), 
                 confirmAction: document.getElementById('modal-confirm-action'),
             };
             this.dom.toastContainer = document.getElementById('toast-container');
@@ -1229,10 +1358,9 @@
             this.dom.logNotes = document.getElementById('log-notes');
             this.dom.logRatingContainer = document.getElementById('log-rating');
             
-            // For Tag Input
             this.dom.logKeywordsContainer = document.getElementById('log-keywords-container');
             this.dom.logKeywordsInputField = document.getElementById('log-keywords-input-field');
-            this.dom.logKeywordsHidden = document.getElementById('log-keywords'); // The hidden input
+            this.dom.logKeywordsHidden = document.getElementById('log-keywords');
 
             this.dom.saveLogBtn = document.getElementById('save-log-btn');
             this.dom.editingLogIdInput = document.getElementById('editing-log-id');
@@ -1242,7 +1370,6 @@
             this.dom.newProjectNameInput = document.getElementById('new-project-name');
             this.dom.btnCreateProjectConfirm = document.getElementById('btn-create-project-confirm');
             
-            // For Rename Project Modal
             this.dom.renameProjectIdInput = document.getElementById('rename-project-id');
             this.dom.renameProjectNameInput = document.getElementById('rename-project-name-input');
             this.dom.btnRenameProjectConfirm = document.getElementById('btn-rename-project-confirm');
@@ -1253,7 +1380,6 @@
         },
 
         navigateTo(screenId, params = {}) {
-            // Store scroll positions before navigating
             if (this.currentScreen === 'screen-project-videos' && this.dom.projectVideosContainer) {
                 this.data.scrollPositions.projectVideos = this.dom.projectVideosContainer.scrollTop;
             } else if (this.currentScreen === 'screen-video-logging' && this.dom.savedLogsList) {
@@ -1293,7 +1419,6 @@
                 }
             }
 
-            // Restore scroll positions after content is rendered
             const restoreScroll = () => {
                 requestAnimationFrame(() => {
                     if (screenId === 'screen-project-videos' && this.dom.projectVideosContainer && typeof this.data.scrollPositions.projectVideos === 'number') {
@@ -1338,7 +1463,7 @@
             }
         },
 
-        loadData() { /* ... (no changes from original, but ensure new fields are handled if schema changes) ... */
+        loadData() { 
              const storedData = localStorage.getItem('logReelData');
             if (storedData) {
                 try {
@@ -1346,7 +1471,7 @@
                     if (Array.isArray(parsedData)) {
                         this.data.projects = parsedData;
                         this.data.projects.forEach(project => {
-                            if (!project.createdAt) project.createdAt = new Date(0).toISOString(); // Add createdAt if missing
+                            if (!project.createdAt) project.createdAt = new Date(0).toISOString(); 
                             if (project && project.videos && Array.isArray(project.videos)) {
                                 project.videos.forEach(video => {
                                     if (video) { 
@@ -1371,13 +1496,19 @@
                 }
             } else { this.data.projects = []; }
         },
-        saveData() { /* ... (no changes from original) ... */ },
-        getProjectById(projectId) { /* ... (no changes from original) ... */ },
-        getVideoById(projectId, videoId) { /* ... (no changes from original) ... */ },
-        getLogById(projectId, videoId, logId) { /* ... (no changes from original) ... */ },
+        saveData() { 
+            try {
+                localStorage.setItem('logReelData', JSON.stringify(this.data.projects));
+            } catch (e) {
+                console.error("Error saving data to localStorage:", e);
+                this.showToast("Could not save data. Storage might be full.", "error", 5000, 'x-circle');
+            }
+        },
+        getProjectById(projectId) { return this.data.projects.find(p => p.id === projectId); },
+        getVideoById(projectId, videoId) { const project = this.getProjectById(projectId); return project ? project.videos.find(v => v.id === videoId) : null; },
+        getLogById(projectId, videoId, logId) { const video = this.getVideoById(projectId, videoId); return video && video.logs ? video.logs.find(l => l.id === logId) : null; },
 
         registerEventListeners() {
-            // ... (original listeners) ...
             this.dom.btnNewProject.addEventListener('click', () => this.showNewProjectModal());
             this.dom.importProjectsInput.addEventListener('change', (e) => this.importProjects(e));
             this.dom.btnBackToProjects.addEventListener('click', () => this.navigateTo('screen-projects'));
@@ -1436,21 +1567,19 @@
                 btn.addEventListener('click', () => this.hideModal(btn.dataset.modalId));
             });
             this.dom.btnCreateProjectConfirm.addEventListener('click', () => this.createNewProject());
-            this.dom.btnRenameProjectConfirm.addEventListener('click', () => this.renameProject()); // New listener
+            this.dom.btnRenameProjectConfirm.addEventListener('click', () => this.renameProject()); 
             this.dom.btnConfirmActionCancel.addEventListener('click', () => this.hideModal('modal-confirm-action')); 
             
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    // Close topmost visible modal
                     const visibleModals = Object.values(this.dom.modals).filter(m => m.classList.contains('visible'));
                     if (visibleModals.length > 0) {
                         this.hideModal(visibleModals[visibleModals.length - 1].id);
-                        return; // Prevent further action if a modal was closed
+                        return; 
                     }
                 }
 
-                // Keyboard shortcuts for Screen 3
-                if (this.currentScreen === 'screen-video-logging' && this.data.videoElement && this.data.videoElement.src && !this.dom.videoFilePrompt.classList.contains('hidden')) {
+                if (this.currentScreen === 'screen-video-logging' && this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) { // Ensure prompt is hidden
                     const activeEl = document.activeElement;
                     const isInputFocused = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT';
                     
@@ -1466,7 +1595,6 @@
                 }
             });
 
-            // Event delegation for Screen 1 project actions
             this.dom.projectsList.addEventListener('click', e => {
                 const openBtn = e.target.closest('.btn-open-project');
                 const deleteBtn = e.target.closest('.btn-delete-project');
@@ -1483,7 +1611,6 @@
 
 
             this.dom.projectVideosContainer.addEventListener('click', (e) => {
-                // ... (original logic, ensure button class names match new/updated ones)
                 const targetButton = e.target.closest('button');
                 if (!targetButton) return;
 
@@ -1529,14 +1656,14 @@
                 if (e.target.closest('.main-player-progress-bar-container')) { this.handleCardPlayerProgressBarTouchStart(e); }
             }, { passive: false });
 
-            // Event listener for auto-hide player controls on Screen 2
             this.dom.projectVideosContainer.addEventListener('mouseover', e => {
                 const previewArea = e.target.closest('.main-video-preview-area');
                 if (previewArea) {
                     const videoId = previewArea.id.replace('main-preview-area-', '');
-                    if (this.data.activeCardPlayer.videoId === videoId) {
-                        clearTimeout(this.data.activeCardPlayer.controlsHideTimer);
-                        if(this.data.activeCardPlayer.controlsContainerElement) this.data.activeCardPlayer.controlsContainerElement.classList.add('visible');
+                    const acp = this.data.activeCardPlayer;
+                    if (acp.videoId === videoId && acp.controlsContainerElement && acp.playerElement && acp.playerElement.src && !acp.promptElement.classList.contains('hidden') === false) { // Ensure player is loaded and not showing prompt
+                        clearTimeout(acp.controlsHideTimer);
+                        acp.controlsContainerElement.classList.add('visible');
                     }
                 }
             });
@@ -1544,9 +1671,10 @@
                  const previewArea = e.target.closest('.main-video-preview-area');
                  if (previewArea) {
                     const videoId = previewArea.id.replace('main-preview-area-', '');
-                     if (this.data.activeCardPlayer.videoId === videoId && !this.data.activeCardPlayer.isPlaying) {
-                        this.data.activeCardPlayer.controlsHideTimer = setTimeout(() => {
-                             if(this.data.activeCardPlayer.controlsContainerElement) this.data.activeCardPlayer.controlsContainerElement.classList.remove('visible');
+                    const acp = this.data.activeCardPlayer;
+                     if (acp.videoId === videoId && acp.controlsContainerElement && acp.playerElement && acp.playerElement.src && !acp.isPlaying) {
+                        acp.controlsHideTimer = setTimeout(() => {
+                             if(acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
                         }, 2000);
                      }
                  }
@@ -1555,13 +1683,13 @@
             this.dom.projectVideosContainer.addEventListener('change', (e) => {
                 if (e.target.classList.contains('main-video-preview-file-input')) {
                     const videoId = e.target.dataset.targetPlayerId; 
-                    if (this.data.activeCardPlayer.videoId === videoId) {
+                    // Check if this is the active card player or if no player is active yet (e.g. prompt was shown first)
+                    if (!this.data.activeCardPlayer.videoId || this.data.activeCardPlayer.videoId === videoId) {
                          this.handleCardPlayerFileSelection(e.target.files[0], videoId);
                     }
                 }
             });
 
-            // Listeners for Tag Input on Screen 3
             this.dom.logKeywordsInputField.addEventListener('keydown', e => this.handleKeywordInputKeydown(e));
             this.dom.logKeywordsContainer.addEventListener('click', e => {
                 if (e.target.closest('.remove-tag-btn')) {
@@ -1572,7 +1700,23 @@
             this.dom.logKeywordsInputField.addEventListener('paste', e => this.handleKeywordInputPaste(e));
         },
         
-        getVideoSource(projectId, videoId, videoFilename) { /* ... (no changes from original) ... */ },
+        async getVideoSource(projectId, videoId, videoFilename) {
+            const cacheKey = `${projectId}-${videoId}`;
+            if (this.data.videoFileCache[cacheKey]) {
+                try {
+                    const response = await fetch(this.data.videoFileCache[cacheKey]); 
+                    if (response.ok) { return this.data.videoFileCache[cacheKey]; } 
+                    else { URL.revokeObjectURL(this.data.videoFileCache[cacheKey]); delete this.data.videoFileCache[cacheKey]; }
+                } catch (e) { if (this.data.videoFileCache[cacheKey]) URL.revokeObjectURL(this.data.videoFileCache[cacheKey]); delete this.data.videoFileCache[cacheKey];}
+            }
+            try {
+                const fileFromDB = await this.idb.retrieveFile(videoId);
+                if (fileFromDB && fileFromDB.name === videoFilename) {
+                    const objectURL = URL.createObjectURL(fileFromDB); this.data.videoFileCache[cacheKey] = objectURL; return objectURL;
+                } else if (fileFromDB && fileFromDB.name !== videoFilename) { console.warn(`Filename mismatch from IDB. Expected ${videoFilename}, got ${fileFromDB.name}.`); }
+            } catch (error) { if (error !== "IndexedDB not supported" && error !== "IndexedDB not available for retrieving file.") this.showToast(`Error accessing storage for "${this.utils.escapeHtml(videoFilename)}".`, "warning", 3000, 'alert-triangle'); }
+            return null;
+        },
 
         renderProjectsScreen() {
             if (!this.dom.projectsList) return;
@@ -1590,14 +1734,16 @@
             this.data.projects.forEach(project => {
                 const card = document.createElement('article');
                 card.className = 'card';
-                const creationDate = new Date(project.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                let creationDateText = 'N/A';
+                if (project.createdAt) { try { creationDateText = new Date(project.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) {} }
+                
                 card.innerHTML = `
                     <div class="card-padding-wrapper" style="padding: 24px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div>
                                 <div class="card-title">${this.utils.escapeHtml(project.name)}</div>
                                 <div class="card-meta">
-                                    Contains ${project.videos ? project.videos.length : 0} video(s) &bull; Created: ${creationDate}
+                                    Contains ${project.videos ? project.videos.length : 0} video(s) &bull; Created: ${creationDateText}
                                 </div>
                             </div>
                             <button class="button button-subtle button-small btn-edit-project-name" data-project-id="${project.id}" aria-label="Rename project">
@@ -1611,7 +1757,7 @@
                             ${this.getIcon('trash')} Delete
                         </button>
                     </div>
-                `; // Note: btn-open-project and btn-delete-project listeners are now delegated
+                `; 
                 fragment.appendChild(card);
             });
             this.dom.projectsList.appendChild(fragment);
@@ -1621,7 +1767,7 @@
             this.showModal('modal-new-project');
             this.dom.newProjectNameInput.focus();
         },
-        createNewProject() { /* ... (original logic, but ensure toast uses icon) ... */ 
+        createNewProject() { 
             const name = this.dom.newProjectNameInput.value.trim();
             if (!name) { this.showToast('Project name cannot be empty.', 'warning', 3000, 'alert-triangle'); return; }
             const newProject = { id: this.utils.generateId(), name: name, videos: [], createdAt: new Date().toISOString() };
@@ -1643,44 +1789,28 @@
             const newName = this.dom.renameProjectNameInput.value.trim();
             const project = this.getProjectById(projectId);
 
-            if (!project) {
-                this.showToast('Error: Project not found.', 'error', 3000, 'x-circle');
-                return;
-            }
-            if (!newName) {
-                this.showToast('Project name cannot be empty.', 'warning', 3000, 'alert-triangle');
-                return;
-            }
-            if (newName === project.name) {
-                 this.hideModal('modal-rename-project');
-                 return; // No change
-            }
+            if (!project) { this.showToast('Error: Project not found.', 'error', 3000, 'x-circle'); return; }
+            if (!newName) { this.showToast('Project name cannot be empty.', 'warning', 3000, 'alert-triangle'); return; }
+            if (newName === project.name) { this.hideModal('modal-rename-project'); return; }
 
-            project.name = newName;
-            this.saveData();
-            this.renderProjectsScreen(); // Re-render projects list
-            if (this.data.currentProjectId === projectId && this.dom.projectNameHeader) { // If current project, update header
-                this.dom.projectNameHeader.textContent = this.utils.escapeHtml(newName);
-            }
+            project.name = newName; this.saveData(); this.renderProjectsScreen(); 
+            if (this.data.currentProjectId === projectId && this.dom.projectNameHeader) { this.dom.projectNameHeader.textContent = this.utils.escapeHtml(newName); }
             this.hideModal('modal-rename-project');
             this.showToast(`Project renamed to "${this.utils.escapeHtml(newName)}".`, 'success', 3000, 'check-circle');
             this.data.currentEditingProjectId = null;
         },
-        confirmDeleteProject(projectId) { /* ... (original logic) ... */ 
+        confirmDeleteProject(projectId) { 
              const project = this.getProjectById(projectId);
             if (!project) return;
             const message = `Are you sure you want to delete the project "<strong>${this.utils.escapeHtml(project.name)}</strong>"? <br>This action cannot be undone and will remove all associated video files from persistent storage.`;
             this.showConfirmationModal(message, () => this.deleteProject(projectId), null, `Delete Project ${this.getIcon('trash')}`, "button-danger");
         },
-        async deleteProject(projectId){ /* ... (original logic, ensure toast uses icon) ... */ 
+        async deleteProject(projectId){ 
              const project = this.getProjectById(projectId);
             if (project && project.videos) {
                 for (const video of project.videos) {
                     const cacheKey = `${projectId}-${video.id}`; 
-                    if (this.data.videoFileCache[cacheKey]) {
-                         URL.revokeObjectURL(this.data.videoFileCache[cacheKey]);
-                         delete this.data.videoFileCache[cacheKey];
-                    }
+                    if (this.data.videoFileCache[cacheKey]) { URL.revokeObjectURL(this.data.videoFileCache[cacheKey]); delete this.data.videoFileCache[cacheKey]; }
                     try { await this.idb.deleteFile(video.id); } catch (error) { console.error(`Failed to delete file for videoId ${video.id} from IDB:`, error); }
                 }
             }
@@ -1689,7 +1819,7 @@
             this.saveData(); this.renderProjectsScreen();
             if(project) this.showToast(`Project "${this.utils.escapeHtml(project.name)}" deleted.`, 'success', 3000, 'check-circle');
         },
-        importProjects(event) { /* ... (original logic, ensure toasts use icons) ... */ 
+        importProjects(event) { 
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -1697,10 +1827,22 @@
                     try {
                         const importedData = JSON.parse(e.target.result);
                         if (Array.isArray(importedData) && importedData.every(p => p.id && p.name && Array.isArray(p.videos))) {
-                            importedData.forEach(p => { /* ensure new fields if any */ });
+                            importedData.forEach(p => { 
+                                p.createdAt = p.createdAt || new Date(0).toISOString();
+                                if (p.videos && Array.isArray(p.videos)) {
+                                    p.videos.forEach(v => {
+                                        if (typeof v.isImportant === 'undefined') v.isImportant = false;
+                                        if (typeof v.mainVideoThumbnail === 'undefined') v.mainVideoThumbnail = null;
+                                        v.createdAt = v.createdAt || new Date(0).toISOString();
+                                        if (v.logs && Array.isArray(v.logs)) {
+                                            v.logs.forEach(l => { l.createdAt = l.createdAt || new Date(0).toISOString(); });
+                                        } else { v.logs = []; }
+                                    });
+                                } else { p.videos = []; }
+                            });
                             this.showConfirmationModal(
                                 "This will add the projects from the file as <strong>new projects</strong>. Continue?",
-                                async () => { /* ... original import logic ... */ 
+                                async () => { 
                                     const projectsToAdd = [];
                                     for (const importedProject of importedData) {
                                         const newProject = JSON.parse(JSON.stringify(importedProject));
@@ -1726,7 +1868,7 @@
                 reader.readAsText(file); event.target.value = null; 
             }
         },
-        exportCurrentProject() { /* ... (original logic, ensure toast uses icon) ... */
+        exportCurrentProject() {
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project) { this.showToast("No project selected.", "warning", 3000, 'alert-triangle'); return; }
             const projectToExport = JSON.parse(JSON.stringify(project)); 
@@ -1747,9 +1889,7 @@
             this.dom.projectNameHeader.textContent = this.utils.escapeHtml(project.name);
             this.dom.projectVideosContainer.innerHTML = '';
 
-            if (this.data.activeCardPlayer.playerElement) {
-                this.resetActiveCardPlayerUI(false); 
-            }
+            if (this.data.activeCardPlayer.playerElement) this.resetActiveCardPlayerUI(false); 
 
             let videosToDisplay = project.videos || [];
             let foundItems = false;
@@ -1832,7 +1972,7 @@
                     <div class="main-video-preview-area" id="main-preview-area-${video.id}">
                         <img src="${mainThumbnailSrc}" class="main-video-thumbnail" id="main-thumbnail-${video.id}" alt="Video preview for ${this.utils.escapeHtml(video.filename)}">
                         <button class="play-main-video-preview-btn" id="play-main-preview-btn-${video.id}" aria-label="Play video preview">
-                            ${this.getIcon('play-circle', 'w-10 h-10 md:w-16 md:h-16')}
+                            ${this.getIcon('play-circle')} 
                         </button>
                         <video class="main-video-preview-player hidden" id="main-player-${video.id}" playsinline width="100%"></video>
                         <div class="main-video-preview-prompt hidden" id="main-player-prompt-${video.id}">
@@ -1842,7 +1982,7 @@
                                 <input type="file" class="main-video-preview-file-input" data-target-player-id="${video.id}" accept="video/*" aria-label="Select video file">
                             </label>
                         </div>
-                        <div class="main-player-custom-controls hidden" id="main-player-controls-${video.id}">
+                        <div class="main-player-custom-controls" id="main-player-controls-${video.id}">
                             <button class="main-player-ctrl-btn main-player-rewind-btn" aria-label="Rewind 5 seconds">${this.getIcon('rewind')}</button>
                             <button class="main-player-ctrl-btn main-player-play-pause-btn" aria-label="Play">${this.getIcon('play')}</button>
                             <button class="main-player-ctrl-btn main-player-forward-btn" aria-label="Forward 5 seconds">${this.getIcon('forward')}</button>
@@ -1913,29 +2053,29 @@
             this.dom.addVideosInput.value = null; 
             if (addVideosButtonLabel) this.setButtonLoadingState(addVideosButtonLabel, false);
         },
-        async generateGenericThumbnail(videoElement) { // Increased quality and resolution
+        async generateGenericThumbnail(videoElement) {
              return new Promise((resolve, reject) => {
                 if (!videoElement || !videoElement.src || videoElement.readyState < videoElement.HAVE_METADATA || videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
                     return reject("Video not ready for thumbnail.");
                 }
                 const canvas = this.dom.thumbnailCanvas; const ctx = canvas.getContext('2d');
                 const ar = videoElement.videoWidth / videoElement.videoHeight;
-                canvas.width = 240; // Increased base resolution
+                canvas.width = 240; 
                 canvas.height = canvas.width / ar; if (isNaN(canvas.height) || !isFinite(canvas.height) || canvas.height <= 0) canvas.height = 135; 
                 try {
                     ctx.clearRect(0, 0, canvas.width, canvas.height); 
                     ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // Increased quality
+                    resolve(canvas.toDataURL('image/jpeg', 0.8)); 
                 } catch (e) { reject("Error creating thumbnail data."); }
             });
         },
-        confirmDeleteVideo(videoId) { /* ... (original, ensure toast uses icon) ... */ 
+        confirmDeleteVideo(videoId) { 
             const video = this.getVideoById(this.data.currentProjectId, videoId);
             if (!video) return;
             const message = `Delete "<strong>${this.utils.escapeHtml(video.filename)}</strong>" and all its logs? <br>This also removes it from persistent storage. Cannot be undone.`;
             this.showConfirmationModal(message, () => this.deleteVideo(videoId), null, `Delete Video ${this.getIcon('trash')}`, "button-danger");
         },
-        async deleteVideo(videoId) { /* ... (original, ensure toast uses icon) ... */ 
+        async deleteVideo(videoId) { 
             const project = this.getProjectById(this.data.currentProjectId);
             if (!project || !project.videos) return;
             const videoIndex = project.videos.findIndex(v => v.id === videoId);
@@ -1951,7 +2091,7 @@
             this.saveData(); this.renderProjectVideosScreen();
             if (videoToDelete) this.showToast(`Video "${this.utils.escapeHtml(videoToDelete.filename)}" deleted.`, 'success', 3000, 'check-circle');
         },
-        toggleVideoImportance(videoId) { /* ... (original, ensure toast uses icon) ... */ 
+        toggleVideoImportance(videoId) { 
             const project = this.getProjectById(this.data.currentProjectId); if (!project) return;
             const video = project.videos.find(v => v.id === videoId); if (!video) return;
             video.isImportant = !video.isImportant; this.saveData();
@@ -1959,7 +2099,7 @@
             this.showToast(`Video marked ${video.isImportant ? 'important' : 'not important'}.`, 'info', 3000, 'info-circle');
         },
 
-        resetActiveCardPlayerUI(findNewPlayerElements = true) { /* ... (original logic) ... */ 
+        resetActiveCardPlayerUI(findNewPlayerElements = true) { 
             const acp = this.data.activeCardPlayer;
             if (acp.playerElement) {
                 acp.playerElement.pause(); acp.playerElement.removeAttribute('src'); acp.playerElement.load(); 
@@ -1971,7 +2111,7 @@
                 if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
 
                 if (acp.playerElement) acp.playerElement.classList.add('hidden');
-                if (acp.controlsContainerElement) { acp.controlsContainerElement.classList.add('hidden'); acp.controlsContainerElement.classList.remove('visible'); }
+                if (acp.controlsContainerElement) { acp.controlsContainerElement.classList.remove('visible'); } // Ensure it's not visible
                 if (acp.promptElement) acp.promptElement.classList.add('hidden');
                 if (acp.thumbnailElement) acp.thumbnailElement.classList.remove('hidden');
                 if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.remove('hidden');
@@ -1980,11 +2120,21 @@
                 if (acp.progressBarElement) acp.progressBarElement.style.width = '0%';
                 clearTimeout(acp.controlsHideTimer);
             }
-            this.data.activeCardPlayer = { /* ... (original reset fields) ... */ };
+             this.data.activeCardPlayer = {
+                videoId: null, cardElement: null, playerElement: null, thumbnailElement: null,
+                bigPlayButtonElement: null, promptElement: null, fileInputElement: null,
+                controlsContainerElement: null, playPauseBtnElement: null, rewindBtnElement: null,
+                forwardBtnElement: null, progressBarContainerElement: null, progressBarElement: null,
+                timecodeElement: null, stopBtnElement: null, isPlaying: false, isScrubbing: false,
+                wasPlayingBeforeScrub: false, currentSegment: { startTime: 0, endTime: 0, duration: 0 },
+                boundPlayerTimeUpdate: null, boundPlayerLoadedMetadata: null, boundPlayerEnded: null,
+                boundPlayerError: null, boundPlayerPlay: null, boundPlayerPause: null,
+                _boundCardPlayerScrubMove: null, _boundCardPlayerScrubEnd: null,
+                controlsHideTimer: null
+            };
         },
 
         async playVideoOnCard(videoId, cardElement, segmentData = null) {
-            // ... (original logic, with structure change for controls inside preview area)
             const videoData = this.getVideoById(this.data.currentProjectId, videoId); if (!videoData) return;
             if (this.data.activeCardPlayer.videoId && (this.data.activeCardPlayer.videoId !== videoId || (segmentData && this.data.activeCardPlayer.currentSegment.startTime !== segmentData.startTime))) {
                 this.resetActiveCardPlayerUI(false); 
@@ -2017,7 +2167,7 @@
             acp.thumbnailElement.classList.add('hidden');
             acp.bigPlayButtonElement.classList.add('hidden');
             acp.playerElement.classList.remove('hidden');
-            acp.controlsContainerElement.classList.remove('hidden'); // Initially hidden by CSS, add 'visible' on play/hover
+            // acp.controlsContainerElement will be made visible on play/hover via CSS opacity/visibility
             acp.promptElement.classList.add('hidden');
 
             if (acp.boundPlayerError) acp.playerElement.removeEventListener('error', acp.boundPlayerError);
@@ -2039,9 +2189,12 @@
             acp.boundPlayerPause = () => { 
                 acp.isPlaying = false; 
                 if(acp.playPauseBtnElement && !acp.isScrubbing) { acp.playPauseBtnElement.innerHTML = this.getIcon('play'); acp.playPauseBtnElement.setAttribute('aria-label', 'Play'); }
-                if(acp.controlsContainerElement && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover')) { // If not hovering
-                    acp.controlsHideTimer = setTimeout(() => acp.controlsContainerElement.classList.remove('visible'), 3000);
-                }
+                // Only hide controls if not hovering over preview area or controls themselves
+                 if(acp.controlsContainerElement && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover')) { 
+                    acp.controlsHideTimer = setTimeout(() => {
+                        if(acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
+                    }, 3000);
+                 }
             };
 
             acp.playerElement.addEventListener('error', acp.boundPlayerError);
@@ -2054,7 +2207,7 @@
             const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
             if (videoSrc) {
                 if(acp.playerElement.src !== videoSrc) { acp.playerElement.src = videoSrc; acp.playerElement.load(); } 
-                else { this.handleCardPlayerLoadedMetadata(segmentData); }
+                else { this.handleCardPlayerLoadedMetadata(segmentData); } // If src is same, manually trigger for segments
                  acp.playerElement.play().catch(e => {
                     if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
                     this.showCardPlayerPrompt(videoData.filename);
@@ -2067,20 +2220,53 @@
             }
         },
 
-        handleCardPlayerLoadedMetadata(segmentData) { /* ... (original logic) ... */ },
-        handleCardPlayerTimeUpdate() { /* ... (original logic) ... */ },
-        handleCardPlayerSegmentEnd() { /* ... (original, ensure SVG update for play button) ... */ 
+        handleCardPlayerLoadedMetadata(segmentData) { 
+            const acp = this.data.activeCardPlayer;
+            if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration)) return;
+
+            if (segmentData && segmentData.endTime > segmentData.startTime) { 
+                acp.currentSegment.startTime = segmentData.startTime;
+                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration); 
+                acp.currentSegment.duration = acp.currentSegment.endTime - acp.currentSegment.startTime;
+                acp.playerElement.currentTime = acp.currentSegment.startTime;
+            } else { 
+                acp.currentSegment.startTime = 0;
+                acp.currentSegment.endTime = acp.playerElement.duration;
+                acp.currentSegment.duration = acp.playerElement.duration;
+                if(acp.playerElement.currentTime >= acp.playerElement.duration - 0.1 && acp.playerElement.duration > 0) { 
+                    acp.playerElement.currentTime = 0;
+                }
+            }
+            this.updateCardPlayerTimeDisplay();
+             if (acp.isPlaying) { 
+                acp.playerElement.play().catch(e=>console.warn("Card player resume play error", e));
+            }
+        },
+        handleCardPlayerTimeUpdate() { 
+            const acp = this.data.activeCardPlayer;
+            if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration) || acp.isScrubbing) return;
+            const currentTimeAbsolute = acp.playerElement.currentTime;
+            if (acp.currentSegment.duration > 0 && currentTimeAbsolute >= acp.currentSegment.endTime - 0.05) { 
+                acp.playerElement.pause(); acp.playerElement.currentTime = acp.currentSegment.endTime; this.handleCardPlayerSegmentEnd(); return;
+            }
+            if (currentTimeAbsolute < acp.currentSegment.startTime) acp.playerElement.currentTime = acp.currentSegment.startTime; 
+            const currentTimeInSegment = Math.max(0, currentTimeAbsolute - acp.currentSegment.startTime);
+            const progress = (acp.currentSegment.duration > 0) ? (currentTimeInSegment / acp.currentSegment.duration) * 100 : 0;
+            if(acp.progressBarElement) acp.progressBarElement.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+            this.updateCardPlayerTimeDisplay();
+        },
+        handleCardPlayerSegmentEnd() { 
             const acp = this.data.activeCardPlayer; acp.isPlaying = false; 
             if(acp.playPauseBtnElement) { acp.playPauseBtnElement.innerHTML = this.getIcon('play'); acp.playPauseBtnElement.setAttribute('aria-label', 'Replay'); }
             if(acp.progressBarElement) acp.progressBarElement.style.width = '100%'; this.updateCardPlayerTimeDisplay(); 
         },
-        handleCardPlayerEnded() { /* ... (original, ensure SVG update for play button) ... */ 
+        handleCardPlayerEnded() { 
             const acp = this.data.activeCardPlayer; acp.isPlaying = false; 
             if(acp.playPauseBtnElement) { acp.playPauseBtnElement.innerHTML = this.getIcon('play'); acp.playPauseBtnElement.setAttribute('aria-label', 'Replay'); }
             if(acp.progressBarElement) acp.progressBarElement.style.width = '100%';
             if(acp.playerElement) acp.playerElement.currentTime = acp.currentSegment.endTime; this.updateCardPlayerTimeDisplay();
         },
-        handleCardPlayerError(filename) { /* ... (original, ensure toast uses icon) ... */ 
+        handleCardPlayerError(filename) { 
              this.showToast(`Error playing video/clip from "${this.utils.escapeHtml(filename)}".`, 'error', 5000, 'x-circle');
             this.showCardPlayerPrompt(filename);
             const acp = this.data.activeCardPlayer;
@@ -2088,8 +2274,16 @@
             if(this.data.videoFileCache[cacheKey]) { URL.revokeObjectURL(this.data.videoFileCache[cacheKey]); delete this.data.videoFileCache[cacheKey]; }
             this.idb.deleteFile(acp.videoId).catch(err => {});
         },
-        updateCardPlayerTimeDisplay() { /* ... (original logic) ... */ },
-        toggleCardPlayerPlayPause() { /* ... (original, ensure SVG update & toast icon) ... */ 
+        updateCardPlayerTimeDisplay() { 
+            const acp = this.data.activeCardPlayer;
+            if (!acp.playerElement || !acp.timecodeElement || isNaN(acp.currentSegment.duration)) {
+                if(acp.timecodeElement) acp.timecodeElement.textContent = '00:00 / 00:00'; return;
+            }
+            const currentTimeInSegment = Math.max(0, Math.min(acp.playerElement.currentTime - acp.currentSegment.startTime, acp.currentSegment.duration));
+            const displayDuration = acp.currentSegment.duration > 0 ? acp.currentSegment.duration : 0;
+            acp.timecodeElement.textContent = `${this.utils.formatTime(currentTimeInSegment)} / ${this.utils.formatTime(displayDuration)}`;
+        },
+        toggleCardPlayerPlayPause() { 
             const acp = this.data.activeCardPlayer;
             if (!acp.playerElement || !acp.playerElement.src) {
                 const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId);
@@ -2105,21 +2299,76 @@
                 });
             }
         },
-        rewindCardPlayer() { /* ... (original logic) ... */ },
-        forwardCardPlayer() { /* ... (original logic) ... */ },
-        stopAndResetCardPlayer() { /* ... (original logic) ... */ },
-        handleCardPlayerProgressBarMouseDown(event) { /* ... (original logic) ... */ },
-        handleCardPlayerProgressBarTouchStart(event) { /* ... (original logic) ... */ },
-        updateCardPlayerProgressBarOnScrub(event) { /* ... (original logic) ... */ },
-        showCardPlayerPrompt(videoFilename) { /* ... (original logic) ... */ },
-        async handleCardPlayerFileSelection(file, videoIdToMatch) { /* ... (original, ensure toasts use icons) ... */ 
+        rewindCardPlayer() { 
+            const acp = this.data.activeCardPlayer; if (!acp.playerElement || !acp.playerElement.src) return;
+            acp.playerElement.currentTime = Math.max(acp.currentSegment.startTime, acp.playerElement.currentTime - this.data.skipTimeSeconds);
+        },
+        forwardCardPlayer() { 
+            const acp = this.data.activeCardPlayer; if (!acp.playerElement || !acp.playerElement.src) return;
+            acp.playerElement.currentTime = Math.min(acp.currentSegment.endTime, acp.playerElement.currentTime + this.data.skipTimeSeconds);
+        },
+        stopAndResetCardPlayer() { this.resetActiveCardPlayerUI(true); },
+        handleCardPlayerProgressBarMouseDown(event) { 
+            const acp = this.data.activeCardPlayer; if (!acp.playerElement || !acp.playerElement.src || isNaN(acp.currentSegment.duration) || acp.currentSegment.duration <=0 ) return;
+            event.preventDefault(); acp.isScrubbing = true; acp.wasPlayingBeforeScrub = acp.isPlaying; 
+            if (acp.isPlaying) acp.playerElement.pause(); this.updateCardPlayerProgressBarOnScrub(event);
+            acp._boundCardPlayerScrubMove = this.updateCardPlayerProgressBarOnScrub.bind(this);
+            acp._boundCardPlayerScrubEnd = (e) => { document.removeEventListener('mousemove', acp._boundCardPlayerScrubMove); document.removeEventListener('mouseup', acp._boundCardPlayerScrubEnd); acp.isScrubbing = false; if (acp.wasPlayingBeforeScrub && acp.playerElement) acp.playerElement.play().catch(()=>{}); this.updateCardPlayerTimeDisplay(); };
+            document.addEventListener('mousemove', acp._boundCardPlayerScrubMove); document.addEventListener('mouseup', acp._boundCardPlayerScrubEnd);
+        },
+        handleCardPlayerProgressBarTouchStart(event) { 
+            const acp = this.data.activeCardPlayer; if (!acp.playerElement || !acp.playerElement.src || isNaN(acp.currentSegment.duration) || acp.currentSegment.duration <=0 ) return;
+            acp.isScrubbing = true; acp.wasPlayingBeforeScrub = acp.isPlaying; if (acp.isPlaying) acp.playerElement.pause();
+            this.updateCardPlayerProgressBarOnScrub(event.touches[0] || event.changedTouches[0]); 
+            acp._boundCardPlayerScrubMove = (e) => { e.preventDefault(); this.updateCardPlayerProgressBarOnScrub(e.touches[0] || e.changedTouches[0]); }
+            acp._boundCardPlayerScrubEnd = (e) => { document.removeEventListener('touchmove', acp._boundCardPlayerScrubMove); document.removeEventListener('touchend', acp._boundCardPlayerScrubEnd); document.removeEventListener('touchcancel', acp._boundCardPlayerScrubEnd); acp.isScrubbing = false; if (acp.wasPlayingBeforeScrub && acp.playerElement) acp.playerElement.play().catch(()=>{}); this.updateCardPlayerTimeDisplay(); };
+            document.addEventListener('touchmove', acp._boundCardPlayerScrubMove, { passive: false }); document.addEventListener('touchend', acp._boundCardPlayerScrubEnd); document.addEventListener('touchcancel', acp._boundCardPlayerScrubEnd);
+        },
+        updateCardPlayerProgressBarOnScrub(event) { 
+            const acp = this.data.activeCardPlayer; if (!acp.progressBarContainerElement || !acp.playerElement || acp.currentSegment.duration <= 0) return;
+            const rect = acp.progressBarContainerElement.getBoundingClientRect(); const clientX = event.clientX; 
+            const clickX = clientX - rect.left; const seekRatio = Math.max(0, Math.min(1, clickX / rect.width));
+            const newTimeInSegment = seekRatio * acp.currentSegment.duration; acp.playerElement.currentTime = acp.currentSegment.startTime + newTimeInSegment;
+            if(acp.progressBarElement) acp.progressBarElement.style.width = `${seekRatio * 100}%`; this.updateCardPlayerTimeDisplay();
+        },
+        showCardPlayerPrompt(videoFilename) { 
             const acp = this.data.activeCardPlayer;
-            if (!file || !acp.videoId || acp.videoId !== videoIdToMatch) {
-                 this.showToast("File selection error.", "error", 3000, 'x-circle'); if(acp.fileInputElement) acp.fileInputElement.value = ''; return;
+            if (acp.promptElement) { 
+                const promptMsgElement = acp.promptElement.querySelector('p');
+                if(promptMsgElement) promptMsgElement.innerHTML = `Video "<strong>${this.utils.escapeHtml(videoFilename)}</strong>" needs to be selected.`;
+                acp.promptElement.classList.remove('hidden');
+                if (acp.playerElement) acp.playerElement.classList.add('hidden');
+                if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible'); // Ensure hidden
+                if (acp.thumbnailElement) acp.thumbnailElement.classList.add('hidden'); 
+                if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.add('hidden');
             }
-            const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId); if (!videoData) {
-                this.showToast("Video data not found.", "error", 3000, 'x-circle'); if(acp.fileInputElement) acp.fileInputElement.value = ''; return;
+        },
+        async handleCardPlayerFileSelection(file, videoIdToMatch) { 
+            const acp = this.data.activeCardPlayer;
+             // Ensure activeCardPlayer is properly initialized for this videoId if it's not already
+            if (!acp.videoId || acp.videoId !== videoIdToMatch) {
+                const cardElement = document.querySelector(`.video-entry-card[data-video-id="${videoIdToMatch}"]`);
+                if (cardElement) {
+                    this.resetActiveCardPlayerUI(false); // Reset previous player
+                    acp.videoId = videoIdToMatch;
+                    acp.cardElement = cardElement;
+                    // Re-query essential elements for the current card
+                    const previewArea = cardElement.querySelector(`#main-preview-area-${videoIdToMatch}`);
+                    if (!previewArea) { this.showToast("Player UI error.", "error", 3000, 'x-circle'); return; }
+                    acp.playerElement = previewArea.querySelector(`#main-player-${videoIdToMatch}`);
+                    acp.promptElement = previewArea.querySelector(`#main-player-prompt-${videoIdToMatch}`);
+                    acp.controlsContainerElement = previewArea.querySelector(`#main-player-controls-${videoIdToMatch}`);
+                    if(acp.promptElement) acp.fileInputElement = acp.promptElement.querySelector('.main-video-preview-file-input');
+                } else {
+                    this.showToast("Associated card not found.", "error", 3000, 'x-circle'); return;
+                }
             }
+
+            if (!file) { this.showToast("No file selected.", "warning", 3000, 'alert-triangle'); if(acp.fileInputElement) acp.fileInputElement.value = ''; return; }
+            
+            const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId); 
+            if (!videoData) { this.showToast("Video data not found.", "error", 3000, 'x-circle'); if(acp.fileInputElement) acp.fileInputElement.value = ''; return; }
+            
             if (file.name !== videoData.filename) {
                 this.showToast(`Incorrect file. Expected "${this.utils.escapeHtml(videoData.filename)}".`, "warning", 3000, 'alert-triangle');
                 if(acp.fileInputElement) acp.fileInputElement.value = ''; return;
@@ -2130,18 +2379,19 @@
             catch { this.showToast(`Could not save "${this.utils.escapeHtml(file.name)}" persistently.`, 'warning', 3000, 'alert-triangle'); }
             const objectURL = URL.createObjectURL(file); this.data.videoFileCache[cacheKey] = objectURL; 
             if (acp.playerElement && acp.promptElement && acp.controlsContainerElement) {
-                acp.promptElement.classList.add('hidden'); acp.playerElement.classList.remove('hidden'); acp.controlsContainerElement.classList.remove('hidden'); // Show controls, auto-hide will manage
+                acp.promptElement.classList.add('hidden'); acp.playerElement.classList.remove('hidden'); 
+                acp.controlsContainerElement.classList.add('visible'); // Show controls
                 acp.playerElement.src = objectURL; acp.playerElement.load(); 
                 acp.playerElement.play().catch(e => { if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle'); });
-            }
+            } else { this.showToast("Player UI elements missing after file selection.", "error", 3000, 'x-circle'); }
             if(acp.fileInputElement) acp.fileInputElement.value = '';
         },
-        confirmDeleteLogItemFromScreen2(videoId, logId){ /* ... (original, ensure toast uses icon) ... */ 
+        confirmDeleteLogItemFromScreen2(videoId, logId){ 
             const log = this.getLogById(this.data.currentProjectId, videoId, logId); if (!log) return;
             const message = `Delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>Cannot be undone.`;
             this.showConfirmationModal(message, () => this.deleteLogItem(videoId, logId), null, `Delete Log ${this.getIcon('trash')}`, "button-danger");
         },
-        deleteLogItem(videoId, logId) { /* ... (original, ensure toast uses icon) ... */ 
+        deleteLogItem(videoId, logId) { 
              const video = this.getVideoById(this.data.currentProjectId, videoId); if (!video || !video.logs) return;
             const logToDelete = video.logs.find(l => l.id === logId); 
             if (this.data.activeCardPlayer.videoId === videoId && logToDelete && this.data.activeCardPlayer.currentSegment &&
@@ -2154,7 +2404,7 @@
         },
 
 
-        async renderVideoLoggingScreen() { /* ... (original logic) ... */ 
+        async renderVideoLoggingScreen() { 
             const videoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             if (!videoData) { this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }); this.showToast("Video not found.", "error", 3000, 'x-circle'); return; }
             this.dom.videoFilenameHeader.textContent = this.utils.escapeHtml(videoData.filename);
@@ -2169,8 +2419,12 @@
                 this.data.videoElement.src = videoSrc; this.data.videoElement.classList.remove('hidden'); this.dom.videoFilePrompt.classList.add('hidden'); 
             } else { this.promptForVideoFile(videoData.filename); }
         },
-        promptForVideoFile(filename) { /* ... (original logic) ... */ },
-        async handleVideoFileSelectionForLogging(file) { /* ... (original, ensure toasts use icons) ... */ 
+        promptForVideoFile(filename) { 
+            this.data.videoElement.classList.add('hidden'); this.dom.videoFilePrompt.classList.remove('hidden'); 
+            this.dom.videoFilePromptMessage.innerHTML = `Video "<strong>${this.utils.escapeHtml(filename)}</strong>" needs to be selected.`;
+            this.dom.videoFileInputLogging.dataset.expectedFilename = filename; 
+        },
+        async handleVideoFileSelectionForLogging(file) { 
             const expectedFilename = this.dom.videoFileInputLogging.dataset.expectedFilename;
             const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             if(!currentVideoData) { this.showToast("Video context lost.", "error", 3000, 'x-circle'); this.dom.videoFileInputLogging.value = ''; return; }
@@ -2184,8 +2438,19 @@
             } else if (file) { this.showToast(`Incorrect file. Expected "${expectedFilename}".`, 'warning', 3000, 'alert-triangle'); }
             this.dom.videoFileInputLogging.value = ''; 
         },
-        updateVideoTimes() { /* ... (original logic) ... */ },
-        async togglePlayPause() { /* ... (original, ensure toasts use icons & play() error handling) ... */ 
+        updateVideoTimes() { 
+            if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) {
+                this.data.timecodeDisplay.textContent = '00:00 / 00:00'; this.data.timelineProgress.style.width = '0%';
+                if(this.data.markInBtn) this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (00:00.0)`;
+                if(this.data.markOutBtn) this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (00:00.0)`; return;
+            }
+            const currentTime = this.data.videoElement.currentTime; const duration = this.data.videoElement.duration;
+            this.data.timecodeDisplay.textContent = `${this.utils.formatTime(currentTime)} / ${this.utils.formatTime(duration)}`;
+            if (!this.data.isScrubbing) this.data.timelineProgress.style.width = `${(currentTime / duration) * 100}%`;
+            if (this.data.markInTime === 0 || (this.data.markInBtn && this.data.markInBtn.classList.contains('default-mark'))) this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (${this.utils.formatTime(currentTime, true)})`;
+            if (this.data.markOutTime === null || (this.data.markOutBtn && this.data.markOutBtn.classList.contains('default-mark'))) this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(currentTime, true)})`;
+        },
+        async togglePlayPause() { 
             if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { 
                 const currentVideoData = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
                 this.showToast("Please select a video file.", "warning", 3000, 'alert-triangle'); 
@@ -2199,16 +2464,23 @@
                 }
             } else { this.data.videoElement.pause(); }
         },
-        rewindVideo() { /* ... (original logic) ... */ },
-        fastForwardVideo() { /* ... (original logic) ... */ },
+        rewindVideo() { if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) { this.showToast("Video not ready.", "warning", 3000, 'alert-triangle'); return; } this.data.videoElement.currentTime = Math.max(0, this.data.videoElement.currentTime - this.data.skipTimeSeconds); },
+        fastForwardVideo() { if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) { this.showToast("Video not ready.", "warning", 3000, 'alert-triangle'); return; } this.data.videoElement.currentTime = Math.min(this.data.videoElement.duration, this.data.videoElement.currentTime + this.data.skipTimeSeconds); },
         
-        handleTimelineMouseDown(event) { /* ... (original logic) ... */ },
-        handleTimelineMouseMove(event) { /* ... (original logic) ... */ },
-        handleTimelineMouseUp(event) { /* ... (original logic) ... */ },
-        handleTimelineTouchStart(event) { /* ... (original logic) ... */ },
-        handleTimelineTouchMove(event) { /* ... (original logic) ... */ },
-        handleTimelineTouchEnd(event) { /* ... (original logic) ... */ },
-        updateTimelineOnScrub(event) { /* ... (original logic) ... */ },
+        handleTimelineMouseDown(event) { if (!this.data.videoElement || !this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) { this.showToast("Video not ready.", "warning", 3000, 'alert-triangle'); return; } event.preventDefault(); this.data.isScrubbing = true; this.data.wasPlayingBeforeScrub = !this.data.videoElement.paused; if (this.data.wasPlayingBeforeScrub) this.data.videoElement.pause(); this.updateTimelineOnScrub(event); document.addEventListener('mousemove', this.boundHandleTimelineMouseMove); document.addEventListener('mouseup', this.boundHandleTimelineMouseUp); },
+        handleTimelineMouseMove(event) { if (!this.data.isScrubbing) return; this.updateTimelineOnScrub(event); },
+        handleTimelineMouseUp(event) { if (!this.data.isScrubbing) return; this.data.isScrubbing = false; this.updateTimelineOnScrub(event); document.removeEventListener('mousemove', this.boundHandleTimelineMouseMove); document.removeEventListener('mouseup', this.boundHandleTimelineMouseUp); if (this.data.wasPlayingBeforeScrub) this.data.videoElement.play().catch(()=>{}); this.updateVideoTimes(); },
+        handleTimelineTouchStart(event) { if (!this.data.videoElement || !this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden') || isNaN(this.data.videoElement.duration)) { this.showToast("Video not ready.", "warning", 3000, 'alert-triangle'); return; } this.data.isScrubbing = true; this.data.wasPlayingBeforeScrub = !this.data.videoElement.paused; if (this.data.wasPlayingBeforeScrub) this.data.videoElement.pause(); this.updateTimelineOnScrub(event); document.addEventListener('touchmove', this.boundHandleTimelineTouchMove, { passive: false }); document.addEventListener('touchend', this.boundHandleTimelineTouchEnd); document.addEventListener('touchcancel', this.boundHandleTimelineTouchEnd); },
+        handleTimelineTouchMove(event) { if (!this.data.isScrubbing) return; event.preventDefault(); this.updateTimelineOnScrub(event); },
+        handleTimelineTouchEnd(event) { if (!this.data.isScrubbing) return; this.data.isScrubbing = false; if (event.changedTouches && event.changedTouches.length > 0) this.updateTimelineOnScrub(event); document.removeEventListener('touchmove', this.boundHandleTimelineTouchMove); document.removeEventListener('touchend', this.boundHandleTimelineTouchEnd); document.removeEventListener('touchcancel', this.boundHandleTimelineTouchEnd); if (this.data.wasPlayingBeforeScrub) this.data.videoElement.play().catch(()=>{}); this.updateVideoTimes(); },
+        updateTimelineOnScrub(event) {
+            if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) return; 
+            const timelineRect = this.data.timelineContainer.getBoundingClientRect(); let clientX;
+            if (event.type.startsWith('touch')) { if (event.touches && event.touches.length > 0) clientX = event.touches[0].clientX; else if (event.changedTouches && event.changedTouches.length > 0) clientX = event.changedTouches[0].clientX; else return; } else clientX = event.clientX;
+            const clickX = clientX - timelineRect.left; const seekRatio = Math.max(0, Math.min(1, clickX / timelineRect.width));
+            const newTime = seekRatio * this.data.videoElement.duration; this.data.videoElement.currentTime = newTime;
+            this.data.timelineProgress.style.width = `${seekRatio * 100}%`; this.data.timecodeDisplay.textContent = `${this.utils.formatTime(newTime)} / ${this.utils.formatTime(this.data.videoElement.duration)}`;
+        },
 
         setMarkIn() { 
             if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { this.showToast("Load video first.", "warning", 3000, 'alert-triangle'); return; }
@@ -2232,7 +2504,10 @@
             this.data.markOutBtn.classList.add('active-mark');
             setTimeout(() => { this.data.markOutBtn.classList.remove('active-mark'); }, 1000);
         },
-        handleStarRating(event) { /* ... (original logic) ... */ },
+        handleStarRating(event) { 
+            const starButton = event.target.closest('button.star');
+            if (starButton) { this.data.currentRating = parseInt(starButton.dataset.value); this.updateStarDisplay(); }
+        },
         updateStarDisplay() { 
             this.dom.logRatingContainer.querySelectorAll('button.star').forEach(star => {
                 const selected = parseInt(star.dataset.value) <= this.data.currentRating;
@@ -2243,8 +2518,7 @@
         },
         async saveLogEntry() { 
             const notes = this.dom.logNotes.value.trim();
-            // Keywords are now taken from data.logKeywordsData
-            const keywords = [...this.data.logKeywordsData]; // Use the array from tag input
+            const keywords = [...this.data.logKeywordsData]; 
 
             if (this.data.markOutTime === null || this.data.markOutTime <= this.data.markInTime) { this.showToast("Set valid Mark In/Out times.", "warning", 3000, 'alert-triangle'); return; }
             if (!notes) { this.showToast("Notes cannot be empty.", "warning", 3000, 'alert-triangle'); return; }
@@ -2276,9 +2550,9 @@
             this.saveData(); this.renderSavedLogsList(); this.resetLogForm();
             this.setButtonLoadingState(this.dom.saveLogBtn, false);
         },
-        generateLogThumbnail(time) { // Increased quality and resolution
+        generateLogThumbnail(time) { 
              return new Promise((resolve, reject) => {
-                if (!this.data.videoElement || !this.data.videoElement.src || this.data.videoElement.readyState < 2 || !this.dom.videoFilePrompt.classList.contains('hidden') || video.videoWidth === 0 || video.videoHeight === 0) { return reject("Video not ready."); }
+                if (!this.data.videoElement || !this.data.videoElement.src || this.data.videoElement.readyState < 2 || !this.dom.videoFilePrompt.classList.contains('hidden') || this.data.videoElement.videoWidth === 0 || this.data.videoElement.videoHeight === 0) { return reject("Video not ready."); }
                 const video = this.data.videoElement; const canvas = this.dom.thumbnailCanvas; const ctx = canvas.getContext('2d');
                 const originalTime = video.currentTime; const originalPaused = video.paused; const originalMuted = video.muted; video.muted = true;
                 let seekTimeout;
@@ -2293,16 +2567,16 @@
         },
         resetLogForm() { 
             this.dom.logNotes.value = ''; 
-            this.data.logKeywordsData = []; // Clear keywords data
-            this.renderKeywordTags(); // Update UI for tags
+            this.data.logKeywordsData = []; 
+            this.renderKeywordTags(); 
             this.data.currentRating = 0; this.updateStarDisplay();
             this.data.markInTime = 0; this.data.markOutTime = null;
             const defaultTime = (this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) ? this.data.videoElement.currentTime : 0;
             this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (${this.utils.formatTime(defaultTime, true)})`; this.data.markInBtn.classList.add('default-mark');
             this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(defaultTime, true)})`; this.data.markOutBtn.classList.add('default-mark');
             this.dom.editingLogIdInput.value = ''; 
-            this.dom.saveLogBtn.innerHTML = `${this.getIcon('save')} Save Log`; // Reset text with icon
-            this.dom.saveLogBtn.disabled = false; // Ensure enabled
+            this.dom.saveLogBtn.innerHTML = `${this.getIcon('save')} Save Log`; 
+            this.dom.saveLogBtn.disabled = false; 
         },
         renderSavedLogsList() { 
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
@@ -2345,7 +2619,7 @@
             this.dom.savedLogsList.querySelectorAll('.btn-edit-log').forEach(btn => btn.addEventListener('click', (e) => this.editLogEntry(e.currentTarget.dataset.logId)));
             this.dom.savedLogsList.querySelectorAll('.btn-delete-log').forEach(btn => btn.addEventListener('click', (e) => this.confirmDeleteLogOnScreen3(e.currentTarget.dataset.logId)));
         },
-        async goToLogTime(time) { /* ... (original logic, ensure toasts use icons) ... */ 
+        async goToLogTime(time) { 
             if(this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) {
                 this.data.videoElement.currentTime = time; 
                 try { await this.data.videoElement.play(); } catch(e) { this.showToast("Error playing video.", "error", 3000, 'x-circle'); }
@@ -2362,8 +2636,8 @@
             if (!log) return;
             this.dom.logNotes.value = log.notes;
             
-            this.data.logKeywordsData = log.keywords ? [...log.keywords] : []; // Populate for tag input
-            this.renderKeywordTags(); // Update UI for tags
+            this.data.logKeywordsData = log.keywords ? [...log.keywords] : []; 
+            this.renderKeywordTags(); 
 
             this.data.currentRating = log.rating; this.updateStarDisplay();
             this.data.markInTime = log.markIn; this.data.markOutTime = log.markOut;
@@ -2376,12 +2650,12 @@
             const logFormCard = this.dom.logNotes.closest('article.card');
             if (logFormCard) logFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         },
-        confirmDeleteLogOnScreen3(logId) { /* ... (original, ensure toast uses icon) ... */ 
+        confirmDeleteLogOnScreen3(logId) { 
              const log = this.getLogById(this.data.currentProjectId, this.data.currentVideoId, logId); if (!log) return;
             const message = `Delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>Cannot be undone.`;
             this.showConfirmationModal(message, () => this.deleteLogOnScreen3(logId), null, `Delete Log ${this.getIcon('trash')}`, "button-danger");
         },
-        deleteLogOnScreen3(logId) { /* ... (original, ensure toast uses icon) ... */ 
+        deleteLogOnScreen3(logId) { 
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             if (!video || !video.logs) return;
             video.logs = video.logs.filter(l => l.id !== logId); this.saveData(); this.renderSavedLogsList();
@@ -2389,12 +2663,9 @@
             this.showToast("Log entry deleted.", 'success', 3000, 'check-circle');
         },
 
-        // Keyword Tag Input Logic
         renderKeywordTags() {
-            // Clear existing tags except the input field itself
-            while (this.dom.logKeywordsContainer.firstChild && this.dom.logKeywordsContainer.firstChild !== this.dom.logKeywordsInputField) {
-                this.dom.logKeywordsContainer.removeChild(this.dom.logKeywordsContainer.firstChild);
-            }
+            const inputField = this.dom.logKeywordsInputField;
+            this.dom.logKeywordsContainer.innerHTML = ''; // Clear all children
             this.data.logKeywordsData.forEach(keyword => {
                 const tagEl = document.createElement('span');
                 tagEl.className = 'tag-item';
@@ -2405,9 +2676,10 @@
                 removeBtn.setAttribute('aria-label', `Remove keyword ${this.utils.escapeHtml(keyword)}`);
                 removeBtn.innerHTML = this.getIcon('x-sm');
                 tagEl.appendChild(removeBtn);
-                this.dom.logKeywordsContainer.insertBefore(tagEl, this.dom.logKeywordsInputField);
+                this.dom.logKeywordsContainer.appendChild(tagEl);
             });
-            this.dom.logKeywordsHidden.value = this.data.logKeywordsData.join(','); // Update hidden input
+            this.dom.logKeywordsContainer.appendChild(inputField); // Re-append the input field
+            this.dom.logKeywordsHidden.value = this.data.logKeywordsData.join(','); 
         },
         addKeywordTag(keyword) {
             keyword = keyword.trim();
@@ -2437,13 +2709,12 @@
             keywords.forEach(k => this.addKeywordTag(k));
         },
         
-        // Modal and Toast enhancements
         showModal(modalId) { 
             const modal = document.getElementById(modalId); 
             if (modal) {
                 this.data.previouslyFocusedElement = document.activeElement;
                 modal.style.display = 'block';
-                requestAnimationFrame(() => modal.classList.add('visible')); // For transition
+                requestAnimationFrame(() => modal.classList.add('visible')); 
                 const firstFocusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
                 if (firstFocusable) firstFocusable.focus();
             }
@@ -2484,8 +2755,8 @@
         },
         showConfirmationModal(message, onConfirm, onCancel = null, confirmButtonText = 'Confirm', confirmButtonClass = 'button-danger', title = 'Confirm Action') {
             this.dom.modals.confirmAction.querySelector('.modal-title').textContent = title;
-            this.dom.confirmActionMessage.innerHTML = message; //innerHTML for <strong>
-            this.dom.btnConfirmActionConfirm.innerHTML = confirmButtonText; // innerHTML for icon
+            this.dom.confirmActionMessage.innerHTML = message; 
+            this.dom.btnConfirmActionConfirm.innerHTML = confirmButtonText; 
             this.dom.btnConfirmActionConfirm.className = `button ${confirmButtonClass}`; 
 
             this.dom.btnConfirmActionConfirm.onclick = () => { onConfirm(); this.hideModal('modal-confirm-action'); };
@@ -2494,18 +2765,39 @@
         },
         setButtonLoadingState(buttonElement, isLoading, loadingText = 'Loading...') {
             if (!buttonElement) return;
+            const originalIcon = buttonElement.querySelector('.button-icon > svg'); // Try to get the original icon
+            
             if (isLoading) {
                 buttonElement.disabled = true;
-                buttonElement.dataset.originalContent = buttonElement.innerHTML;
+                if (!buttonElement.dataset.originalContent) { // Store only if not already stored
+                     buttonElement.dataset.originalContent = buttonElement.innerHTML;
+                }
                 const textSpan = loadingText ? `<span>${loadingText}</span>` : '';
                 buttonElement.innerHTML = `<span class="button-icon">${this.getIcon('spinner')}</span>${textSpan}`;
             } else {
                 buttonElement.disabled = false;
                 if (buttonElement.dataset.originalContent) {
                     buttonElement.innerHTML = buttonElement.dataset.originalContent;
-                } 
-                // else: If no original content, it might need specific resetting.
-                // For simplicity, this assumes originalContent covers most cases.
+                    delete buttonElement.dataset.originalContent; // Clean up
+                } else {
+                    // Fallback if originalContent wasn't set (e.g. if called with false first)
+                    // This might need more specific logic if icons are complex or dynamic
+                    const iconSpan = buttonElement.querySelector('.button-icon');
+                    if(iconSpan && iconSpan.firstChild && iconSpan.firstChild.classList && iconSpan.firstChild.classList.contains('animate-spin')) {
+                        // Attempt to restore a generic icon if possible, or leave text only
+                        // This part is tricky without knowing the exact original icon.
+                        // For now, let's assume `originalContent` dataset is the primary mechanism.
+                        // If it's a label, the inner text is usually just the text.
+                        if (buttonElement.tagName === 'LABEL') {
+                            const input = buttonElement.querySelector('input[type="file"]');
+                            let textContent = "Action"; // Generic fallback
+                            if (buttonElement.id === 'add-videos-input_label') textContent = "Add Videos"; // Example specific
+                            // This part would be more robust if original text was also stored.
+                             buttonElement.innerHTML = `<span class="button-icon">${this.getIcon('plus')}</span> ${textContent}`;
+                             if (input) buttonElement.appendChild(input);
+                        }
+                    }
+                }
             }
         },
 
