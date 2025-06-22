@@ -674,10 +674,10 @@
         .video-controls .button .button-icon svg { width: 22px; height: 22px; } /* Larger icons for main controls */
         .video-controls .timecode-display { font-family: monospace; font-size: 1em; color: var(--text-color); text-align: center; flex-grow: 1; min-width: 140px; }
         .video-controls .speed-control-group { display: flex; align-items: center; }
-        .video-controls .speed-control-group select { min-width: 80px; } /* Handled by global form style now */
+        .video-controls .speed-control-group select { min-width: 50px; text-align: center; text-align-last: center; } /* Handled by global form style now */
         
         #timeline-container {
-            width: 50%; height: 15px; background-color: #E5E7EB; /* Lighter gray */ cursor: pointer;
+            width: 100%; height: 15px; background-color: #E5E7EB; /* Lighter gray */ cursor: pointer;
             border-radius: 5px; margin-bottom: 10px; overflow: hidden;
             touch-action: pan-y;
         }
@@ -705,10 +705,13 @@
             background-color: var(--card-bg-color);
             min-height: 46px; /* Match input height */
         }
+
+        /*
         .tag-input-container:focus-within {
             border-color: none;
             box-shadow: none;
         }
+        */
         .tag-input-container .tag-item {
             display: inline-flex;
             align-items: center;
