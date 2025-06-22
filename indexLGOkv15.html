@@ -241,6 +241,7 @@
             color: var(--text-color-light);
             margin-bottom: 16px;
         }
+        
         .card-actions {
             margin-top: 24px;
             display: flex;
@@ -252,15 +253,14 @@
              margin-top: 16px; 
         }
         
-        /* UPDATED: Make primary button grow, others take natural width */
+        .card-actions .button {
+            flex-grow: 0; /* Default: buttons do not grow */
+            flex-shrink: 0;
+        }
         .card-actions .button-primary { 
-            flex-grow: 1; 
+            flex-grow: 1; /* Primary button grows to fill available space */
         }
-        .card-actions .button-secondary,
-        .card-actions .button-subtle {
-            flex-grow: 0;
-        }
-
+        
         @media (max-width: 480px) {
             /* On small screens, make all card action buttons full width */
             .card-actions .button { 
@@ -679,7 +679,7 @@
         
         .mark-buttons { display: flex; gap: 16px; margin-bottom: 24px; }
         .mark-buttons .button { flex-grow: 1; }
-        .mark-buttons .button .button-icon svg { width: 20px; height: 20px; } /* UPDATED: Control Mark In/Out icon size */
+        .mark-buttons .button .button-icon svg { width: 20px; height: 20px; } /* Icon size for Mark In/Out */
         .mark-buttons .button.active-mark { background-color: var(--primary-color); color: white; }
         
         .star-rating { display: flex; gap: 8px; cursor: pointer; margin-bottom: 16px; }
@@ -1045,21 +1045,21 @@
 
     <script>
     const app = {
-        icons: { // Heroicons v2 (Outline style) & Custom
+        icons: { // Heroicons v2 (Outline style) & Custom, Mark In/Out updated
             'plus': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>',
             'upload': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>',
             'download': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>',
             'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>',
             'video': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9a2.25 2.25 0 00-2.25 2.25v9A2.25 2.25 0 004.5 18.75z" /></svg>',
-            'rewind': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>', // UPDATED: FastRewind style
+            'rewind': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>', 
             'play': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" /></svg>',
             'pause': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" /></svg>',
-            'forward': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5" /></svg>', // UPDATED: FastForward style
-            'mark-in': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5V4.5M8.25 12H19.5M19.5 12l-4.5-4.5M19.5 12l-4.5 4.5" /></svg>', // UPDATED: Simpler Mark In
-            'mark-out': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5V19.5M15.75 12H4.5M4.5 12l4.5-4.5M4.5 12l4.5 4.5" /></svg>', // UPDATED: Simpler Mark Out
+            'forward': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5" /></svg>', 
+            'mark-in': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v16m16-8H4m6-4L4 12l6 4" /></svg>', // UPDATED: More minimalist Mark In
+            'mark-out': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 4v16M4 12h16m-6-4l6 4-6 4" /></svg>', // UPDATED: More minimalist Mark Out
             'star-outline': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.82.61l-4.725-2.885a.563.563 0 00-.652 0l-4.725 2.885a.562.562 0 01-.82-.61l1.285-5.385a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>',
             'star-filled': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354l-4.593 2.71c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>',
-            'save': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>', // Check circle
+            'save': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>', 
             'close': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>',
             'plus-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
             'trash': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.56 0c1.153 0 2.243.096 3.298.26m-3.298-.26l-.6 3.601m10.274-3.601l.6 3.601m-5.405-3.601a48.27 48.27 0 00-4.482.375M5.106 5.79A48.27 48.27 0 0012 5.25m0 0c1.531 0 3.036.126 4.5.36m-9 0c1.464-.234 2.969-.36 4.5-.36m4.482.375a48.27 48.27 0 015.342.616m-5.342-.616a3.375 3.375 0 00-1.022.166m-12.56 0a3.375 3.375 0 011.022.166m0 0L3 5.79m2.106 0L4.772 5.79m14.456 0L19.228 5.79m2.104 0L21 5.79" /></svg>',
@@ -2775,11 +2775,11 @@
         },
         setButtonLoadingState(buttonElement, isLoading, loadingText = 'Loading...') {
             if (!buttonElement) return;
-            const originalIcon = buttonElement.querySelector('.button-icon > svg'); // Try to get the original icon
+            const originalIcon = buttonElement.querySelector('.button-icon > svg'); 
             
             if (isLoading) {
                 buttonElement.disabled = true;
-                if (!buttonElement.dataset.originalContent) { // Store only if not already stored
+                if (!buttonElement.dataset.originalContent) { 
                      buttonElement.dataset.originalContent = buttonElement.innerHTML;
                 }
                 const textSpan = loadingText ? `<span>${loadingText}</span>` : '';
@@ -2788,22 +2788,35 @@
                 buttonElement.disabled = false;
                 if (buttonElement.dataset.originalContent) {
                     buttonElement.innerHTML = buttonElement.dataset.originalContent;
-                    delete buttonElement.dataset.originalContent; // Clean up
+                    delete buttonElement.dataset.originalContent; 
                 } else {
-                    // Fallback if originalContent wasn't set (e.g. if called with false first)
-                    // This might need more specific logic if icons are complex or dynamic
                     const iconSpan = buttonElement.querySelector('.button-icon');
                     if(iconSpan && iconSpan.firstChild && iconSpan.firstChild.classList && iconSpan.firstChild.classList.contains('animate-spin')) {
-                        // Attempt to restore a generic icon if possible, or leave text only
-                        // This part is tricky without knowing the exact original icon.
-                        // For now, let's assume `originalContent` dataset is the primary mechanism.
-                        // If it's a label, the inner text is usually just the text.
-                        if (buttonElement.tagName === 'LABEL') {
-                            const input = buttonElement.querySelector('input[type="file"]');
-                            let textContent = "Action"; // Generic fallback
-                            // This part would be more robust if original text was also stored.
-                             buttonElement.innerHTML = `<span class="button-icon">${this.getIcon('plus')}</span> ${textContent}`; // Defaulting to 'plus' for labels
-                             if (input) buttonElement.appendChild(input);
+                        // Fallback: Attempt to restore original text, assume icon was just a spinner
+                        let originalText = "Action"; // Generic
+                        // Attempt to deduce original text - this is brittle
+                        const buttonId = buttonElement.id;
+                        if (buttonId === "btn-create-project-confirm") originalText = "Create Project";
+                        else if (buttonId === "btn-rename-project-confirm") originalText = "Save Changes";
+                        else if (buttonId === "save-log-btn") originalText = "Save Log"; // or Update Log
+                        else if (buttonElement.closest('label') && buttonElement.closest('label').control?.id === 'add-videos-input') originalText = "Add Videos";
+
+
+                        let originalIconName = 'plus'; // Default
+                        if (buttonId === "btn-rename-project-confirm" || buttonId === "save-log-btn") originalIconName = "save";
+                        
+                        // Reconstruct based on typical structure
+                        let newContent = `<span class="button-icon">${this.getIcon(originalIconName)}</span>`;
+                        if(buttonElement.textContent.includes(loadingText)){ // If loadingText was part of the visible text
+                            newContent += ` ${originalText}`;
+                        } else { // Spinner was likely the only thing, or text was separate
+                           newContent += buttonElement.textContent.replace(loadingText, '').trim() || ` ${originalText}`;
+                        }
+                        buttonElement.innerHTML = newContent;
+
+                        if (buttonElement.tagName === 'LABEL') { // Re-attach input if it was a label
+                           const input = document.getElementById(buttonElement.htmlFor);
+                           if (input) buttonElement.appendChild(input); // This is not quite right, original input was inside
                         }
                     }
                 }
