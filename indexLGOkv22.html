@@ -412,13 +412,17 @@
 
         /* General UI Elements */
         .actions-bar {
-            margin-bottom: 24px;
+            margin-bottom: 40px;
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
         }
         .actions-bar .button { flex: 1; min-width: calc(50% - 8px); }
         @media (max-width: 480px) { .actions-bar .button { min-width: 100%; } }
+
+        #screen-projects .actions-bar {
+            margin-bottom: 40px; /* Increased margin specifically for Screen 1 */
+        }
 
         .section-title {
             font-size: 1.3em; font-weight: 600; margin-top: 32px;
