@@ -209,8 +209,8 @@
         }
         .button-full-width { display: flex; width: 100%; margin-bottom: 12px; }
         .button-small { padding: 8px 12px; font-size: 0.875em; gap: 6px;}
-        .button-icon { display: inline-flex; align-items: center; justify-content: center; }
-        .button-icon svg { width: 18px; height: 18px; } /* Default icon size */
+        .button .button-icon { display: inline-flex; align-items: center; justify-content: center; }
+        .button .button-icon svg { width: 18px; height: 18px; } /* Default icon size */
         .button-small .button-icon svg { width: 16px; height: 16px; }
         .button .button-icon-only { margin-right: 0; } 
 
@@ -241,7 +241,6 @@
             color: var(--text-color-light);
             margin-bottom: 16px;
         }
-        
         .card-actions {
             margin-top: 24px;
             display: flex;
@@ -253,20 +252,9 @@
              margin-top: 16px; 
         }
         
-        .card-actions .button {
-            flex-grow: 0; /* Default: buttons do not grow */
-            flex-shrink: 0;
-        }
-        .card-actions .button-primary { 
-            flex-grow: 1; /* Primary button grows to fill available space */
-        }
-        
+        .card-actions .button { flex-grow: 1; }
         @media (max-width: 480px) {
-            /* On small screens, make all card action buttons full width */
-            .card-actions .button { 
-                min-width: 100%; 
-                flex-grow: 1; /* Override specific grow rules for small screens */
-            }
+            .card-actions .button { min-width: 100%; }
         }
 
 
@@ -676,10 +664,8 @@
             touch-action: pan-y;
         }
         #timeline-progress { height: 100%; background-color: var(--primary-color); border-radius: 5px; }
-        
         .mark-buttons { display: flex; gap: 16px; margin-bottom: 24px; }
         .mark-buttons .button { flex-grow: 1; }
-        .mark-buttons .button .button-icon svg { width: 20px; height: 20px; } /* Icon size for Mark In/Out */
         .mark-buttons .button.active-mark { background-color: var(--primary-color); color: white; }
         
         .star-rating { display: flex; gap: 8px; cursor: pointer; margin-bottom: 16px; }
@@ -1045,36 +1031,36 @@
 
     <script>
     const app = {
-        icons: { // Heroicons v2 (Outline style) & Custom, Mark In/Out updated
-            'plus': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>',
-            'upload': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>',
-            'download': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>',
-            'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>',
-            'video': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9a2.25 2.25 0 00-2.25 2.25v9A2.25 2.25 0 004.5 18.75z" /></svg>',
-            'rewind': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>', 
-            'play': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" /></svg>',
-            'pause': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" /></svg>',
-            'forward': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5" /></svg>', 
-            'mark-in': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v16m16-8H4m6-4L4 12l6 4" /></svg>', // UPDATED: More minimalist Mark In
-            'mark-out': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 4v16M4 12h16m-6-4l6 4-6 4" /></svg>', // UPDATED: More minimalist Mark Out
-            'star-outline': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.82.61l-4.725-2.885a.563.563 0 00-.652 0l-4.725 2.885a.562.562 0 01-.82-.61l1.285-5.385a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>',
-            'star-filled': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354l-4.593 2.71c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>',
-            'save': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>', 
-            'close': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>',
-            'plus-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
-            'trash': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.56 0c1.153 0 2.243.096 3.298.26m-3.298-.26l-.6 3.601m10.274-3.601l.6 3.601m-5.405-3.601a48.27 48.27 0 00-4.482.375M5.106 5.79A48.27 48.27 0 0012 5.25m0 0c1.531 0 3.036.126 4.5.36m-9 0c1.464-.234 2.969-.36 4.5-.36m4.482.375a48.27 48.27 0 015.342.616m-5.342-.616a3.375 3.375 0 00-1.022.166m-12.56 0a3.375 3.375 0 011.022.166m0 0L3 5.79m2.106 0L4.772 5.79m14.456 0L19.228 5.79m2.104 0L21 5.79" /></svg>',
-            'pencil': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>',
-            'play-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" /></svg>',
-            'stop-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 019 14.437V9.564z" /></svg>',
-            'info-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>',
-            'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
-            'x-circle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
-            'alert-triangle': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>',
-            'folder': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>',
-            'film': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25h12m-7.5-3.75v3.75m-3.75-3.75v3.75m0-3.75C4.5 16.5 3 15 3 13.5v-9c0-1.5 1.5-3 3-3h12c1.5 0 3 1.5 3 3v9c0 1.5-1.5 3-3 3h-3.75m-7.5-3.75h7.5" /></svg>',
-            'document-text': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>',
-            'spinner': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>',
-            'x-sm': '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>', // For tag remove
+        icons: { // Lucide Icons (https://lucide.dev/)
+            'plus': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
+            'upload': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>',
+            'download': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+            'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
+            'video': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"></path><rect x="2" y="6" width="14" height="12" rx="2" ry="2"></rect></svg>',
+            'rewind': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 19 2 12 11 5 11 19"></polygon><polygon points="22 19 13 12 22 5 22 19"></polygon></svg>', 
+            'play': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>',
+            'pause': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>',
+            'forward': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>', 
+            'mark-in': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3"></path><path d="m6 11 6 6 6-6"></path><path d="M21 17H3"></path></svg>', 
+            'mark-out': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7V21"></path><path d="m6 13 6-6 6 6"></path><path d="M21 7H3"></path></svg>', 
+            'star-outline': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+            'star-filled': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+            'save': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>',
+            'close': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+            'plus-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+            'trash': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+            'pencil': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>',
+            'play-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>',
+            'stop-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6"></rect></svg>',
+            'info-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+            'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+            'x-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+            'alert-triangle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+            'folder': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
+            'film': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>',
+            'document-text': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
+            'spinner': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>',
+            'x-sm': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
         },
         getIcon(name, additionalClasses = '') {
             const svgString = this.icons[name] || this.icons['plus']; // Fallback
@@ -1133,11 +1119,11 @@
         dom: {}, 
         idb: {
             db: null,
-            dbName: 'LogReelFilesDB_v2', // Updated DB name
+            dbName: 'LogReelFilesDB_v2', 
             storeName: 'videoFiles',
             version: 1,
 
-            initDB() { // Direct, correct implementation
+            initDB() { 
                 return new Promise((resolve, reject) => {
                     if (app.idb.db) {
                         resolve(app.idb.db);
@@ -1148,7 +1134,6 @@
                         reject("IndexedDB not supported");
                         return;
                     }
-                    // Uses app.idb.dbName directly from this object's properties
                     const request = indexedDB.open(app.idb.dbName, app.idb.version);
 
                     request.onerror = (event) => {
@@ -1172,7 +1157,7 @@
                 });
             },
 
-            storeFile(videoId, file) { // Direct, correct implementation
+            storeFile(videoId, file) { 
                 return new Promise(async (resolve, reject) => {
                     try {
                         if (!app.idb.db) { 
@@ -1203,7 +1188,7 @@
                 });
             },
 
-            retrieveFile(videoId) { // Direct, correct implementation (removed unused 'file' param)
+            retrieveFile(videoId) { 
                 return new Promise(async (resolve, reject) => {
                     try {
                         if (!app.idb.db) {
@@ -1226,7 +1211,7 @@
                             if (event.target.result) {
                                 resolve(event.target.result.file);
                             } else {
-                                resolve(null); // File not found
+                                resolve(null); 
                             }
                         };
                         request.onerror = (event) => {
@@ -1240,7 +1225,7 @@
                 });
             },
 
-            deleteFile(videoId) { // Direct, correct implementation
+            deleteFile(videoId) { 
                 return new Promise(async (resolve, reject) => {
                     try {
                         if (!app.idb.db) {
@@ -1534,13 +1519,15 @@
 
                 this.data.videoElement.addEventListener('play', () => { 
                     if(this.data.playPauseBtn && this.currentScreen === 'screen-video-logging') {
-                        this.data.playPauseBtn.innerHTML = this.getIcon('pause'); 
+                        const iconSpan = this.data.playPauseBtn.querySelector('.button-icon');
+                        if (iconSpan) iconSpan.innerHTML = this.getIcon('pause');
                         this.data.playPauseBtn.setAttribute('aria-label', 'Pause video'); 
                     }
                 });
                 this.data.videoElement.addEventListener('pause', () => { 
                     if(this.data.playPauseBtn && this.currentScreen === 'screen-video-logging') {
-                        this.data.playPauseBtn.innerHTML = this.getIcon('play'); 
+                        const iconSpan = this.data.playPauseBtn.querySelector('.button-icon');
+                        if (iconSpan) iconSpan.innerHTML = this.getIcon('play');
                         this.data.playPauseBtn.setAttribute('aria-label', 'Play video'); 
                     }
                 });
@@ -1589,7 +1576,7 @@
                     }
                 }
 
-                if (this.currentScreen === 'screen-video-logging' && this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) { // Ensure prompt is hidden
+                if (this.currentScreen === 'screen-video-logging' && this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) { 
                     const activeEl = document.activeElement;
                     const isInputFocused = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT';
                     
@@ -1671,7 +1658,7 @@
                 if (previewArea) {
                     const videoId = previewArea.id.replace('main-preview-area-', '');
                     const acp = this.data.activeCardPlayer;
-                    if (acp.videoId === videoId && acp.controlsContainerElement && acp.playerElement && acp.playerElement.src && !acp.promptElement.classList.contains('hidden') === false) { // Ensure player is loaded and not showing prompt
+                    if (acp.videoId === videoId && acp.controlsContainerElement && acp.playerElement && acp.playerElement.src && !acp.promptElement.classList.contains('hidden') === false) { 
                         clearTimeout(acp.controlsHideTimer);
                         acp.controlsContainerElement.classList.add('visible');
                     }
@@ -1693,7 +1680,6 @@
             this.dom.projectVideosContainer.addEventListener('change', (e) => {
                 if (e.target.classList.contains('main-video-preview-file-input')) {
                     const videoId = e.target.dataset.targetPlayerId; 
-                    // Check if this is the active card player or if no player is active yet (e.g. prompt was shown first)
                     if (!this.data.activeCardPlayer.videoId || this.data.activeCardPlayer.videoId === videoId) {
                          this.handleCardPlayerFileSelection(e.target.files[0], videoId);
                     }
@@ -1757,14 +1743,14 @@
                                 </div>
                             </div>
                             <button class="button button-subtle button-small btn-edit-project-name" data-project-id="${project.id}" aria-label="Rename project">
-                                ${this.getIcon('pencil')}
+                                <span class="button-icon">${this.getIcon('pencil')}</span>
                             </button>
                         </div>
                     </div>
                     <div class="card-actions">
                         <button class="button button-primary btn-open-project" data-project-id="${project.id}">Open Project</button>
                         <button class="button button-subtle btn-delete-project" data-project-id="${project.id}">
-                            ${this.getIcon('trash')} Delete
+                            <span class="button-icon">${this.getIcon('trash')}</span> Delete
                         </button>
                     </div>
                 `; 
@@ -1810,10 +1796,15 @@
             this.data.currentEditingProjectId = null;
         },
         confirmDeleteProject(projectId) { 
-             const project = this.getProjectById(projectId);
+            const project = this.getProjectById(projectId);
             if (!project) return;
             const message = `Are you sure you want to delete the project "<strong>${this.utils.escapeHtml(project.name)}</strong>"? <br>This action cannot be undone and will remove all associated video files from persistent storage.`;
-            this.showConfirmationModal(message, () => this.deleteProject(projectId), null, `Delete Project ${this.getIcon('trash')}`, "button-danger");
+            this.showConfirmationModal(
+                message, 
+                () => this.deleteProject(projectId), 
+                null, 
+                { text: 'Delete Project', icon: 'trash', class: 'button-danger' }
+            );
         },
         async deleteProject(projectId){ 
              const project = this.getProjectById(projectId);
@@ -1870,7 +1861,8 @@
                                     this.saveData(); this.renderProjectsScreen();
                                     this.showToast(`${projectsToAdd.length} project(s) imported. Video files may need re-adding.`, 'success', 5000, 'check-circle');
                                 },
-                                null, `Import & Add ${this.getIcon('plus-circle')}`, "button-primary"
+                                null, 
+                                { text: 'Import & Add', icon: 'plus-circle', class: 'button-primary' }
                             );
                         } else { this.showToast('Invalid project file format.', 'error', 3000, 'x-circle'); }
                     } catch (error) { this.showToast('Error reading project file.', 'error', 3000, 'x-circle'); console.error("Import error:", error); }
@@ -1950,9 +1942,9 @@
                                     ${log.keywords && log.keywords.length > 0 ? `<p class="keywords">Keywords: ${this.utils.escapeHtml(log.keywords.join(', '))}</p>` : ''}
                                 </div>
                                 <div class="clip-item-actions">
-                                    <button class="button button-primary button-small btn-play-clip-on-card" data-log-id="${log.id}" aria-label="Play clip">${this.getIcon('play')} Play</button>
-                                    <button class="button button-subtle button-small btn-edit-this-clip" data-log-id="${log.id}" aria-label="Edit clip">${this.getIcon('pencil')} Edit</button>
-                                    <button class="button button-subtle button-small btn-delete-this-log-item" data-log-id="${log.id}" aria-label="Delete clip">${this.getIcon('trash')} Del</button>
+                                    <button class="button button-primary button-small btn-play-clip-on-card" data-log-id="${log.id}" aria-label="Play clip"><span class="button-icon">${this.getIcon('play')}</span> Play</button>
+                                    <button class="button button-subtle button-small btn-edit-this-clip" data-log-id="${log.id}" aria-label="Edit clip"><span class="button-icon">${this.getIcon('pencil')}</span> Edit</button>
+                                    <button class="button button-subtle button-small btn-delete-this-log-item" data-log-id="${log.id}" aria-label="Delete clip"><span class="button-icon">${this.getIcon('trash')}</span> Del</button>
                                 </div>
                             </div>
                         `;
@@ -1974,8 +1966,8 @@
                              <button class="button button-subtle button-small btn-toggle-important ${video.isImportant ? 'is-important' : ''}" title="${video.isImportant ? 'Unmark as important' : 'Mark as important'}" aria-pressed="${video.isImportant}">
                                 <span class="button-icon">${this.getIcon(video.isImportant ? 'star-filled' : 'star-outline')}</span>
                             </button>
-                            <button class="button button-secondary button-small btn-log-full-video" aria-label="Log full video">${this.getIcon('document-text')} Log Full Video</button>
-                            <button class="button button-subtle button-small btn-delete-this-video" aria-label="Delete video">${this.getIcon('trash')} Delete Video</button>
+                            <button class="button button-secondary button-small btn-log-full-video" aria-label="Log full video"><span class="button-icon">${this.getIcon('document-text')}</span> Log Full Video</button>
+                            <button class="button button-subtle button-small btn-delete-this-video" aria-label="Delete video"><span class="button-icon">${this.getIcon('trash')}</span> Delete Video</button>
                         </div>
                     </div>
 
@@ -1988,19 +1980,19 @@
                         <div class="main-video-preview-prompt hidden" id="main-player-prompt-${video.id}">
                             <p id="main-player-prompt-msg-${video.id}">Select video file to play preview.</p>
                             <label class="button button-primary button-small mt-1">
-                                ${this.getIcon('video')} Select Video File
+                                <span class="button-icon">${this.getIcon('video')}</span> Select Video File
                                 <input type="file" class="main-video-preview-file-input" data-target-player-id="${video.id}" accept="video/*" aria-label="Select video file">
                             </label>
                         </div>
                         <div class="main-player-custom-controls" id="main-player-controls-${video.id}">
-                            <button class="main-player-ctrl-btn main-player-rewind-btn" aria-label="Rewind 5 seconds">${this.getIcon('rewind')}</button>
-                            <button class="main-player-ctrl-btn main-player-play-pause-btn" aria-label="Play">${this.getIcon('play')}</button>
-                            <button class="main-player-ctrl-btn main-player-forward-btn" aria-label="Forward 5 seconds">${this.getIcon('forward')}</button>
+                            <button class="main-player-ctrl-btn main-player-rewind-btn" aria-label="Rewind 5 seconds"><span class="button-icon">${this.getIcon('rewind')}</span></button>
+                            <button class="main-player-ctrl-btn main-player-play-pause-btn" aria-label="Play"><span class="button-icon">${this.getIcon('play')}</span></button>
+                            <button class="main-player-ctrl-btn main-player-forward-btn" aria-label="Forward 5 seconds"><span class="button-icon">${this.getIcon('forward')}</span></button>
                             <div class="main-player-progress-bar-container">
                                 <div class="main-player-progress-bar" id="main-player-progress-${video.id}"></div>
                             </div>
                             <span class="main-player-timecode" id="main-player-timecode-${video.id}">00:00 / 00:00</span>
-                            <button class="main-player-ctrl-btn main-player-stop-btn" aria-label="Stop playback and show thumbnail">${this.getIcon('stop-circle')}</button>
+                            <button class="main-player-ctrl-btn main-player-stop-btn" aria-label="Stop playback and show thumbnail"><span class="button-icon">${this.getIcon('stop-circle')}</span></button>
                         </div>
                     </div>
 
@@ -2083,7 +2075,12 @@
             const video = this.getVideoById(this.data.currentProjectId, videoId);
             if (!video) return;
             const message = `Delete "<strong>${this.utils.escapeHtml(video.filename)}</strong>" and all its logs? <br>This also removes it from persistent storage. Cannot be undone.`;
-            this.showConfirmationModal(message, () => this.deleteVideo(videoId), null, `Delete Video ${this.getIcon('trash')}`, "button-danger");
+            this.showConfirmationModal(
+                message, 
+                () => this.deleteVideo(videoId), 
+                null, 
+                { text: 'Delete Video', icon: 'trash', class: 'button-danger' }
+            );
         },
         async deleteVideo(videoId) { 
             const project = this.getProjectById(this.data.currentProjectId);
@@ -2121,7 +2118,7 @@
                 if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
 
                 if (acp.playerElement) acp.playerElement.classList.add('hidden');
-                if (acp.controlsContainerElement) { acp.controlsContainerElement.classList.remove('visible'); } // Ensure it's not visible
+                if (acp.controlsContainerElement) { acp.controlsContainerElement.classList.remove('visible'); } 
                 if (acp.promptElement) acp.promptElement.classList.add('hidden');
                 if (acp.thumbnailElement) acp.thumbnailElement.classList.remove('hidden');
                 if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.remove('hidden');
@@ -2177,7 +2174,6 @@
             acp.thumbnailElement.classList.add('hidden');
             acp.bigPlayButtonElement.classList.add('hidden');
             acp.playerElement.classList.remove('hidden');
-            // acp.controlsContainerElement will be made visible on play/hover via CSS opacity/visibility
             acp.promptElement.classList.add('hidden');
 
             if (acp.boundPlayerError) acp.playerElement.removeEventListener('error', acp.boundPlayerError);
@@ -2193,13 +2189,20 @@
             acp.boundPlayerEnded = () => this.handleCardPlayerEnded(); 
             acp.boundPlayerPlay = () => { 
                 acp.isPlaying = true; 
-                if(acp.playPauseBtnElement) { acp.playPauseBtnElement.innerHTML = this.getIcon('pause'); acp.playPauseBtnElement.setAttribute('aria-label', 'Pause'); }
+                if(acp.playPauseBtnElement) { 
+                    const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                    if(iconSpan) iconSpan.innerHTML = this.getIcon('pause');
+                    acp.playPauseBtnElement.setAttribute('aria-label', 'Pause'); 
+                }
                 if(acp.controlsContainerElement) { clearTimeout(acp.controlsHideTimer); acp.controlsContainerElement.classList.add('visible'); }
             };
             acp.boundPlayerPause = () => { 
                 acp.isPlaying = false; 
-                if(acp.playPauseBtnElement && !acp.isScrubbing) { acp.playPauseBtnElement.innerHTML = this.getIcon('play'); acp.playPauseBtnElement.setAttribute('aria-label', 'Play'); }
-                // Only hide controls if not hovering over preview area or controls themselves
+                if(acp.playPauseBtnElement && !acp.isScrubbing) {
+                    const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                    if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
+                    acp.playPauseBtnElement.setAttribute('aria-label', 'Play'); 
+                }
                  if(acp.controlsContainerElement && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover')) { 
                     acp.controlsHideTimer = setTimeout(() => {
                         if(acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
@@ -2217,7 +2220,7 @@
             const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
             if (videoSrc) {
                 if(acp.playerElement.src !== videoSrc) { acp.playerElement.src = videoSrc; acp.playerElement.load(); } 
-                else { this.handleCardPlayerLoadedMetadata(segmentData); } // If src is same, manually trigger for segments
+                else { this.handleCardPlayerLoadedMetadata(segmentData); } 
                  acp.playerElement.play().catch(e => {
                     if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
                     this.showCardPlayerPrompt(videoData.filename);
@@ -2267,12 +2270,20 @@
         },
         handleCardPlayerSegmentEnd() { 
             const acp = this.data.activeCardPlayer; acp.isPlaying = false; 
-            if(acp.playPauseBtnElement) { acp.playPauseBtnElement.innerHTML = this.getIcon('play'); acp.playPauseBtnElement.setAttribute('aria-label', 'Replay'); }
+            if(acp.playPauseBtnElement) { 
+                const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
+                acp.playPauseBtnElement.setAttribute('aria-label', 'Replay'); 
+            }
             if(acp.progressBarElement) acp.progressBarElement.style.width = '100%'; this.updateCardPlayerTimeDisplay(); 
         },
         handleCardPlayerEnded() { 
             const acp = this.data.activeCardPlayer; acp.isPlaying = false; 
-            if(acp.playPauseBtnElement) { acp.playPauseBtnElement.innerHTML = this.getIcon('play'); acp.playPauseBtnElement.setAttribute('aria-label', 'Replay'); }
+            if(acp.playPauseBtnElement) { 
+                const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
+                acp.playPauseBtnElement.setAttribute('aria-label', 'Replay'); 
+            }
             if(acp.progressBarElement) acp.progressBarElement.style.width = '100%';
             if(acp.playerElement) acp.playerElement.currentTime = acp.currentSegment.endTime; this.updateCardPlayerTimeDisplay();
         },
@@ -2348,21 +2359,19 @@
                 if(promptMsgElement) promptMsgElement.innerHTML = `Video "<strong>${this.utils.escapeHtml(videoFilename)}</strong>" needs to be selected.`;
                 acp.promptElement.classList.remove('hidden');
                 if (acp.playerElement) acp.playerElement.classList.add('hidden');
-                if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible'); // Ensure hidden
+                if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible'); 
                 if (acp.thumbnailElement) acp.thumbnailElement.classList.add('hidden'); 
                 if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.add('hidden');
             }
         },
         async handleCardPlayerFileSelection(file, videoIdToMatch) { 
             const acp = this.data.activeCardPlayer;
-             // Ensure activeCardPlayer is properly initialized for this videoId if it's not already
             if (!acp.videoId || acp.videoId !== videoIdToMatch) {
                 const cardElement = document.querySelector(`.video-entry-card[data-video-id="${videoIdToMatch}"]`);
                 if (cardElement) {
-                    this.resetActiveCardPlayerUI(false); // Reset previous player
+                    this.resetActiveCardPlayerUI(false); 
                     acp.videoId = videoIdToMatch;
                     acp.cardElement = cardElement;
-                    // Re-query essential elements for the current card
                     const previewArea = cardElement.querySelector(`#main-preview-area-${videoIdToMatch}`);
                     if (!previewArea) { this.showToast("Player UI error.", "error", 3000, 'x-circle'); return; }
                     acp.playerElement = previewArea.querySelector(`#main-player-${videoIdToMatch}`);
@@ -2390,7 +2399,7 @@
             const objectURL = URL.createObjectURL(file); this.data.videoFileCache[cacheKey] = objectURL; 
             if (acp.playerElement && acp.promptElement && acp.controlsContainerElement) {
                 acp.promptElement.classList.add('hidden'); acp.playerElement.classList.remove('hidden'); 
-                acp.controlsContainerElement.classList.add('visible'); // Show controls
+                acp.controlsContainerElement.classList.add('visible'); 
                 acp.playerElement.src = objectURL; acp.playerElement.load(); 
                 acp.playerElement.play().catch(e => { if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle'); });
             } else { this.showToast("Player UI elements missing after file selection.", "error", 3000, 'x-circle'); }
@@ -2399,7 +2408,12 @@
         confirmDeleteLogItemFromScreen2(videoId, logId){ 
             const log = this.getLogById(this.data.currentProjectId, videoId, logId); if (!log) return;
             const message = `Delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>Cannot be undone.`;
-            this.showConfirmationModal(message, () => this.deleteLogItem(videoId, logId), null, `Delete Log ${this.getIcon('trash')}`, "button-danger");
+            this.showConfirmationModal(
+                message, 
+                () => this.deleteLogItem(videoId, logId), 
+                null, 
+                { text: 'Delete Log', icon: 'trash', class: 'button-danger' }
+            );
         },
         deleteLogItem(videoId, logId) { 
              const video = this.getVideoById(this.data.currentProjectId, videoId); if (!video || !video.logs) return;
@@ -2420,7 +2434,11 @@
             this.dom.videoFilenameHeader.textContent = this.utils.escapeHtml(videoData.filename);
             this.resetLogForm(); this.renderSavedLogsList(); this.data.videoElement.pause(); 
             this.data.videoElement.removeAttribute('src'); this.data.videoElement.load(); 
-            this.data.playPauseBtn.innerHTML = this.getIcon('play'); this.data.playPauseBtn.setAttribute('aria-label', 'Play video');
+            
+            const playPauseIconSpan = this.data.playPauseBtn.querySelector('.button-icon');
+            if (playPauseIconSpan) playPauseIconSpan.innerHTML = this.getIcon('play');
+            this.data.playPauseBtn.setAttribute('aria-label', 'Play video');
+
             this.updateVideoTimes(); this.dom.videoPlayerContainer.classList.remove('hidden'); 
             this.dom.videoFilePrompt.classList.add('hidden'); this.data.videoElement.classList.add('hidden'); 
             this.data.videoElement.removeAttribute('controls');
@@ -2451,14 +2469,19 @@
         updateVideoTimes() { 
             if (!this.data.videoElement || !this.data.videoElement.duration || isNaN(this.data.videoElement.duration)) {
                 this.data.timecodeDisplay.textContent = '00:00 / 00:00'; this.data.timelineProgress.style.width = '0%';
-                if(this.data.markInBtn) this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (00:00.0)`;
-                if(this.data.markOutBtn) this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (00:00.0)`; return;
+                if(this.data.markInBtn) this.data.markInBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-in')}</span> Mark In (00:00.0)`;
+                if(this.data.markOutBtn) this.data.markOutBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-out')}</span> Mark Out (00:00.0)`; return;
             }
             const currentTime = this.data.videoElement.currentTime; const duration = this.data.videoElement.duration;
             this.data.timecodeDisplay.textContent = `${this.utils.formatTime(currentTime)} / ${this.utils.formatTime(duration)}`;
             if (!this.data.isScrubbing) this.data.timelineProgress.style.width = `${(currentTime / duration) * 100}%`;
-            if (this.data.markInTime === 0 || (this.data.markInBtn && this.data.markInBtn.classList.contains('default-mark'))) this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (${this.utils.formatTime(currentTime, true)})`;
-            if (this.data.markOutTime === null || (this.data.markOutBtn && this.data.markOutBtn.classList.contains('default-mark'))) this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(currentTime, true)})`;
+            
+            if (this.data.markInTime === 0 || (this.data.markInBtn && this.data.markInBtn.classList.contains('default-mark'))) {
+                this.data.markInBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-in')}</span> Mark In (${this.utils.formatTime(currentTime, true)})`;
+            }
+            if (this.data.markOutTime === null || (this.data.markOutBtn && this.data.markOutBtn.classList.contains('default-mark'))) {
+                this.data.markOutBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-out')}</span> Mark Out (${this.utils.formatTime(currentTime, true)})`;
+            }
         },
         async togglePlayPause() { 
             if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { 
@@ -2495,12 +2518,13 @@
         setMarkIn() { 
             if (!this.data.videoElement.src || !this.dom.videoFilePrompt.classList.contains('hidden')) { this.showToast("Load video first.", "warning", 3000, 'alert-triangle'); return; }
             this.data.markInTime = this.data.videoElement.currentTime;
-            this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (${this.utils.formatTime(this.data.markInTime, true)})`;
+            this.data.markInBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-in')}</span> Mark In (${this.utils.formatTime(this.data.markInTime, true)})`;
             this.data.markInBtn.classList.remove('default-mark'); 
             this.data.markInBtn.classList.add('active-mark'); 
             setTimeout(() => { this.data.markInBtn.classList.remove('active-mark');}, 1000);
             if (this.data.markOutTime !== null && this.data.markOutTime < this.data.markInTime) {
-                this.data.markOutTime = null; this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(this.data.videoElement.currentTime, true)})`;
+                this.data.markOutTime = null; 
+                this.data.markOutBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-out')}</span> Mark Out (${this.utils.formatTime(this.data.videoElement.currentTime, true)})`;
                 this.data.markOutBtn.classList.add('default-mark');
             }
         },
@@ -2509,7 +2533,7 @@
             const currentTime = this.data.videoElement.currentTime;
             if (currentTime <= this.data.markInTime) { this.showToast("Mark Out must be after Mark In.", "warning", 3000, 'alert-triangle'); return; }
             this.data.markOutTime = currentTime;
-            this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(this.data.markOutTime, true)})`;
+            this.data.markOutBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-out')}</span> Mark Out (${this.utils.formatTime(this.data.markOutTime, true)})`;
             this.data.markOutBtn.classList.remove('default-mark'); 
             this.data.markOutBtn.classList.add('active-mark');
             setTimeout(() => { this.data.markOutBtn.classList.remove('active-mark'); }, 1000);
@@ -2582,10 +2606,10 @@
             this.data.currentRating = 0; this.updateStarDisplay();
             this.data.markInTime = 0; this.data.markOutTime = null;
             const defaultTime = (this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) ? this.data.videoElement.currentTime : 0;
-            this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (${this.utils.formatTime(defaultTime, true)})`; this.data.markInBtn.classList.add('default-mark');
-            this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(defaultTime, true)})`; this.data.markOutBtn.classList.add('default-mark');
+            this.data.markInBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-in')}</span> Mark In (${this.utils.formatTime(defaultTime, true)})`; this.data.markInBtn.classList.add('default-mark');
+            this.data.markOutBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-out')}</span> Mark Out (${this.utils.formatTime(defaultTime, true)})`; this.data.markOutBtn.classList.add('default-mark');
             this.dom.editingLogIdInput.value = ''; 
-            this.dom.saveLogBtn.innerHTML = `${this.getIcon('save')} Save Log`; 
+            this.dom.saveLogBtn.innerHTML = `<span class="button-icon">${this.getIcon('save')}</span> Save Log`; 
             this.dom.saveLogBtn.disabled = false; 
         },
         renderSavedLogsList() { 
@@ -2616,9 +2640,9 @@
                     ${keywordsDisplay ? `<div class="log-item-keywords">${keywordsDisplay}</div>` : ''}
                     ${log.thumbnail ? `<img src="${log.thumbnail}" alt="Log thumbnail">` : ''}
                     <div class="card-actions" style="margin-top:10px;">
-                        <button class="button button-subtle button-small btn-go-to-log-time" data-time="${log.markIn}" aria-label="Go to time">${this.getIcon('play-circle')} Go to</button>
-                        <button class="button button-secondary button-small btn-edit-log" data-log-id="${log.id}" aria-label="Edit log">${this.getIcon('pencil')} Edit</button>
-                        <button class="button button-subtle button-small btn-delete-log" data-log-id="${log.id}" aria-label="Delete log">${this.getIcon('trash')} Delete</button>
+                        <button class="button button-subtle button-small btn-go-to-log-time" data-time="${log.markIn}" aria-label="Go to time"><span class="button-icon">${this.getIcon('play-circle')}</span> Go to</button>
+                        <button class="button button-secondary button-small btn-edit-log" data-log-id="${log.id}" aria-label="Edit log"><span class="button-icon">${this.getIcon('pencil')}</span> Edit</button>
+                        <button class="button button-subtle button-small btn-delete-log" data-log-id="${log.id}" aria-label="Delete log"><span class="button-icon">${this.getIcon('trash')}</span> Delete</button>
                     </div>
                 `;
                 fragment.appendChild(item);
@@ -2652,10 +2676,11 @@
             this.data.currentRating = log.rating; this.updateStarDisplay();
             this.data.markInTime = log.markIn; this.data.markOutTime = log.markOut;
             if (this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) { this.data.videoElement.currentTime = log.markIn; }
-            this.data.markInBtn.innerHTML = `${this.getIcon('mark-in')} Mark In (${this.utils.formatTime(log.markIn, true)})`;
-            this.data.markOutBtn.innerHTML = `${this.getIcon('mark-out')} Mark Out (${this.utils.formatTime(log.markOut, true)})`;
+            this.data.markInBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-in')}</span> Mark In (${this.utils.formatTime(log.markIn, true)})`;
+            this.data.markOutBtn.innerHTML = `<span class="button-icon">${this.getIcon('mark-out')}</span> Mark Out (${this.utils.formatTime(log.markOut, true)})`;
             this.data.markInBtn.classList.remove('default-mark'); this.data.markOutBtn.classList.remove('default-mark');
-            this.dom.editingLogIdInput.value = log.id; this.dom.saveLogBtn.innerHTML = `${this.getIcon('save')} Update Log`;
+            this.dom.editingLogIdInput.value = log.id; 
+            this.dom.saveLogBtn.innerHTML = `<span class="button-icon">${this.getIcon('save')}</span> Update Log`;
             this.dom.logNotes.focus();
             const logFormCard = this.dom.logNotes.closest('article.card');
             if (logFormCard) logFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2663,7 +2688,12 @@
         confirmDeleteLogOnScreen3(logId) { 
              const log = this.getLogById(this.data.currentProjectId, this.data.currentVideoId, logId); if (!log) return;
             const message = `Delete this log entry? <br><small style="color:var(--text-color-light);">${this.utils.escapeHtml(log.notes.substring(0,50))}...</small><br>Cannot be undone.`;
-            this.showConfirmationModal(message, () => this.deleteLogOnScreen3(logId), null, `Delete Log ${this.getIcon('trash')}`, "button-danger");
+            this.showConfirmationModal(
+                message, 
+                () => this.deleteLogOnScreen3(logId), 
+                null, 
+                { text: 'Delete Log', icon: 'trash', class: 'button-danger' }
+            );
         },
         deleteLogOnScreen3(logId) { 
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
@@ -2675,7 +2705,7 @@
 
         renderKeywordTags() {
             const inputField = this.dom.logKeywordsInputField;
-            this.dom.logKeywordsContainer.innerHTML = ''; // Clear all children
+            this.dom.logKeywordsContainer.innerHTML = ''; 
             this.data.logKeywordsData.forEach(keyword => {
                 const tagEl = document.createElement('span');
                 tagEl.className = 'tag-item';
@@ -2688,7 +2718,7 @@
                 tagEl.appendChild(removeBtn);
                 this.dom.logKeywordsContainer.appendChild(tagEl);
             });
-            this.dom.logKeywordsContainer.appendChild(inputField); // Re-append the input field
+            this.dom.logKeywordsContainer.appendChild(inputField); 
             this.dom.logKeywordsHidden.value = this.data.logKeywordsData.join(','); 
         },
         addKeywordTag(keyword) {
@@ -2763,11 +2793,22 @@
                 toast.addEventListener('transitionend', () => { if (toast.parentNode === this.dom.toastContainer) this.dom.toastContainer.removeChild(toast); }, { once: true });
             }, duration);
         },
-        showConfirmationModal(message, onConfirm, onCancel = null, confirmButtonText = 'Confirm', confirmButtonClass = 'button-danger', title = 'Confirm Action') {
+        showConfirmationModal(message, onConfirm, onCancel = null, confirmButtonDetails = {}, title = 'Confirm Action') {
             this.dom.modals.confirmAction.querySelector('.modal-title').textContent = title;
-            this.dom.confirmActionMessage.innerHTML = message; 
-            this.dom.btnConfirmActionConfirm.innerHTML = confirmButtonText; 
-            this.dom.btnConfirmActionConfirm.className = `button ${confirmButtonClass}`; 
+            this.dom.confirmActionMessage.innerHTML = message;
+
+            const btnText = confirmButtonDetails.text || 'Confirm';
+            const btnIconName = confirmButtonDetails.icon || null;
+            const btnClass = confirmButtonDetails.class || 'button-danger';
+
+            let confirmHTML = '';
+            if (btnIconName) {
+                confirmHTML += `<span class="button-icon">${this.getIcon(btnIconName)}</span> `;
+            }
+            confirmHTML += this.utils.escapeHtml(btnText);
+
+            this.dom.btnConfirmActionConfirm.innerHTML = confirmHTML;
+            this.dom.btnConfirmActionConfirm.className = `button ${btnClass}`;
 
             this.dom.btnConfirmActionConfirm.onclick = () => { onConfirm(); this.hideModal('modal-confirm-action'); };
             this.dom.btnConfirmActionCancel.onclick = () => { if (onCancel) onCancel(); this.hideModal('modal-confirm-action'); };
@@ -2775,7 +2816,6 @@
         },
         setButtonLoadingState(buttonElement, isLoading, loadingText = 'Loading...') {
             if (!buttonElement) return;
-            const originalIcon = buttonElement.querySelector('.button-icon > svg'); 
             
             if (isLoading) {
                 buttonElement.disabled = true;
@@ -2790,34 +2830,20 @@
                     buttonElement.innerHTML = buttonElement.dataset.originalContent;
                     delete buttonElement.dataset.originalContent; 
                 } else {
-                    const iconSpan = buttonElement.querySelector('.button-icon');
-                    if(iconSpan && iconSpan.firstChild && iconSpan.firstChild.classList && iconSpan.firstChild.classList.contains('animate-spin')) {
-                        // Fallback: Attempt to restore original text, assume icon was just a spinner
-                        let originalText = "Action"; // Generic
-                        // Attempt to deduce original text - this is brittle
-                        const buttonId = buttonElement.id;
-                        if (buttonId === "btn-create-project-confirm") originalText = "Create Project";
-                        else if (buttonId === "btn-rename-project-confirm") originalText = "Save Changes";
-                        else if (buttonId === "save-log-btn") originalText = "Save Log"; // or Update Log
-                        else if (buttonElement.closest('label') && buttonElement.closest('label').control?.id === 'add-videos-input') originalText = "Add Videos";
+                    // Fallback for buttons not dynamically set initially, find their intended icon from data-icon attribute if it existed
+                    const originalIconName = buttonElement.dataset.iconForLoading || (buttonElement.querySelector('.button-icon') ? buttonElement.querySelector('.button-icon').dataset.iconForLoadingFallback : null);
+                    let buttonText = "Action"; // Very generic
+                    // Try to infer text for specific buttons
+                    if (buttonElement.id === 'save-log-btn') buttonText = this.dom.editingLogIdInput.value ? "Update Log" : "Save Log";
+                    else if (buttonElement.closest('label') && buttonElement.closest('label').textContent.includes('Add Videos')) buttonText = "Add Videos";
 
 
-                        let originalIconName = 'plus'; // Default
-                        if (buttonId === "btn-rename-project-confirm" || buttonId === "save-log-btn") originalIconName = "save";
-                        
-                        // Reconstruct based on typical structure
-                        let newContent = `<span class="button-icon">${this.getIcon(originalIconName)}</span>`;
-                        if(buttonElement.textContent.includes(loadingText)){ // If loadingText was part of the visible text
-                            newContent += ` ${originalText}`;
-                        } else { // Spinner was likely the only thing, or text was separate
-                           newContent += buttonElement.textContent.replace(loadingText, '').trim() || ` ${originalText}`;
-                        }
-                        buttonElement.innerHTML = newContent;
-
-                        if (buttonElement.tagName === 'LABEL') { // Re-attach input if it was a label
-                           const input = document.getElementById(buttonElement.htmlFor);
-                           if (input) buttonElement.appendChild(input); // This is not quite right, original input was inside
-                        }
+                    if(originalIconName){
+                        buttonElement.innerHTML = `<span class="button-icon">${this.getIcon(originalIconName)}</span> <span>${buttonText}</span>`;
+                    } else if (buttonElement.id === 'add-videos-input_label_fallback') { // Example specific ID if you add one to the label
+                        buttonElement.innerHTML = `<span class="button-icon">${this.getIcon('plus')}</span> <span>Add Videos</span>`;
+                         const input = buttonElement.querySelector('input[type="file"]'); // Re-append if it was a label with input
+                         if(input) buttonElement.appendChild(input);
                     }
                 }
             }
