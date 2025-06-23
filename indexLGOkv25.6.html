@@ -2804,7 +2804,7 @@
                 return;
             }
             
-            videosToDisplay.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            videosToDisplay.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
 
             videosToDisplay.forEach((video, index) => {
                 let videoMatchesSearch = false;
