@@ -488,9 +488,7 @@
             width: 100%; 
             height: auto;
             max-height: 350px; /* Increased max height */
-            object-fit: contain; /* Changed to contain to see full frame */
-            aspect-ratio: 16/9; /* Helps stabilize layout before image loads */
-            background-color: var(--border-color); /* Placeholder bg */
+            object-fit: contain; 
             cursor: pointer;
             display: block; 
         }
@@ -524,7 +522,6 @@
             width: 100%;
             display: block;
             max-height: 350px; 
-            aspect-ratio: 16/9; /* Match thumbnail aspect ratio */
             background-color: #000;
         }
         .main-video-preview-player.hidden { display: none; }
@@ -599,7 +596,7 @@
         /* Scrollable Logged Clips List - Screen 2 */
         .video-clips-list-container {
             padding: 20px 24px; 
-            min-height: 100px; /* Allow shrinking if no clips */
+            min-height: 460px;
             max-height: 460px;
             overflow-y: auto;
             scroll-behavior: smooth;
@@ -628,12 +625,9 @@
         }
         .clip-item-card:last-child { margin-bottom: 0; }
         .clip-item-thumbnail {
-            width: 100px; /* Fixed width */
-            height: 60px; /* Fixed height */
-            background-color: var(--border-color); /* Placeholder bg */
-            object-fit: cover;
-            border-radius: var(--border-radius-small);
-            flex-shrink: 0;
+            width: 100px; height: 60px; /* Larger */
+            background-color: var(--border-color); object-fit: cover;
+            border-radius: var(--border-radius-small); flex-shrink: 0;
         }
         .clip-item-info { flex-grow: 1; min-width:0; }
         .clip-item-info .notes { font-size: 1em; margin-bottom: 6px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -653,11 +647,7 @@
             position: relative; border-radius: var(--border-radius); overflow:hidden;
             box-shadow: var(--shadow-lg);
         }
-        #video-player { 
-            width: 100%; display: block; max-height: 60vh; /* Increased max height */
-            aspect-ratio: 16/9; /* Ensure consistent aspect ratio */
-            background-color: #000; /* Visible if video not loaded */
-        }
+        #video-player { width: 100%; display: block; max-height: 60vh; /* Increased max height */ }
         #video-file-prompt {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -767,14 +757,7 @@
             font-style: normal;
         }
         .log-item-rating-display .star-icon { width: 16px; height: 16px; margin-right: 2px; } /* Consistency */
-        .log-item img { 
-            max-width:120px; max-height:70px; /* Fixed dimensions */
-            width: 120px; height: 70px;
-            object-fit:cover; /* Ensure it covers the area */
-            border-radius:var(--border-radius-small); margin-top:10px; 
-            border:1px solid var(--border-color); 
-            background-color: var(--border-color); /* Placeholder bg */
-        }
+        .log-item img { max-width:120px; max-height:70px; border-radius:var(--border-radius-small); margin-top:10px; border:1px solid var(--border-color); }
 
         .file-input-label {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -837,7 +820,7 @@
             .video-clips-list-container { padding: 16px; max-height: 350px; /* Adjusted for mobile */ }
 
             .clip-item-card { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .clip-item-thumbnail { width: 100%; height: auto; max-height: 180px; aspect-ratio:16/9; margin-bottom:10px; }
+            .clip-item-thumbnail { width: 100%; height: auto; max-height: 180px; margin-bottom:10px; }
             .clip-item-actions { width: 100%; flex-direction: row; justify-content: flex-start; margin-top: 12px; gap: 8px; }
             .clip-item-actions .button-small { flex-grow: 1; }
 
@@ -1459,11 +1442,6 @@
             thumbnailWorker: null,
         },
         dom: {}, 
-        domElementMaps: { // For smart DOM updates
-            projectCards: new Map(), // projectId -> cardElement
-            videoEntryCards: new Map(), // videoId -> videoEntryCardElement (on Screen 2)
-            s3LogItems: new Map(), // logId -> logItemElement (on Screen 3)
-        },
         idb: { // This remains for video SOURCE files (LogReelFilesDB_v2)
             db: null,
             dbName: 'LogReelFilesDB_v2', 
@@ -1641,14 +1619,6 @@
                     console.error("Error in dataURLtoBlob:", e);
                     return null;
                 }
-            },
-            debounce(func, delay) {
-                let timeout;
-                return function(...args) {
-                    const context = this;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), delay);
-                };
             }
         },
 
@@ -1926,20 +1896,29 @@
 
             const restoreScroll = () => {
                 requestAnimationFrame(() => {
-                    let keyToRestore = null;
                     if (screenId === 'screen-projects') {
-                        keyToRestore = 'screen-projects';
+                        if (typeof this.data.scrollPositions['screen-projects'] === 'number') {
+                            window.scrollTo(0, this.data.scrollPositions['screen-projects']);
+                        }
                     } else if (screenId === 'screen-project-videos' && this.data.currentProjectId) {
-                        keyToRestore = 'screen-project-videos-' + this.data.currentProjectId;
+                        const key = 'screen-project-videos-' + this.data.currentProjectId;
+                        if (typeof this.data.scrollPositions[key] === 'number') {
+                            window.scrollTo(0, this.data.scrollPositions[key]);
+                        }
+                        // Clip list scroll restoration is now primarily handled within renderProjectVideosScreen
+                        // to ensure it happens *after* the DOM is fully re-rendered by that function.
+                        // However, this.data.scrollPositions can still be a source if renderProjectVideosScreen
+                        // decides not to fully re-render certain elements in future optimizations.
+
                     } else if (screenId === 'screen-video-logging' && this.data.currentProjectId && this.data.currentVideoId) {
-                        keyToRestore = 'screen-video-logging-window-' + this.data.currentProjectId + '-' + this.data.currentVideoId;
-                    }
+                        const windowKey = 'screen-video-logging-window-' + this.data.currentProjectId + '-' + this.data.currentVideoId;
+                        if (typeof this.data.scrollPositions[windowKey] === 'number') {
+                            window.scrollTo(0, this.data.scrollPositions[windowKey]);
+                        }
 
-                    if (keyToRestore && typeof this.data.scrollPositions[keyToRestore] === 'number') {
-                        window.scrollTo(0, this.data.scrollPositions[keyToRestore]);
+                        // Saved logs list scroll restoration is handled by renderVideoLoggingScreen calling renderSavedLogsList,
+                        // which now has its own internal scroll restoration.
                     }
-
-                    // List specific scroll restoration is handled within their respective render functions after DOM is stable
                 });
             };
 
@@ -1949,7 +1928,7 @@
                     this.revokeAllActiveObjectURLsForPrefix('video-');
                     this.revokeAllActiveObjectURLsForPrefix('log-');
                     await this.renderProjectsScreen();
-                    restoreScroll(); 
+                    restoreScroll(); // Restore window scroll for screen-projects
                     break;
                 case 'screen-project-videos':
                     this.revokeAllActiveObjectURLsForPrefix('log-'); 
@@ -1958,8 +1937,10 @@
                     } else if (!this.data.currentProjectId) {
                         this.navigateTo('screen-projects'); return; 
                     }
-                    await this.renderProjectVideosScreen(); // Handles its own list scrolls
-                    restoreScroll(); // Handles window scroll
+                    // `renderProjectVideosScreen` will handle its own scroll restoration internally now.
+                    // `restoreScroll()` will just set the initial window scroll for this screen.
+                    await this.renderProjectVideosScreen(); 
+                    restoreScroll(); 
                     break;
                 case 'screen-video-logging':
                      this.revokeAllActiveObjectURLsForPrefix('video-'); 
@@ -1969,11 +1950,12 @@
                         else this.navigateTo('screen-projects');
                         return;
                     }
-                    await this.renderVideoLoggingScreen(); // Handles its own list scrolls
+                    // `renderVideoLoggingScreen` and `renderSavedLogsList` will handle their own scroll restoration.
+                    await this.renderVideoLoggingScreen(); 
                     if(params && params.logIdToEdit) {
                         await this.editLogEntry(params.logIdToEdit, true);
                     }
-                    restoreScroll(); // Handles window scroll
+                    restoreScroll(); // Restore window scroll for screen-video-logging
                     break;
             }
         },
@@ -2072,15 +2054,6 @@
                     }
                     this.data.projects.push(project);
                 }
-                 // Sort projects once after loading
-                this.data.projects.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-                this.data.projects.forEach(p => {
-                    if (p.videos) p.videos.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-                    if (p.videos) p.videos.forEach(v => {
-                        if (v.logs) v.logs.sort((a,b) => a.markIn - b.markIn);
-                    });
-                });
-
             } catch (err) {
                 console.error("Error loading data from DataManager:", err);
                 this.showToast("Could not load all project data.", "error", 5000, 'x-circle');
@@ -2108,14 +2081,9 @@
             });
             
             this.dom.btnExportProject.addEventListener('click', () => this.exportCurrentProject());
-            
-            this.debouncedRenderProjectVideosScreen = this.utils.debounce(async (searchTerm) => {
-                 await this.renderProjectVideosScreen(searchTerm);
-            }, 300);
-            this.dom.projectVideosSearch.addEventListener('input', (e) => {
-                this.debouncedRenderProjectVideosScreen(e.target.value.trim());
+            this.dom.projectVideosSearch.addEventListener('input', async (e) => {
+                await this.renderProjectVideosScreen(e.target.value.trim());
             });
-
             this.dom.btnBackToProjectVideos.addEventListener('click', () => this.navigateTo('screen-project-videos', { projectId: this.data.currentProjectId }));
             if (this.dom.btnHomeFromVideoLogging) {
                 this.dom.btnHomeFromVideoLogging.addEventListener('click', () => this.navigateTo('screen-projects'));
@@ -2325,122 +2293,99 @@
             return null;
         },
         
-        _createProjectCard(project) { // Renamed from _createOrUpdateProjectCard (create part)
+        _createOrUpdateProjectCard(project, existingCard = null) {
             const cardDataId = `project-${project.id}`;
             let creationDateText = 'N/A';
             if (project.createdAt) { try { creationDateText = new Date(project.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) {} }
 
-            const card = document.createElement('article');
-            card.className = 'card';
-            card.dataset.projectId = project.id;
-            
-            card.innerHTML = `
-                <div class="card-padding-wrapper" style="padding: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <div class="card-title">${this.utils.escapeHtml(project.name)}</div>
-                            <div class="card-meta">
-                                Contains ${project.videos ? project.videos.length : 0} video(s) &bull; Created: ${creationDateText}
+            if (existingCard) { // Update existing
+                existingCard.querySelector('.card-title').textContent = this.utils.escapeHtml(project.name);
+                existingCard.querySelector('.card-meta').textContent = `Contains ${project.videos ? project.videos.length : 0} video(s) • Created: ${creationDateText}`;
+                return existingCard;
+            } else { // Create new
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.dataset.projectId = project.id;
+                
+                card.innerHTML = `
+                    <div class="card-padding-wrapper" style="padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div class="card-title">${this.utils.escapeHtml(project.name)}</div>
+                                <div class="card-meta">
+                                    Contains ${project.videos ? project.videos.length : 0} video(s) &bull; Created: ${creationDateText}
+                                </div>
                             </div>
+                            <button class="button button-subtle button-small btn-edit-project-name" data-project-id="${project.id}" aria-label="Rename project">
+                                <span class="button-icon">${this.getIcon('pencil')}</span>
+                            </button>
                         </div>
-                        <button class="button button-subtle button-small btn-edit-project-name" data-project-id="${project.id}" aria-label="Rename project">
-                            <span class="button-icon">${this.getIcon('pencil')}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="button button-primary btn-open-project" data-project-id="${project.id}">Open Project</button>
+                        <button class="button button-subtle btn-delete-project" data-project-id="${project.id}">
+                            <span class="button-icon">${this.getIcon('trash')}</span> Delete
                         </button>
                     </div>
-                </div>
-                <div class="card-actions">
-                    <button class="button button-primary btn-open-project" data-project-id="${project.id}">Open Project</button>
-                    <button class="button button-subtle btn-delete-project" data-project-id="${project.id}">
-                        <span class="button-icon">${this.getIcon('trash')}</span> Delete
-                    </button>
-                </div>
-            `; 
-            return card;
+                `; 
+                return card;
+            }
         },
-
-        _updateProjectCardDOM(cardElement, project) { // New function to update existing card
-            cardElement.querySelector('.card-title').textContent = this.utils.escapeHtml(project.name);
-            const videosCount = project.videos ? project.videos.length : 0;
-            let creationDateText = 'N/A';
-            if (project.createdAt) { try { creationDateText = new Date(project.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) {} }
-            cardElement.querySelector('.card-meta').textContent = `Contains ${videosCount} video(s) • Created: ${creationDateText}`;
-            // Buttons' data-project-id should remain correct as the card itself is keyed by project.id
-        },
-
 
         async renderProjectsScreen() {
             if (!this.dom.projectsList) return;
+            
+            let previousScrollY = 0;
+            if (this.currentScreen === 'screen-projects') { // Only save if currently on this screen
+                previousScrollY = window.pageYOffset;
+            }
+
             const projectsContainer = this.dom.projectsList;
-            const previousScrollY = (this.currentScreen === 'screen-projects') ? window.pageYOffset : (this.data.scrollPositions['screen-projects'] || 0);
+            const existingProjectCards = new Map();
+            projectsContainer.querySelectorAll('article.card[data-project-id]').forEach(card => {
+                existingProjectCards.set(card.dataset.projectId, card);
+            });
 
             if (this.data.projects.length === 0) {
-                this.domElementMaps.projectCards.forEach((card, projectId) => {
-                    card.remove();
-                    this.revokeActiveObjectURL(`project-${projectId}`);
-                });
-                this.domElementMaps.projectCards.clear();
+                existingProjectCards.forEach(card => this.revokeActiveObjectURL(`project-${card.dataset.projectId}`)); 
                 projectsContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">${this.getIcon('folder')}</div>
                         <p>No projects yet.</p>
                         <p>Create one or import existing projects to get started!</p>
                     </div>`;
-                requestAnimationFrame(() => { window.scrollTo(0, previousScrollY); });
+                if (this.currentScreen === 'screen-projects') { // Restore even for empty
+                    requestAnimationFrame(() => { window.scrollTo(0, previousScrollY); });
+                }
                 return;
             }
 
-            // Data is already sorted in loadData and after modifications
-            // this.data.projects.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); 
+            const fragment = document.createDocumentFragment();
+            this.data.projects.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); 
 
-            const newRenderedCardsMap = new Map();
-            const fragmentForNewCards = document.createDocumentFragment();
-            
-            // Reorder existing elements to match data, append new ones
             for (const project of this.data.projects) {
-                let cardElement = this.domElementMaps.projectCards.get(project.id);
-                if (cardElement) { // Existing card
-                    this._updateProjectCardDOM(cardElement, project);
-                    // If cardElement is not already in projectsContainer, append it (e.g. if it was hidden by search)
-                    if (!cardElement.parentNode) {
-                        projectsContainer.appendChild(cardElement);
-                    }
-                } else { // New card
-                    cardElement = this._createProjectCard(project);
-                    fragmentForNewCards.appendChild(cardElement);
+                const existingCard = existingProjectCards.get(project.id);
+                const cardElement = this._createOrUpdateProjectCard(project, existingCard);
+                fragment.appendChild(cardElement);
+                if (existingCard) {
+                    existingProjectCards.delete(project.id); 
                 }
-                newRenderedCardsMap.set(project.id, cardElement);
-            }
-            if (fragmentForNewCards.childNodes.length > 0) {
-                projectsContainer.appendChild(fragmentForNewCards);
             }
             
-            // Correct order of all cards based on this.data.projects
-            // This ensures existing cards are re-ordered if necessary
-            let currentElement = projectsContainer.firstChild;
-            for (const project of this.data.projects) {
-                const expectedCard = newRenderedCardsMap.get(project.id);
-                if (currentElement !== expectedCard) {
-                    projectsContainer.insertBefore(expectedCard, currentElement);
-                } else {
-                    currentElement = currentElement.nextSibling;
-                }
+            existingProjectCards.forEach((card, projectId) => {
+                this.revokeActiveObjectURL(`project-${projectId}`); 
+                card.remove();
+            });
+            
+            projectsContainer.innerHTML = ''; 
+            projectsContainer.appendChild(fragment);
+
+            if (this.currentScreen === 'screen-projects') {
+                requestAnimationFrame(() => {
+                    window.scrollTo(0, previousScrollY);
+                });
             }
-
-
-            // Remove stale cards
-            this.domElementMaps.projectCards.forEach((card, projectId) => {
-                if (!newRenderedCardsMap.has(projectId)) {
-                    card.remove();
-                    this.revokeActiveObjectURL(`project-${projectId}`);
-                }
-            });
-            this.domElementMaps.projectCards = newRenderedCardsMap;
-
-            requestAnimationFrame(() => {
-                window.scrollTo(0, previousScrollY);
-            });
         },
-
         async showNewProjectModal() { 
             this.dom.newProjectNameInput.value = '';
             this.showModal('modal-new-project');
@@ -2460,7 +2405,6 @@
             try {
                 await this.DataManager.addProject({ id: newProjectData.id, name: newProjectData.name, createdAt: newProjectData.createdAt });
                 this.data.projects.unshift(newProjectData); 
-                this.data.projects.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); // Re-sort
                 await this.renderProjectsScreen(); 
                 this.hideModal('modal-new-project');
                 this.showToast(`Project "${this.utils.escapeHtml(name)}" created.`, 'success', 3000, 'check-circle');
@@ -2493,7 +2437,6 @@
             try {
                 await this.DataManager.updateProject(projectToStore);
                 project.name = newName; 
-                // No need to re-sort if only name changes, render will pick it up
                 await this.renderProjectsScreen(); 
                 if (this.data.currentProjectId === projectId && this.dom.projectNameHeader) { this.dom.projectNameHeader.textContent = this.utils.escapeHtml(newName); }
                 this.hideModal('modal-rename-project');
@@ -2541,7 +2484,6 @@
                 }
         
                 this.data.projects = this.data.projects.filter(p => p.id !== projectId);
-                // No need to re-sort if item removed, existing sort order maintained
                 
                 delete this.data.scrollPositions['screen-project-videos-' + projectId];
                 if (projectToDelete.videos) {
@@ -2633,16 +2575,13 @@
                                                         await this.DataManager.addLog(logToStore);
                                                         videoForMemory.logs.push(logToStore);
                                                     }
-                                                     videoForMemory.logs.sort((a,b) => a.markIn - b.markIn); // Sort logs
                                                 }
                                                 projectForMemory.videos.push(videoForMemory);
                                             }
-                                            projectForMemory.videos.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort videos
                                         }
                                         this.data.projects.unshift(projectForMemory); 
                                         importCount++;
                                     }
-                                    this.data.projects.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); // Re-sort all projects
                                     await this.renderProjectsScreen();
                                     this.showToast(`${importCount} project(s) imported. Video source files need to be selected for each video.`, 'success', 7000, 'check-circle');
                                 },
@@ -2692,7 +2631,7 @@
             this.showToast(`Project "${this.utils.escapeHtml(projectToExport.name)}" export started.`, 'success', 3000, 'check-circle');
         },
         
-        _createVideoCard(video, index, searchTerm = '') { // Renamed
+        _createOrUpdateVideoCard(video, index, searchTerm = '') {
             const cardDataId = `video-${video.id}`;
             this.revokeActiveObjectURL(cardDataId); 
 
@@ -2704,6 +2643,58 @@
                 mainThumbnailSrc = video.mainVideoThumbnail;
             }
             
+            let clipsHtml = '';
+            let clipsToDisplay = video.logs || [];
+            if (searchTerm) {
+                const lowerSearchTerm = searchTerm.toLowerCase();
+                clipsToDisplay = clipsToDisplay.filter(log =>
+                    log.notes.toLowerCase().includes(lowerSearchTerm) ||
+                    (log.keywords && Array.isArray(log.keywords) && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
+                );
+            }
+
+            if (clipsToDisplay.length > 0) {
+                clipsToDisplay.sort((a,b) => a.markIn - b.markIn).forEach(log => {
+                    const logThumbId = `log-${log.id}`;
+                    this.revokeActiveObjectURL(logThumbId);
+                    let logThumbSrc = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+                    if (log.thumbnail instanceof Blob) {
+                        logThumbSrc = URL.createObjectURL(log.thumbnail);
+                        this.data.activeObjectURLs[logThumbId] = logThumbSrc;
+                    } else if (typeof log.thumbnail === 'string') { 
+                        logThumbSrc = log.thumbnail;
+                    }
+
+                    const ratingStars = Array(5).fill(0).map((_, i) => 
+                        this.getIcon(i < log.rating ? 'star-filled' : 'star-outline', `star-icon ${i < log.rating ? 'filled' : 'empty'}`)
+                    ).join('');
+                    const keywordsText = (log.keywords && Array.isArray(log.keywords) && log.keywords.length > 0) 
+                        ? `<p class="keywords">Keywords: ${this.utils.escapeHtml(log.keywords.join(', '))}</p>` 
+                        : '';
+
+                    clipsHtml += `
+                        <div class="clip-item-card" data-log-id="${log.id}">
+                            <img src="${logThumbSrc}" alt="Clip thumbnail" class="clip-item-thumbnail">
+                            <div class="clip-item-info">
+                                <p class="notes">${this.utils.escapeHtml(log.notes)}</p>
+                                <p class="time">Time: ${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}</p>
+                                <p class="rating-display">Rating: ${ratingStars}</p>
+                                ${keywordsText}
+                            </div>
+                            <div class="clip-item-actions">
+                                <button class="button button-primary button-small btn-play-clip-on-card" data-log-id="${log.id}" aria-label="Play clip"><span class="button-icon">${this.getIcon('play')}</span> Play</button>
+                                <button class="button button-subtle button-small btn-edit-this-clip" data-log-id="${log.id}" aria-label="Edit clip"><span class="button-icon">${this.getIcon('pencil')}</span> Edit</button>
+                                <button class="button button-subtle button-small btn-delete-this-log-item" data-log-id="${log.id}" aria-label="Delete clip"><span class="button-icon">${this.getIcon('trash')}</span> Del</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else if (searchTerm && video.filename.toLowerCase().includes(searchTerm.toLowerCase())) { 
+                clipsHtml = '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No logged clips match search for this video.</p>';
+            } else if (!searchTerm) {
+                 clipsHtml = '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No clips logged for this video yet.</p>';
+            }
+
             const videoCard = document.createElement('article');
             videoCard.className = 'video-entry-card';
             videoCard.dataset.videoId = video.id;
@@ -2745,107 +2736,12 @@
                     </div>
                 </div>
                 <div class="video-clips-list-container">
-                    ${this._buildClipsListHTML(video, searchTerm)}
+                    ${clipsToDisplay.length > 0 || (searchTerm && video.filename.toLowerCase().includes(searchTerm.toLowerCase())) ? `<h4>Logged Clips (${clipsToDisplay.length})</h4>` : ''}
+                    ${clipsHtml}
                 </div>
             `;
             return videoCard;
         },
-
-        _updateVideoCardDOM(cardElement, video, index, searchTerm = '') { // New function
-            const titleElement = cardElement.querySelector('.video-entry-title');
-            if (titleElement) {
-                 titleElement.title = this.utils.escapeHtml(video.filename);
-                 titleElement.innerHTML = `<span class="video-card-number">${index + 1}. </span>${this.utils.escapeHtml(video.filename)}`;
-            }
-
-            const importantButton = cardElement.querySelector('.btn-toggle-important');
-            if (importantButton) {
-                importantButton.classList.toggle('is-important', video.isImportant);
-                importantButton.title = video.isImportant ? 'Unmark as important' : 'Mark as important';
-                importantButton.setAttribute('aria-pressed', video.isImportant.toString());
-                const iconSpan = importantButton.querySelector('.button-icon');
-                if (iconSpan) iconSpan.innerHTML = this.getIcon(video.isImportant ? 'star-filled' : 'star-outline');
-            }
-            
-            const mainThumbnailImg = cardElement.querySelector(`#main-thumbnail-${video.id}`);
-            if (mainThumbnailImg) {
-                const cardDataId = `video-${video.id}`;
-                this.revokeActiveObjectURL(cardDataId); // Revoke old one if it exists
-                let mainThumbnailSrc = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90"%3E%3Crect width="160" height="90" fill="%23e0e0e0"/%3E%3Ctext x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14px" fill="%23777"%3EVideo%3C/text%3E%3C/svg%3E';
-                if (video.mainVideoThumbnail instanceof Blob) {
-                    mainThumbnailSrc = URL.createObjectURL(video.mainVideoThumbnail);
-                    this.data.activeObjectURLs[cardDataId] = mainThumbnailSrc;
-                } else if (typeof video.mainVideoThumbnail === 'string') {
-                    mainThumbnailSrc = video.mainVideoThumbnail;
-                }
-                mainThumbnailImg.src = mainThumbnailSrc;
-            }
-
-            const clipsListContainer = cardElement.querySelector('.video-clips-list-container');
-            if (clipsListContainer) {
-                clipsListContainer.innerHTML = this._buildClipsListHTML(video, searchTerm);
-            }
-        },
-
-        _buildClipsListHTML(video, searchTerm = '') { // Helper for internal clip list HTML
-            let clipsHtml = '';
-            let clipsToDisplay = video.logs || [];
-            if (searchTerm) {
-                const lowerSearchTerm = searchTerm.toLowerCase();
-                clipsToDisplay = clipsToDisplay.filter(log =>
-                    log.notes.toLowerCase().includes(lowerSearchTerm) ||
-                    (log.keywords && Array.isArray(log.keywords) && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
-                );
-            }
-            // Ensure logs are sorted by markIn time
-            clipsToDisplay.sort((a,b) => a.markIn - b.markIn);
-
-
-            if (clipsToDisplay.length > 0) {
-                 clipsToDisplay.forEach(log => {
-                    const logThumbId = `log-${log.id}`; // Key for S2 specific log thumbs
-                    this.revokeActiveObjectURL(logThumbId); // Revoke if one exists
-                    let logThumbSrc = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; // Transparent pixel
-                    if (log.thumbnail instanceof Blob) {
-                        logThumbSrc = URL.createObjectURL(log.thumbnail);
-                        this.data.activeObjectURLs[logThumbId] = logThumbSrc;
-                    } else if (typeof log.thumbnail === 'string' && log.thumbnail.startsWith('data:image')) {
-                        logThumbSrc = log.thumbnail;
-                    }
-
-                    const ratingStars = Array(5).fill(0).map((_, i) => 
-                        this.getIcon(i < log.rating ? 'star-filled' : 'star-outline', `star-icon ${i < log.rating ? 'filled' : 'empty'}`)
-                    ).join('');
-                    const keywordsText = (log.keywords && Array.isArray(log.keywords) && log.keywords.length > 0) 
-                        ? `<p class="keywords">Keywords: ${this.utils.escapeHtml(log.keywords.join(', '))}</p>` 
-                        : '';
-
-                    clipsHtml += `
-                        <div class="clip-item-card" data-log-id="${log.id}">
-                            <img src="${logThumbSrc}" alt="Clip thumbnail" class="clip-item-thumbnail">
-                            <div class="clip-item-info">
-                                <p class="notes">${this.utils.escapeHtml(log.notes)}</p>
-                                <p class="time">Time: ${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}</p>
-                                <p class="rating-display">Rating: ${ratingStars}</p>
-                                ${keywordsText}
-                            </div>
-                            <div class="clip-item-actions">
-                                <button class="button button-primary button-small btn-play-clip-on-card" data-log-id="${log.id}" aria-label="Play clip"><span class="button-icon">${this.getIcon('play')}</span> Play</button>
-                                <button class="button button-subtle button-small btn-edit-this-clip" data-log-id="${log.id}" aria-label="Edit clip"><span class="button-icon">${this.getIcon('pencil')}</span> Edit</button>
-                                <button class="button button-subtle button-small btn-delete-this-log-item" data-log-id="${log.id}" aria-label="Delete clip"><span class="button-icon">${this.getIcon('trash')}</span> Del</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                return (clipsToDisplay.length > 0 || (searchTerm && video.filename.toLowerCase().includes(searchTerm.toLowerCase())) ? `<h4>Logged Clips (${clipsToDisplay.length})</h4>` : '') + clipsHtml;
-            } else if (searchTerm && video.filename.toLowerCase().includes(searchTerm.toLowerCase())) { 
-                return '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No logged clips match search for this video.</p>';
-            } else if (!searchTerm) {
-                 return '<p style="padding: 10px 0; text-align:center; color: var(--text-color-light); font-size:0.9em;">No clips logged for this video yet.</p>';
-            }
-            return ''; // Should not happen if conditions above are met
-        },
-
 
         async renderProjectVideosScreen(searchTerm = '') {
             const project = this.getProjectById(this.data.currentProjectId);
@@ -2855,108 +2751,85 @@
             }
             this.dom.projectNameHeader.textContent = this.utils.escapeHtml(project.name);
 
-            const previousScrollY = window.pageYOffset;
+            let previousScrollY = window.pageYOffset;
             const previousClipListScrolls = new Map();
-            if (this.dom.projectVideosContainer) {
-                 this.dom.projectVideosContainer.querySelectorAll('article.video-entry-card[data-video-id]').forEach(card => {
+            // Capture scroll positions from existing DOM elements BEFORE clearing/modifying them
+            if (this.dom.projectVideosContainer && this.dom.projectVideosContainer.firstChild) { 
+                this.dom.projectVideosContainer.querySelectorAll('article.video-entry-card[data-video-id]').forEach(card => {
                     const videoId = card.dataset.videoId;
                     const clipList = card.querySelector('.video-clips-list-container');
-                    if (videoId && clipList) {
+                    if (videoId && clipList) { // Store current scroll top, even if 0
                         previousClipListScrolls.set(videoId, clipList.scrollTop);
                     }
                 });
             }
 
             const videosContainer = this.dom.projectVideosContainer;
+            const existingVideoCards = new Map();
+            videosContainer.querySelectorAll('article.video-entry-card[data-video-id]').forEach(card => {
+                existingVideoCards.set(card.dataset.videoId, card);
+                card.querySelectorAll('.clip-item-card[data-log-id]').forEach(clipCard => {
+                    this.revokeActiveObjectURL(`log-${clipCard.dataset.logId}`);
+                });
+            });
+
             if (this.data.activeCardPlayer.playerElement) this.resetActiveCardPlayerUI();
 
             let videosToDisplay = project.videos || [];
-            // Data is already sorted in loadData and after modifications
-            // videosToDisplay.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
-            const newRenderedVideoCardsMap = new Map();
-            const fragmentForNewVideoCards = document.createDocumentFragment();
             let foundItems = false;
-
-            videosToDisplay.forEach((video, index) => {
-                let videoMatchesSearch = false;
-                let clipsMatchSearch = false;
-                if (searchTerm) {
-                    const lowerSearchTerm = searchTerm.toLowerCase();
-                    if (video.filename.toLowerCase().includes(lowerSearchTerm)) videoMatchesSearch = true;
-                    clipsMatchSearch = (video.logs || []).some(log =>
-                        log.notes.toLowerCase().includes(lowerSearchTerm) ||
-                        (log.keywords && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
-                    );
-                    if (!videoMatchesSearch && !clipsMatchSearch) return; // Skip this video if no match
-                }
-                foundItems = true;
-
-                let videoCardElement = this.domElementMaps.videoEntryCards.get(video.id);
-                if (videoCardElement) { // Existing card
-                    this._updateVideoCardDOM(videoCardElement, video, index, searchTerm);
-                    if (!videoCardElement.parentNode) { // Append if it was removed (e.g. by previous search)
-                        videosContainer.appendChild(videoCardElement);
-                    }
-                } else { // New card
-                    videoCardElement = this._createVideoCard(video, index, searchTerm);
-                    fragmentForNewVideoCards.appendChild(videoCardElement);
-                }
-                newRenderedVideoCardsMap.set(video.id, videoCardElement);
-            });
-
-            if (fragmentForNewVideoCards.childNodes.length > 0) {
-                 videosContainer.appendChild(fragmentForNewVideoCards);
-            }
-
-            // Correct order of all video cards
-            let currentElement = videosContainer.firstChild;
-            for(const video of videosToDisplay) { // Iterate through the *filtered and sorted* data
-                if (searchTerm) { // Re-check if it should be displayed with current search
-                    const lowerSearchTerm = searchTerm.toLowerCase();
-                    const videoMatches = video.filename.toLowerCase().includes(lowerSearchTerm);
-                    const clipsMatch = (video.logs || []).some(log =>
-                        log.notes.toLowerCase().includes(lowerSearchTerm) ||
-                        (log.keywords && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
-                    );
-                    if (!videoMatches && !clipsMatch) continue;
-                }
-                const expectedCard = newRenderedVideoCardsMap.get(video.id);
-                if (expectedCard) { // Ensure card exists in the current render map
-                    if (currentElement !== expectedCard) {
-                        videosContainer.insertBefore(expectedCard, currentElement);
-                    } else {
-                        currentElement = currentElement.nextSibling;
-                    }
-                }
-            }
-
-
-            this.domElementMaps.videoEntryCards.forEach((card, videoId) => {
-                if (!newRenderedVideoCardsMap.has(videoId)) {
-                    card.remove();
-                    this.revokeActiveObjectURL(`video-${videoId}`);
-                    // Revoke S2 clip thumbs for this removed card
-                    card.querySelectorAll('.clip-item-card[data-log-id]').forEach(clipCard => {
-                         this.revokeActiveObjectURL(`log-${clipCard.dataset.logId}`);
-                    });
-                }
-            });
-            this.domElementMaps.videoEntryCards = newRenderedVideoCardsMap;
+            const fragment = document.createDocumentFragment();
             
-            if (!foundItems && searchTerm) {
-                 videosContainer.innerHTML = `<div class="empty-state" style="margin:20px;"><p>No videos or clips found matching "<strong>${this.utils.escapeHtml(searchTerm)}</strong>".</p></div>`;
-            } else if (!foundItems && !searchTerm && videosToDisplay.length > 0) { 
-                 videosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos to display.</p></div>'; 
-            } else if (videosToDisplay.length === 0 && !searchTerm) {
-                 videosContainer.innerHTML = `
+            if (videosToDisplay.length === 0 && !searchTerm) {
+                existingVideoCards.forEach((card, videoId) => this.revokeActiveObjectURL(`video-${videoId}`));
+                videosContainer.innerHTML = `
                     <div class="empty-state" style="margin:20px;">
                         <div class="empty-state-icon">${this.getIcon('film')}</div>
                         <p>No videos in this project yet.</p>
                         <p>Click "Add Videos" to begin.</p>
                     </div>`;
+                if (this.dom.bottomAddVideosBar) this.dom.bottomAddVideosBar.classList.add('hidden');
+                requestAnimationFrame(() => { window.scrollTo(0, previousScrollY); });
+                return;
             }
+            
+            videosToDisplay.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+            videosToDisplay.forEach((video, index) => {
+                let videoMatchesSearch = false;
+                if (searchTerm) {
+                    const lowerSearchTerm = searchTerm.toLowerCase();
+                    if (video.filename.toLowerCase().includes(lowerSearchTerm)) videoMatchesSearch = true;
+                    const clipsMatch = (video.logs || []).some(log =>
+                        log.notes.toLowerCase().includes(lowerSearchTerm) ||
+                        (log.keywords && log.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)))
+                    );
+                    if (!videoMatchesSearch && !clipsMatch) return;
+                }
+                foundItems = true;
+
+                const existingCard = existingVideoCards.get(video.id);
+                if (existingCard) {
+                     this.revokeActiveObjectURL(`video-${video.id}`); 
+                     existingCard.remove(); 
+                }
+                const videoCardElement = this._createOrUpdateVideoCard(video, index, searchTerm);
+                fragment.appendChild(videoCardElement);
+                existingVideoCards.delete(video.id); 
+            });
+            
+            existingVideoCards.forEach((card, videoId) => {
+                this.revokeActiveObjectURL(`video-${videoId}`);
+                card.remove();
+            });
+
+            videosContainer.innerHTML = ''; 
+            videosContainer.appendChild(fragment); 
+            
+            if (!foundItems && searchTerm) {
+                 videosContainer.innerHTML = `<div class="empty-state" style="margin:20px;"><p>No videos or clips found matching "<strong>${this.utils.escapeHtml(searchTerm)}</strong>".</p></div>`;
+            } else if (!foundItems && !searchTerm && videosToDisplay.length > 0) { 
+                 videosContainer.innerHTML = '<div class="empty-state" style="margin:20px;"><p>No videos to display.</p></div>'; 
+            }
 
             requestAnimationFrame(() => {
                 window.scrollTo(0, previousScrollY);
@@ -2964,10 +2837,22 @@
                     this.dom.projectVideosContainer.querySelectorAll('article.video-entry-card[data-video-id]').forEach(card => {
                         const videoId = card.dataset.videoId;
                         const clipList = card.querySelector('.video-clips-list-container');
-                        if (videoId && clipList && previousClipListScrolls.has(videoId)) {
-                            clipList.scrollTop = previousClipListScrolls.get(videoId);
-                        } else if (clipList) {
-                            clipList.scrollTop = 0; // Reset for new/filtered lists
+                        if (videoId && clipList) {
+                            const scrollKey = `s2_clipsList_${this.data.currentProjectId}_${videoId}`;
+                            let targetScrollTop = 0;
+
+                            // Priority 1: Value from sessionStorage (loaded into this.data.scrollPositions during init)
+                            if (typeof this.data.scrollPositions[scrollKey] === 'number') {
+                                targetScrollTop = this.data.scrollPositions[scrollKey];
+                            }
+                            // Priority 2: Value captured just before this re-render (for in-session navigation)
+                            else if (previousClipListScrolls.has(videoId)) {
+                                targetScrollTop = previousClipListScrolls.get(videoId);
+                            }
+
+                            if (targetScrollTop > 0 && clipList.scrollHeight > clipList.clientHeight) {
+                                clipList.scrollTop = targetScrollTop;
+                            }
                         }
                     });
                 }
@@ -3021,16 +2906,14 @@
                             filename: file.name, 
                             createdAt: new Date(baseTime + i).toISOString(), 
                             isImportant: false, 
-                            mainVideoThumbnail: mainThumbnailBlob,
-                            logs: [] // Initialize logs array
+                            mainVideoThumbnail: mainThumbnailBlob 
                         };
                         await this.DataManager.addVideo(newVideoData); 
                         
                         const projectInMemory = this.getProjectById(project.id);
                         if (projectInMemory) {
                             if(!projectInMemory.videos) projectInMemory.videos = [];
-                            projectInMemory.videos.push({ ...newVideoData }); 
-                            projectInMemory.videos.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); // Re-sort videos
+                            projectInMemory.videos.push({ ...newVideoData, logs: [] }); 
                         }
                         addedCount++;
                     } else { 
@@ -3328,10 +3211,9 @@
                 delete this.data.scrollPositions[s2ClipListKey];
 
                 project.videos.splice(videoIndex, 1);
-                // No need to re-sort here, render will use the current order
                 if (this.data.currentVideoId === videoId) this.data.currentVideoId = null; 
                 
-                await this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim());
+                await this.renderProjectVideosScreen();
                 this.showToast(`Video "${this.utils.escapeHtml(videoToDelete.filename)}" deleted.`, 'success', 3000, 'check-circle');
             } catch (err) {
                 console.error("Error deleting video:", err);
@@ -3343,13 +3225,12 @@
             const video = project.videos.find(v => v.id === videoId); if (!video) return;
             video.isImportant = !video.isImportant; 
             
-            const videoToStore = { ...video }; delete videoToStore.logs; // Don't store logs array in the 'videos' store
+            const videoToStore = { ...video }; delete videoToStore.logs;
 
             try {
                 await this.DataManager.updateVideo(videoToStore);
 
-                // Update DOM directly if card exists, otherwise full render will handle it
-                const cardElement = this.domElementMaps.videoEntryCards.get(videoId);
+                const cardElement = this.dom.projectVideosContainer.querySelector(`article.video-entry-card[data-video-id="${videoId}"]`);
                 if (cardElement) {
                     const buttonElement = cardElement.querySelector('.btn-toggle-important');
                     if (buttonElement) {
@@ -3362,17 +3243,14 @@
                         }
                     }
                 } else {
-                     // Should ideally not happen if diffing is correct, but as a fallback:
                     await this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
                 }
 
                 this.showToast(`Video marked ${video.isImportant ? 'important' : 'not important'}.`, 'info', 3000, 'info-circle');
             } catch (err) {
                 console.error("Error toggling video importance:", err);
-                video.isImportant = !video.isImportant; // Revert optimistic update
-                const cardElement = this.domElementMaps.videoEntryCards.get(videoId);
-                if (cardElement) this._updateVideoCardDOM(cardElement, video, project.videos.findIndex(v=>v.id === videoId), this.dom.projectVideosSearch.value.trim());
-                else await this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
+                video.isImportant = !video.isImportant; 
+                await this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
                 this.showToast("Failed to update video importance.", "error", 4000, 'x-circle');
             }
         },
@@ -3749,24 +3627,18 @@
             );
         },
         async deleteLogItem(videoId, logId) { 
-            const project = this.getProjectById(this.data.currentProjectId);
-            if (!project) return;
-            const video = project.videos.find(v => v.id === videoId); 
-            if (!video || !video.logs) return;
-
+            const video = this.getVideoById(this.data.currentProjectId, videoId); if (!video || !video.logs) return;
             const logToDelete = video.logs.find(l => l.id === logId); 
             
             try {
                 await this.DataManager.deleteLog(logId);
-                this.revokeActiveObjectURL(`log-${logId}`); // For S2 thumbs, S3 thumbs handled in its render
+                this.revokeActiveObjectURL(`log-${logId}`); 
 
                 if (this.data.activeCardPlayer.videoId === videoId && logToDelete && this.data.activeCardPlayer.currentSegment &&
                     logToDelete.markIn === this.data.activeCardPlayer.currentSegment.startTime && logToDelete.markOut === this.data.activeCardPlayer.currentSegment.endTime ) {
                     this.resetActiveCardPlayerUI(); 
                 }
                 video.logs = video.logs.filter(l => l.id !== logId); 
-                // video.logs.sort((a,b) => a.markIn - b.markIn); // Re-sort logs for this video
-
                 await this.renderProjectVideosScreen(this.dom.projectVideosSearch.value.trim()); 
                 if(logToDelete) this.showToast(`Log entry deleted.`, 'success', 3000, 'check-circle');
             } catch (err) {
@@ -3955,7 +3827,6 @@
                     video.logs.push(logDataForDB); 
                     this.showToast("Log entry saved.", "success", 3000, 'check-circle');
                 }
-                video.logs.sort((a,b) => a.markIn - b.markIn); // Re-sort logs for this video
                 await this.renderSavedLogsList(); this.resetLogForm();
             } catch(err) {
                 console.error("Error saving log entry:", err);
@@ -3978,16 +3849,15 @@
             this.dom.saveLogBtn.innerHTML = `<span class="button-icon">${this.getIcon('save')}</span> Save Log`; 
             this.dom.saveLogBtn.disabled = false; 
         },
-
-        _createLogItem(log) { // Renamed from _createOrUpdateLogItem (create part)
+        _createOrUpdateLogItem(log, existingItem = null) {
             const logItemId = `log-item-${log.id}`;
-            const logThumbIdS3 = `s3-log-${log.id}`; // S3 specific key
-            this.revokeActiveObjectURL(logThumbIdS3); 
+            const logThumbId = `log-${log.id}`;
+            this.revokeActiveObjectURL(logThumbId); 
 
             let logThumbSrc = '';
             if (log.thumbnail instanceof Blob) {
                 logThumbSrc = URL.createObjectURL(log.thumbnail);
-                this.data.activeObjectURLs[logThumbIdS3] = logThumbSrc;
+                this.data.activeObjectURLs[logThumbId] = logThumbSrc;
             } else if (typeof log.thumbnail === 'string' && log.thumbnail.startsWith('data:image')) {
                 logThumbSrc = log.thumbnail; 
             }
@@ -3998,178 +3868,118 @@
                                     : '';
             const thumbnailHTML = logThumbSrc ? `<img src="${logThumbSrc}" alt="Log thumbnail">` : '';
 
-            const item = document.createElement('article'); 
-            item.className = 'log-item'; 
-            item.id = logItemId;
-            item.dataset.logId = log.id; 
-            item.innerHTML = `
-                <div class="log-item-header">
-                    <span class="log-item-time">${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}</span>
-                    <div class="log-item-rating-display">${ratingStars}</div>
-                </div>
-                <p class="log-item-notes">${this.utils.escapeHtml(log.notes)}</p>
-                ${keywordsDisplay ? `<div class="log-item-keywords">${keywordsDisplay}</div>` : ''}
-                ${thumbnailHTML}
-                <div class="card-actions" style="margin-top:10px;">
-                    <button class="button button-subtle button-small btn-go-to-log-time" data-time="${log.markIn}" aria-label="Go to time"><span class="button-icon">${this.getIcon('play-circle')}</span> Go to</button>
-                    <button class="button button-secondary button-small btn-edit-log" data-log-id="${log.id}" aria-label="Edit log"><span class="button-icon">${this.getIcon('pencil')}</span> Edit</button>
-                    <button class="button button-subtle button-small btn-delete-log" data-log-id="${log.id}" aria-label="Delete log"><span class="button-icon">${this.getIcon('trash')}</span> Delete</button>
-                </div>
-            `;
-            return item;
-        },
-
-        _updateLogItemDOM(itemElement, log) { // New function to update existing S3 log item
-            const logThumbIdS3 = `s3-log-${log.id}`;
-            this.revokeActiveObjectURL(logThumbIdS3); 
-
-            let logThumbSrc = '';
-            if (log.thumbnail instanceof Blob) {
-                logThumbSrc = URL.createObjectURL(log.thumbnail);
-                this.data.activeObjectURLs[logThumbIdS3] = logThumbSrc;
-            } else if (typeof log.thumbnail === 'string' && log.thumbnail.startsWith('data:image')) {
-                logThumbSrc = log.thumbnail;
-            }
-
-            itemElement.querySelector('.log-item-time').textContent = `${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}`;
-            
-            const ratingStars = Array(5).fill(0).map((_, i) => this.getIcon(i < log.rating ? 'star-filled' : 'star-outline', `star-icon ${i < log.rating ? 'filled' : 'empty'}`)).join('');
-            itemElement.querySelector('.log-item-rating-display').innerHTML = ratingStars;
-            itemElement.querySelector('.log-item-notes').textContent = this.utils.escapeHtml(log.notes);
-            
-            const keywordsDisplay = (log.keywords && Array.isArray(log.keywords) && log.keywords.length > 0) 
-                                    ? log.keywords.map(k => `<span>${this.utils.escapeHtml(k)}</span>`).join('') 
-                                    : '';
-            let keywordsDiv = itemElement.querySelector('.log-item-keywords');
-            if (keywordsDisplay) {
-                if (!keywordsDiv) {
-                    keywordsDiv = document.createElement('div');
-                    keywordsDiv.className = 'log-item-keywords';
-                    itemElement.querySelector('.log-item-notes').insertAdjacentElement('afterend', keywordsDiv);
+            if (existingItem) { 
+                existingItem.querySelector('.log-item-time').textContent = `${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}`;
+                existingItem.querySelector('.log-item-rating-display').innerHTML = ratingStars;
+                existingItem.querySelector('.log-item-notes').textContent = this.utils.escapeHtml(log.notes);
+                const keywordsDiv = existingItem.querySelector('.log-item-keywords');
+                if (keywordsDisplay) {
+                    if (keywordsDiv) keywordsDiv.innerHTML = keywordsDisplay;
+                    else { 
+                        const newKeywordsDiv = document.createElement('div');
+                        newKeywordsDiv.className = 'log-item-keywords';
+                        newKeywordsDiv.innerHTML = keywordsDisplay;
+                        existingItem.querySelector('.log-item-notes').insertAdjacentElement('afterend', newKeywordsDiv);
+                    }
+                } else if (keywordsDiv) {
+                    keywordsDiv.remove();
                 }
-                keywordsDiv.innerHTML = keywordsDisplay;
-            } else if (keywordsDiv) {
-                keywordsDiv.remove();
-            }
-
-            let imgEl = itemElement.querySelector('img');
-            if (logThumbSrc) {
-                if (!imgEl) {
-                    imgEl = document.createElement('img');
-                    imgEl.alt = "Log thumbnail";
-                     // Insert before card-actions, or at appropriate place if no card-actions
-                    const cardActionsDiv = itemElement.querySelector('.card-actions');
-                    if(cardActionsDiv) itemElement.insertBefore(imgEl, cardActionsDiv);
-                    else itemElement.appendChild(imgEl); // Fallback append
+                const imgEl = existingItem.querySelector('img');
+                if (thumbnailHTML) {
+                    if (imgEl) imgEl.src = logThumbSrc;
+                    else { 
+                        const tempDiv = document.createElement('div'); tempDiv.innerHTML = thumbnailHTML;
+                        existingItem.querySelector('.card-actions').insertAdjacentElement('beforebegin', tempDiv.firstChild);
+                    }
+                } else if (imgEl) {
+                    imgEl.remove();
                 }
-                imgEl.src = logThumbSrc;
-            } else if (imgEl) {
-                imgEl.remove();
+                return existingItem;
+            } else { 
+                const item = document.createElement('article'); 
+                item.className = 'log-item'; 
+                item.id = logItemId;
+                item.dataset.logId = log.id; 
+                item.innerHTML = `
+                    <div class="log-item-header">
+                        <span class="log-item-time">${this.utils.formatTime(log.markIn)} - ${this.utils.formatTime(log.markOut)}</span>
+                        <div class="log-item-rating-display">${ratingStars}</div>
+                    </div>
+                    <p class="log-item-notes">${this.utils.escapeHtml(log.notes)}</p>
+                    ${keywordsDisplay ? `<div class="log-item-keywords">${keywordsDisplay}</div>` : ''}
+                    ${thumbnailHTML}
+                    <div class="card-actions" style="margin-top:10px;">
+                        <button class="button button-subtle button-small btn-go-to-log-time" data-time="${log.markIn}" aria-label="Go to time"><span class="button-icon">${this.getIcon('play-circle')}</span> Go to</button>
+                        <button class="button button-secondary button-small btn-edit-log" data-log-id="${log.id}" aria-label="Edit log"><span class="button-icon">${this.getIcon('pencil')}</span> Edit</button>
+                        <button class="button button-subtle button-small btn-delete-log" data-log-id="${log.id}" aria-label="Delete log"><span class="button-icon">${this.getIcon('trash')}</span> Delete</button>
+                    </div>
+                `;
+                return item;
             }
-
-            const goToButton = itemElement.querySelector('.btn-go-to-log-time');
-            if(goToButton) goToButton.dataset.time = log.markIn;
         },
-
 
         async renderSavedLogsList() { 
             const video = this.getVideoById(this.data.currentProjectId, this.data.currentVideoId);
             const logsContainer = this.dom.savedLogsList;
             
-            const previousScrollTop = logsContainer ? logsContainer.scrollTop : (this.data.scrollPositions['videoLogsList-' + this.data.currentProjectId + '-' + this.data.currentVideoId] || 0);
+            let previousScrollTop = 0;
+            if (logsContainer) {
+                previousScrollTop = logsContainer.scrollTop;
+            }
+
+            const existingLogItems = new Map();
+            if (logsContainer) {
+                logsContainer.querySelectorAll('article.log-item[data-log-id]').forEach(item => {
+                    existingLogItems.set(item.dataset.logId, item);
+                });
+            }
 
             if (!video || !video.logs || video.logs.length === 0) {
                 if (logsContainer) {
-                    this.domElementMaps.s3LogItems.forEach((item, logId) => {
+                    existingLogItems.forEach((item, logId) => {
+                        this.revokeActiveObjectURL(`log-${logId}`);
                         item.remove();
-                        this.revokeActiveObjectURL(`s3-log-${logId}`);
                     });
-                    this.domElementMaps.s3LogItems.clear();
                     logsContainer.innerHTML = `
                         <div class="empty-state" style="padding:20px; font-size:0.9em;">
                             <div class="empty-state-icon">${this.getIcon('document-text')}</div>
                             <p>No logs saved for this video yet.</p>
                         </div>`;
                 }
-                requestAnimationFrame(() => { if(logsContainer) logsContainer.scrollTop = previousScrollTop; });
+                if (logsContainer) {
+                    requestAnimationFrame(() => { logsContainer.scrollTop = previousScrollTop; });
+                }
                 return;
             }
             
-            // Data is already sorted in loadData and after modifications
-            // const sortedLogs = [...video.logs].sort((a, b) => a.markIn - b.markIn);
+            const fragment = document.createDocumentFragment();
+            const sortedLogs = [...video.logs].sort((a, b) => a.markIn - b.markIn);
 
-            const newRenderedLogItemsMap = new Map();
-            const fragmentForNewLogItems = document.createDocumentFragment();
-
-            for (const log of video.logs) { // Iterate over pre-sorted video.logs
-                let logElement = this.domElementMaps.s3LogItems.get(log.id);
-                if (logElement) { // Existing item
-                    this._updateLogItemDOM(logElement, log);
-                     if (!logElement.parentNode) { // Append if it was removed
-                        logsContainer.appendChild(logElement);
-                    }
-                } else { // New item
-                    logElement = this._createLogItem(log);
-                    fragmentForNewLogItems.appendChild(logElement);
-                }
-                newRenderedLogItemsMap.set(log.id, logElement);
-            }
-            if (fragmentForNewLogItems.childNodes.length > 0) {
-                logsContainer.appendChild(fragmentForNewLogItems);
-            }
-
-            // Correct order of all log items based on video.logs
-            let currentElement = logsContainer.firstChild;
-            if(currentElement && currentElement.classList.contains('empty-state')) currentElement.remove(); // Remove empty state if it exists
-            currentElement = logsContainer.firstChild; 
-
-            for(const log of video.logs){
-                const expectedLogItem = newRenderedLogItemsMap.get(log.id);
-                if(expectedLogItem){
-                    if(currentElement !== expectedLogItem){
-                        logsContainer.insertBefore(expectedLogItem, currentElement);
-                    } else {
-                        currentElement = currentElement.nextSibling;
-                    }
+            for (const log of sortedLogs) {
+                const existingItem = existingLogItems.get(log.id);
+                const logElement = this._createOrUpdateLogItem(log, existingItem);
+                fragment.appendChild(logElement);
+                if (existingItem) {
+                    existingLogItems.delete(log.id); 
                 }
             }
-
-
-            this.domElementMaps.s3LogItems.forEach((item, logId) => {
-                if (!newRenderedLogItemsMap.has(logId)) {
-                    item.remove();
-                    this.revokeActiveObjectURL(`s3-log-${logId}`);
-                }
-            });
-            this.domElementMaps.s3LogItems = newRenderedLogItemsMap;
-
+            
             if (logsContainer) {
-                // Event listeners are delegated, but ensure they are attached if container was cleared
-                // For this diffing strategy where container is not cleared, existing listeners should be fine.
-                // If specific buttons were re-created *inside* _updateLogItemDOM, their listeners might need re-attaching
-                // But the current _updateLogItemDOM updates content, not button structure, so delegation is robust.
-                logsContainer.querySelectorAll('.btn-go-to-log-time').forEach(btn => {
-                    if(!btn.dataset.listenerAttachedS3GoTo) {
-                         btn.addEventListener('click', (e) => this.goToLogTime(parseFloat(e.currentTarget.dataset.time)));
-                         btn.dataset.listenerAttachedS3GoTo = 'true';
-                    }
+                existingLogItems.forEach((item, logId) => {
+                    this.revokeActiveObjectURL(`log-${logId}`);
+                    item.remove();
                 });
-                logsContainer.querySelectorAll('.btn-edit-log').forEach(btn => {
-                     if(!btn.dataset.listenerAttachedS3Edit) {
-                        btn.addEventListener('click', (e) => this.editLogEntry(e.currentTarget.dataset.logId));
-                        btn.dataset.listenerAttachedS3Edit = 'true';
-                    }
-                });
-                logsContainer.querySelectorAll('.btn-delete-log').forEach(btn => {
-                    if(!btn.dataset.listenerAttachedS3Delete) {
-                        btn.addEventListener('click', (e) => this.confirmDeleteLogOnScreen3(e.currentTarget.dataset.logId));
-                        btn.dataset.listenerAttachedS3Delete = 'true';
-                    }
-                });
+
+                logsContainer.innerHTML = ''; 
+                logsContainer.appendChild(fragment); 
+
+                logsContainer.querySelectorAll('.btn-go-to-log-time').forEach(btn => btn.addEventListener('click', (e) => this.goToLogTime(parseFloat(e.currentTarget.dataset.time))));
+                logsContainer.querySelectorAll('.btn-edit-log').forEach(btn => btn.addEventListener('click', (e) => this.editLogEntry(e.currentTarget.dataset.logId)));
+                logsContainer.querySelectorAll('.btn-delete-log').forEach(btn => btn.addEventListener('click', (e) => this.confirmDeleteLogOnScreen3(e.currentTarget.dataset.logId)));
+
                 requestAnimationFrame(() => { logsContainer.scrollTop = previousScrollTop; });
             }
         },
-
         async goToLogTime(time) { 
             if(this.data.videoElement && this.data.videoElement.src && this.dom.videoFilePrompt.classList.contains('hidden')) {
                 this.data.videoElement.currentTime = time; 
@@ -4227,10 +4037,9 @@
             
             try {
                 await this.DataManager.deleteLog(logId);
-                this.revokeActiveObjectURL(`s3-log-${logId}`); // For S3 thumbs
+                this.revokeActiveObjectURL(`log-${logId}`); 
 
                 video.logs = video.logs.filter(l => l.id !== logId); 
-                video.logs.sort((a,b) => a.markIn - b.markIn); // Re-sort
                 if(this.dom.editingLogIdInput.value === logId) { this.resetLogForm(); }
                 await this.renderSavedLogsList(); 
                 this.showToast("Log entry deleted.", 'success', 3000, 'check-circle');
@@ -4392,24 +4201,36 @@
                 } else {
                     let defaultIcon = 'plus';
                     let defaultText = 'Action';
-                    if(buttonElement.id === 'save-log-btn') { defaultIcon = 'save'; defaultText = this.dom.editingLogIdInput.value ? "Update Log" : "Save Log"; }
-                    else if (buttonElement.id === 'btn-create-project-confirm') { defaultIcon = 'plus-circle'; defaultText = "Create Project"; }
-                    // Fallback for other buttons if originalContent wasn't set
-                    const iconSpan = buttonElement.querySelector('.button-icon');
-                    const textNode = buttonElement.childNodes[1] ? buttonElement.childNodes[1].textContent.trim() : defaultText; // Attempt to preserve existing text
-                    if (iconSpan) { // If icon exists, try to keep it or reset
-                         const currentIcon = Object.keys(this.icons).find(key => this.icons[key] === iconSpan.innerHTML) || defaultIcon;
-                         buttonElement.innerHTML = `<span class="button-icon">${this.getIcon(currentIcon)}</span> <span>${this.utils.escapeHtml(textNode)}</span>`;
-                    } else {
-                         buttonElement.innerHTML = `<span class="button-icon">${this.getIcon(defaultIcon)}</span> <span>${this.utils.escapeHtml(defaultText)}</span>`;
+                    if(buttonElement.id === 'save-log-btn') { defaultIcon = 'save'; defaultText = this.dom.editingLogIdInput.value ? "Update Log" : "Save Log"; 
+                    } else if (buttonElement.id === 'btn-create-project-confirm') { 
+                        defaultIcon = 'plus-circle'; 
+                        defaultText = "Create Project"; 
+                    } else if (buttonElement.id === 'btn-rename-project-confirm') {
+                        defaultIcon = 'save';
+                        defaultText = "Save Changes";
+                    } else if (buttonElement.classList.contains('add-videos-button-label')) { // For add video buttons
+                        defaultIcon = 'plus';
+                        // Try to get more specific text for Add Videos buttons
+                        const textSpanElement = buttonElement.querySelector('span:not(.button-icon)');
+                        if (textSpanElement && textSpanElement.id === 'add-videos-top-text') {
+                            defaultText = "Add Videos";
+                        } else if (textSpanElement && textSpanElement.id === 'add-videos-bottom-text') {
+                            defaultText = "Add More Videos";
+                        } else {
+                            defaultText = "Add Videos"; // Generic fallback for add video buttons
+                        }
                     }
+                    // Add more else if conditions for other specific buttons if needed for more accurate restoration.
+                    
+                    buttonElement.innerHTML = `<span class="button-icon">${this.getIcon(defaultIcon)}</span> <span>${this.utils.escapeHtml(defaultText)}</span>`;
                 }
             }
-        },
+        }, // End of setButtonLoadingState
 
     }; // End of app object
 
     document.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 </body>
-</html>
+</html>                                    
+                                                             
