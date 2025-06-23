@@ -476,27 +476,23 @@
             padding: 0; 
             background-color: #000; 
             position: relative;
-            /* min-height: 180px; /* Original */
-            height: 350px; /* MODIFIED: Set a fixed height, matching player's max-height */
+            min-height: 180px; /* Increased min height */
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden; 
-            border-bottom-left-radius: var(--border-radius-large); 
-            border-bottom-right-radius: var(--border-radius-large);
+            /*border-bottom-left-radius: var(--border-radius-large); */ /* Removed: now applies to video-clips-list-container */
+            /*border-bottom-right-radius: var(--border-radius-large); */
         }
-        .main-video-thumbnail,
-        .main-video-preview-player { 
+        .main-video-thumbnail {
             width: 100%; 
-            /* height: auto; /* MODIFIED */
-            /* max-height: 350px; /* MODIFIED - Increased max height */
-            height: 100%; /* MODIFIED: Make them fill the fixed height of the parent */
-            object-fit: contain; /* MODIFIED: This will keep aspect ratio and fit within bounds */
-            /* cursor: pointer; /* MODIFIED - removed from thumbnail as big play button is primary */
+            height: auto;
+            max-height: 350px; /* Increased max height */
+            object-fit: contain; 
+            cursor: pointer;
             display: block; 
         }
-         .main-video-thumbnail.hidden,
-         .main-video-preview-player.hidden { display: none; }
+         .main-video-thumbnail.hidden { display: none; }
 
         .play-main-video-preview-btn { 
             position: absolute;
@@ -522,7 +518,13 @@
         .play-main-video-preview-btn:hover { background: rgba(0,0,0,0.7); transform: translate(-50%, -50%) scale(1.05); }
         .play-main-video-preview-btn.hidden { display: none; }
 
-        /* .main-video-preview-player no longer needs separate sizing if parent is fixed */
+        .main-video-preview-player { 
+            width: 100%;
+            display: block;
+            max-height: 350px; 
+            background-color: #000;
+        }
+        .main-video-preview-player.hidden { display: none; }
 
         /* Custom Controls for Main Player on Card - Screen 2 (MODIFIED TO BE OVER VIDEO) */
         .main-player-custom-controls {
@@ -599,6 +601,8 @@
             overflow-y: auto;
             scroll-behavior: smooth;
             background-color: #F9FAFB; /* Light bg for clip list section */
+            border-bottom-left-radius: var(--border-radius-large); /* To match card */
+            border-bottom-right-radius: var(--border-radius-large);
         }
         .video-clips-list-container h4 { 
             font-size: 1.1em; font-weight: 600; color: var(--text-color);
@@ -2472,14 +2476,10 @@
             this.showToast(`Video marked ${video.isImportant ? 'important' : 'not important'}.`, 'info', 3000, 'info-circle');
         },
 
-        resetActiveCardPlayerUI(findNewPlayerElements = true) {
+        resetActiveCardPlayerUI(findNewPlayerElements = true) { 
             const acp = this.data.activeCardPlayer;
             if (acp.playerElement) {
-                acp.playerElement.pause();
-                acp.playerElement.removeAttribute('src');
-                acp.playerElement.load(); // Important to clear buffer and reset state
-                
-                // Remove all previously bound listeners
+                acp.playerElement.pause(); acp.playerElement.removeAttribute('src'); acp.playerElement.load(); 
                 if (acp.boundPlayerTimeUpdate) acp.playerElement.removeEventListener('timeupdate', acp.boundPlayerTimeUpdate);
                 if (acp.boundPlayerLoadedMetadata) acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
                 if (acp.boundPlayerEnded) acp.playerElement.removeEventListener('ended', acp.boundPlayerEnded);
@@ -2487,26 +2487,23 @@
                 if (acp.boundPlayerPlay) acp.playerElement.removeEventListener('play', acp.boundPlayerPlay);
                 if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
 
-                acp.playerElement.classList.add('hidden');
-                if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
+                if (acp.playerElement) acp.playerElement.classList.add('hidden');
+                if (acp.controlsContainerElement) { acp.controlsContainerElement.classList.remove('visible'); } 
                 if (acp.promptElement) acp.promptElement.classList.add('hidden');
                 if (acp.thumbnailElement) acp.thumbnailElement.classList.remove('hidden');
                 if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.remove('hidden');
+
                 if (acp.timecodeElement) acp.timecodeElement.textContent = '00:00 / 00:00';
                 if (acp.progressBarElement) acp.progressBarElement.style.width = '0%';
                 clearTimeout(acp.controlsHideTimer);
             }
-             // Reset the activeCardPlayer state object
-            this.data.activeCardPlayer = {
+             this.data.activeCardPlayer = {
                 videoId: null, cardElement: null, playerElement: null, thumbnailElement: null,
                 bigPlayButtonElement: null, promptElement: null, fileInputElement: null,
                 controlsContainerElement: null, playPauseBtnElement: null, rewindBtnElement: null,
                 forwardBtnElement: null, progressBarContainerElement: null, progressBarElement: null,
-                timecodeElement: null, stopBtnElement: null, 
-                isPlaying: false, // Crucially reset isPlaying
-                isScrubbing: false,
-                wasPlayingBeforeScrub: false, 
-                currentSegment: { startTime: 0, endTime: 0, duration: 0 },
+                timecodeElement: null, stopBtnElement: null, isPlaying: false, isScrubbing: false,
+                wasPlayingBeforeScrub: false, currentSegment: { startTime: 0, endTime: 0, duration: 0 },
                 boundPlayerTimeUpdate: null, boundPlayerLoadedMetadata: null, boundPlayerEnded: null,
                 boundPlayerError: null, boundPlayerPlay: null, boundPlayerPause: null,
                 _boundCardPlayerScrubMove: null, _boundCardPlayerScrubEnd: null,
@@ -2515,175 +2512,179 @@
         },
 
         async playVideoOnCard(videoId, cardElement, segmentData = null) {
-            const videoData = this.getVideoById(this.data.currentProjectId, videoId);
-            if (!videoData) {
-                console.error("playVideoOnCard: videoData not found for videoId", videoId);
-                return;
-            }
-
-            const acp = this.data.activeCardPlayer;
-            const previewArea = cardElement.querySelector(`#main-preview-area-${videoId}`);
-            if (!previewArea) {
-                console.error("playVideoOnCard: Preview area not found for videoId:", videoId);
-                return;
-            }
-
-            const isSwitchingVideo = acp.videoId !== videoId;
+            const videoData = this.getVideoById(this.data.currentProjectId, videoId); if (!videoData) return;
             
-            if (isSwitchingVideo || !acp.playerElement || (acp.videoId === videoId && acp.promptElement && !acp.promptElement.classList.contains('hidden'))) {
+            // If another video OR a different segment of the same video is being played, reset UI
+            if (this.data.activeCardPlayer.videoId && 
+                (this.data.activeCardPlayer.videoId !== videoId || 
+                 (segmentData && this.data.activeCardPlayer.currentSegment.startTime !== segmentData.startTime))) {
                 this.resetActiveCardPlayerUI(false); 
-                
-                acp.videoId = videoId;
-                acp.cardElement = cardElement;
+            }
+            const acp = this.data.activeCardPlayer; 
+            acp.videoId = videoId; 
+            acp.cardElement = cardElement;
+            // Ensure previewArea is correctly identified from the current cardElement
+            const previewArea = cardElement.querySelector(`.main-video-preview-area`);
 
-                acp.playerElement = previewArea.querySelector(`#main-player-${videoId}`);
-                acp.thumbnailElement = previewArea.querySelector(`#main-thumbnail-${videoId}`);
-                acp.bigPlayButtonElement = previewArea.querySelector(`#play-main-preview-btn-${videoId}`);
-                acp.promptElement = previewArea.querySelector(`#main-player-prompt-${videoId}`);
-                if (acp.promptElement) acp.fileInputElement = acp.promptElement.querySelector('.main-video-preview-file-input');
-                acp.controlsContainerElement = previewArea.querySelector(`#main-player-controls-${videoId}`);
-                
-                if(acp.controlsContainerElement){
-                    acp.playPauseBtnElement = acp.controlsContainerElement.querySelector('.main-player-play-pause-btn');
-                    acp.rewindBtnElement = acp.controlsContainerElement.querySelector('.main-player-rewind-btn');
-                    acp.forwardBtnElement = acp.controlsContainerElement.querySelector('.main-player-forward-btn');
-                    acp.progressBarContainerElement = acp.controlsContainerElement.querySelector('.main-player-progress-bar-container');
-                    if(acp.progressBarContainerElement) acp.progressBarElement = acp.progressBarContainerElement.querySelector('.main-player-progress-bar');
-                    acp.timecodeElement = acp.controlsContainerElement.querySelector('.main-player-timecode');
-                    acp.stopBtnElement = acp.controlsContainerElement.querySelector('.main-player-stop-btn');
-                }
+            if (!previewArea) { 
+                console.error("Preview area not found for videoId:", videoId, "on card:", cardElement); 
+                this.showToast("Player UI component missing (preview area).", "error");
+                return; 
+            }
 
-                if (!acp.playerElement || !acp.thumbnailElement || !acp.bigPlayButtonElement || !acp.promptElement || !acp.controlsContainerElement) {
-                    this.showToast("Player UI error.", "error", 3000, 'x-circle');
-                    console.error("playVideoOnCard: Essential player UI elements missing for videoId:", videoId, acp);
-                    return;
-                }
+            // Assign/Re-assign ACP elements based on the current previewArea and videoId
+            acp.playerElement = previewArea.querySelector(`#main-player-${videoId}`);
+            acp.thumbnailElement = previewArea.querySelector(`#main-thumbnail-${videoId}`);
+            acp.bigPlayButtonElement = previewArea.querySelector(`#play-main-preview-btn-${videoId}`);
+            acp.promptElement = previewArea.querySelector(`#main-player-prompt-${videoId}`);
+            if(acp.promptElement) acp.fileInputElement = acp.promptElement.querySelector('.main-video-preview-file-input');
+            acp.controlsContainerElement = previewArea.querySelector(`#main-player-controls-${videoId}`);
+            
+            if(acp.controlsContainerElement){
+                acp.playPauseBtnElement = acp.controlsContainerElement.querySelector('.main-player-play-pause-btn');
+                acp.rewindBtnElement = acp.controlsContainerElement.querySelector('.main-player-rewind-btn');
+                acp.forwardBtnElement = acp.controlsContainerElement.querySelector('.main-player-forward-btn');
+                acp.progressBarContainerElement = acp.controlsContainerElement.querySelector('.main-player-progress-bar-container');
+                // Ensure progress bar and timecode elements are found by their unique IDs
+                if(acp.progressBarContainerElement) acp.progressBarElement = acp.progressBarContainerElement.querySelector(`#main-player-progress-${videoId}`);
+                acp.timecodeElement = acp.controlsContainerElement.querySelector(`#main-player-timecode-${videoId}`);
+                acp.stopBtnElement = acp.controlsContainerElement.querySelector('.main-player-stop-btn');
+            }
 
-                acp.boundPlayerError = () => this.handleCardPlayerError(videoData.filename);
-                acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData, true); 
-                acp.boundPlayerTimeUpdate = () => this.handleCardPlayerTimeUpdate();
-                acp.boundPlayerEnded = () => this.handleCardPlayerEnded();
-                acp.boundPlayerPlay = () => {
-                    acp.isPlaying = true;
-                    if (acp.playPauseBtnElement) {
-                        const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
-                        if (iconSpan) iconSpan.innerHTML = this.getIcon('pause');
-                        acp.playPauseBtnElement.setAttribute('aria-label', 'Pause');
-                    }
-                    if (acp.controlsContainerElement) { clearTimeout(acp.controlsHideTimer); acp.controlsContainerElement.classList.add('visible'); }
-                };
-                acp.boundPlayerPause = () => {
-                    if(!acp.isScrubbing) acp.isPlaying = false;
-                    if (acp.playPauseBtnElement && !acp.isScrubbing) {
-                        const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
-                        if (iconSpan) iconSpan.innerHTML = this.getIcon('play');
-                        acp.playPauseBtnElement.setAttribute('aria-label', 'Play');
-                    }
-                    if (acp.controlsContainerElement && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover') && !acp.isScrubbing) {
-                        acp.controlsHideTimer = setTimeout(() => {
-                            if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
-                        }, 3000);
-                    }
-                };
-                acp.playerElement.addEventListener('error', acp.boundPlayerError);
-                acp.playerElement.addEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
-                acp.playerElement.addEventListener('timeupdate', acp.boundPlayerTimeUpdate);
-                acp.playerElement.addEventListener('ended', acp.boundPlayerEnded);
-                acp.playerElement.addEventListener('play', acp.boundPlayerPlay);
-                acp.playerElement.addEventListener('pause', acp.boundPlayerPause);
-            } else {
-                // Same video, player already initialized. Update segmentData for the existing listener.
-                acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata); 
-                acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData, true); 
-                acp.playerElement.addEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
+            if(!acp.playerElement || !acp.thumbnailElement || !acp.bigPlayButtonElement || !acp.promptElement || !acp.controlsContainerElement) {
+                this.showToast("Player UI error (missing core components).", "error", 3000, 'x-circle'); 
+                console.error("Missing ACP elements for videoId:", videoId, acp);
+                return;
             }
 
             acp.thumbnailElement.classList.add('hidden');
             acp.bigPlayButtonElement.classList.add('hidden');
             acp.playerElement.classList.remove('hidden');
             acp.promptElement.classList.add('hidden');
+
+            // Remove old listeners before adding new ones, only if playerElement is valid
+            if (acp.playerElement) {
+                if (acp.boundPlayerError) acp.playerElement.removeEventListener('error', acp.boundPlayerError);
+                if (acp.boundPlayerLoadedMetadata) acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
+                if (acp.boundPlayerTimeUpdate) acp.playerElement.removeEventListener('timeupdate', acp.boundPlayerTimeUpdate);
+                if (acp.boundPlayerEnded) acp.playerElement.removeEventListener('ended', acp.boundPlayerEnded);
+                if (acp.boundPlayerPlay) acp.playerElement.removeEventListener('play', acp.boundPlayerPlay);
+                if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
+            }
+
+            acp.boundPlayerError = () => this.handleCardPlayerError(videoData.filename);
+            acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData);
+            acp.boundPlayerTimeUpdate = () => this.handleCardPlayerTimeUpdate();
+            acp.boundPlayerEnded = () => this.handleCardPlayerEnded(); 
+            acp.boundPlayerPlay = () => { 
+                acp.isPlaying = true; 
+                if(acp.playPauseBtnElement) { 
+                    const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                    if(iconSpan) iconSpan.innerHTML = this.getIcon('pause');
+                    acp.playPauseBtnElement.setAttribute('aria-label', 'Pause'); 
+                }
+                if(acp.controlsContainerElement) { clearTimeout(acp.controlsHideTimer); acp.controlsContainerElement.classList.add('visible'); }
+            };
+            acp.boundPlayerPause = () => { 
+                acp.isPlaying = false; 
+                if(acp.playPauseBtnElement && !acp.isScrubbing) {
+                    const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                    if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
+                    acp.playPauseBtnElement.setAttribute('aria-label', 'Play'); 
+                }
+                 if(acp.controlsContainerElement && previewArea && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover')) { 
+                    acp.controlsHideTimer = setTimeout(() => {
+                        if(acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
+                    }, 3000);
+                 }
+            };
             
-            acp.isPlaying = true; 
+            if (acp.playerElement) {
+                acp.playerElement.addEventListener('error', acp.boundPlayerError);
+                acp.playerElement.addEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
+                acp.playerElement.addEventListener('timeupdate', acp.boundPlayerTimeUpdate);
+                acp.playerElement.addEventListener('ended', acp.boundPlayerEnded);
+                acp.playerElement.addEventListener('play', acp.boundPlayerPlay);
+                acp.playerElement.addEventListener('pause', acp.boundPlayerPause);
+            }
 
             const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
-
             if (videoSrc) {
-                if (acp.playerElement.src !== videoSrc || isSwitchingVideo || acp.playerElement.readyState === 0) { 
-                    acp.playerElement.src = videoSrc;
-                    acp.playerElement.load(); 
-                } else {
-                    this.handleCardPlayerLoadedMetadata(segmentData, true); 
-                }
-            } else {
-                acp.isPlaying = false;
-                this.showCardPlayerPrompt(videoData.filename);
-            }
-            this.conditionallyScrollPlayerIntoView(previewArea, acp.cardElement);
-        },
-
-        conditionallyScrollPlayerIntoView(previewAreaElement, cardElement) {
-            if (!previewAreaElement || !cardElement) return;
+                if(acp.playerElement.src !== videoSrc) { acp.playerElement.src = videoSrc; acp.playerElement.load(); } 
+                else { this.handleCardPlayerLoadedMetadata(segmentData); } 
+                 acp.playerElement.play().catch(e => {
+                    if(e.name === "NotAllowedError") this.showToast("Playback blocked by browser. User interaction may be required.", "warning", 4000, 'alert-triangle');
+                    else console.error("Card player play error:", e);
+                    this.showCardPlayerPrompt(videoData.filename);
+                });
+            } else { this.showCardPlayerPrompt(videoData.filename); }
+            
+            // --- REVISED SCROLL LOGIC ---
             requestAnimationFrame(() => {
-                const previewRect = previewAreaElement.getBoundingClientRect();
-                const viewportHeight = window.innerHeight;
-                const buffer = 10; 
+                if (acp.playerElement && previewArea) { // Check previewArea again for safety
+                    const previewAreaRect = previewArea.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    
+                    let estimatedHeaderHeight = 0;
+                    // Find the currently active sticky header for Screen 2
+                    const activeScreenHeader = this.dom.screens['project-videos'].querySelector('.header-with-back');
+                    if (activeScreenHeader && getComputedStyle(activeScreenHeader).position === 'sticky') {
+                        estimatedHeaderHeight = activeScreenHeader.offsetHeight;
+                    } else {
+                        // Fallback if header specific to screen 2 is not found or not sticky
+                        // This path should ideally not be taken if DOM structure is consistent.
+                        const genericActiveHeader = document.querySelector('.header-with-back.active'); // Less specific but might work
+                         if (genericActiveHeader && getComputedStyle(genericActiveHeader).position === 'sticky') {
+                            estimatedHeaderHeight = genericActiveHeader.offsetHeight;
+                        } else {
+                            estimatedHeaderHeight = 65; // A reasonable default fallback
+                        }
+                    }
 
-                const isTooHigh = previewRect.bottom < buffer; 
-                const isTooLow = previewRect.top > viewportHeight - buffer; 
-                const isPartiallyVisibleButNeedsScroll = (previewRect.top < buffer && previewRect.height > buffer) || (previewRect.bottom > viewportHeight - buffer && previewRect.height > buffer);
+                    const scrollThreshold = 10; // Only scroll if it's off by more than 10px
 
-                if (isTooHigh || isTooLow || isPartiallyVisibleButNeedsScroll) {
-                    previewAreaElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    const needsScrollForTopVisibility = previewAreaRect.top < (estimatedHeaderHeight + scrollThreshold); // Adjusted logic
+                    const needsScrollForBottomVisibility = previewAreaRect.bottom > (viewportHeight - scrollThreshold); // Adjusted logic
+
+                    if (needsScrollForTopVisibility || needsScrollForBottomVisibility) {
+                         // Scroll the previewArea into view, trying to keep it below the header.
+                        // 'nearest' is usually good, but for top, we might prefer 'start' if header is tall.
+                        let scrollBlockOption = 'nearest';
+                        if (needsScrollForTopVisibility && previewAreaRect.height < (viewportHeight - estimatedHeaderHeight)) {
+                           // If it fits below header, align to start (considering header)
+                           // This is more complex to do perfectly with scrollIntoView alone,
+                           // but 'start' is a closer approximation if the main issue is top visibility.
+                           // A manual window.scrollTo would be needed for exact pixel positioning below header.
+                           // For now, 'nearest' is the simplest robust option.
+                        }
+                        previewArea.scrollIntoView({ behavior: 'smooth', block: scrollBlockOption });
+                    }
                 }
             });
+            // --- END REVISED SCROLL LOGIC ---
         },
 
-        handleCardPlayerLoadedMetadata(segmentData, autoPlay = false) {
-            const acp = this.data.activeCardPlayer;
-            if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration)) {
-                console.warn("handleCardPlayerLoadedMetadata: Player not ready or duration invalid.", acp.playerElement?.readyState, acp.playerElement?.duration);
-                 const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId); 
-                 if (videoData && acp.videoId === videoData.id ) { 
-                    this.showCardPlayerPrompt(videoData.filename);
-                 } else {
-                    console.error("handleCardPlayerLoadedMetadata: Could not retrieve videoData or acp.videoId is stale.");
-                 }
-                return;
-            }
 
-            if (segmentData && typeof segmentData.startTime === 'number' && typeof segmentData.endTime === 'number' && segmentData.endTime > segmentData.startTime) {
+        handleCardPlayerLoadedMetadata(segmentData) { 
+            const acp = this.data.activeCardPlayer;
+            if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration)) return;
+
+            if (segmentData && segmentData.endTime > segmentData.startTime) { 
                 acp.currentSegment.startTime = segmentData.startTime;
-                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration);
+                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration); 
+                acp.currentSegment.duration = acp.currentSegment.endTime - acp.currentSegment.startTime;
+                acp.playerElement.currentTime = acp.currentSegment.startTime;
             } else { 
                 acp.currentSegment.startTime = 0;
                 acp.currentSegment.endTime = acp.playerElement.duration;
+                acp.currentSegment.duration = acp.playerElement.duration;
+                if(acp.playerElement.currentTime >= acp.playerElement.duration - 0.1 && acp.playerElement.duration > 0) { 
+                    acp.playerElement.currentTime = 0;
+                }
             }
-            acp.currentSegment.duration = acp.currentSegment.endTime - acp.currentSegment.startTime;
-            
-            if (acp.playerElement.currentTime < acp.currentSegment.startTime || acp.playerElement.currentTime >= acp.currentSegment.endTime || autoPlay) {
-                 acp.playerElement.currentTime = acp.currentSegment.startTime;
-            }
-            
             this.updateCardPlayerTimeDisplay();
-
-            if (autoPlay && acp.isPlaying) { 
-                acp.playerElement.play().catch(e => {
-                    console.warn("Card player auto-play error in loadedmetadata:", e);
-                    if (e.name === "NotAllowedError") {
-                        this.showToast("Playback blocked by browser.", "warning", 4000, 'alert-triangle');
-                        const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId);
-                        if (videoData) this.showCardPlayerPrompt(videoData.filename);
-                        acp.isPlaying = false; 
-                        if (acp.playPauseBtnElement) { 
-                            const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
-                            if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
-                            acp.playPauseBtnElement.setAttribute('aria-label', 'Play');
-                        }
-                    } else {
-                         const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId);
-                         if (videoData) this.showCardPlayerPrompt(videoData.filename); 
-                    }
-                });
+             if (acp.isPlaying) { 
+                acp.playerElement.play().catch(e=>console.warn("Card player resume play error", e));
             }
         },
         handleCardPlayerTimeUpdate() { 
@@ -2746,9 +2747,7 @@
             if (acp.isPlaying) { acp.playerElement.pause(); } 
             else {
                 if (acp.playerElement.currentTime >= acp.currentSegment.endTime - 0.1) { acp.playerElement.currentTime = acp.currentSegment.startTime; }
-                acp.isPlaying = true; // Set intent to play before calling play()
                 acp.playerElement.play().catch(e => {
-                    acp.isPlaying = false; // Play failed, reset intent
                     if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
                 });
             }
@@ -2780,7 +2779,7 @@
         },
         updateCardPlayerProgressBarOnScrub(event) { 
             const acp = this.data.activeCardPlayer; if (!acp.progressBarContainerElement || !acp.playerElement || acp.currentSegment.duration <= 0) return;
-            const rect = acp.progressBarContainerElement.getBoundingClientRect(); let clientX = event.clientX; 
+            const rect = acp.progressBarContainerElement.getBoundingClientRect(); const clientX = event.clientX; 
             const clickX = clientX - rect.left; const seekRatio = Math.max(0, Math.min(1, clickX / rect.width));
             const newTimeInSegment = seekRatio * acp.currentSegment.duration; acp.playerElement.currentTime = acp.currentSegment.startTime + newTimeInSegment;
             if(acp.progressBarElement) acp.progressBarElement.style.width = `${seekRatio * 100}%`; this.updateCardPlayerTimeDisplay();
@@ -2833,13 +2832,8 @@
             if (acp.playerElement && acp.promptElement && acp.controlsContainerElement) {
                 acp.promptElement.classList.add('hidden'); acp.playerElement.classList.remove('hidden'); 
                 acp.controlsContainerElement.classList.add('visible'); 
-                acp.playerElement.src = objectURL; 
-                acp.playerElement.load(); 
-                acp.isPlaying = true; // Set intent
-                acp.playerElement.play().catch(e => { 
-                    acp.isPlaying = false; // Reset intent if play fails
-                    if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle'); 
-                });
+                acp.playerElement.src = objectURL; acp.playerElement.load(); 
+                acp.playerElement.play().catch(e => { if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle'); });
             } else { this.showToast("Player UI elements missing after file selection.", "error", 3000, 'x-circle'); }
             if(acp.fileInputElement) acp.fileInputElement.value = '';
         },
