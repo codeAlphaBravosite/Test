@@ -476,13 +476,13 @@
             padding: 0; 
             background-color: #000; 
             position: relative;
-            /* min-height: 180px; /* Original - Increased min height */
+            /* min-height: 180px; /* Original */
             height: 350px; /* MODIFIED: Set a fixed height, matching player's max-height */
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden; 
-            border-bottom-left-radius: var(--border-radius-large); /* To match card */
+            border-bottom-left-radius: var(--border-radius-large); 
             border-bottom-right-radius: var(--border-radius-large);
         }
         .main-video-thumbnail,
@@ -2472,10 +2472,14 @@
             this.showToast(`Video marked ${video.isImportant ? 'important' : 'not important'}.`, 'info', 3000, 'info-circle');
         },
 
-        resetActiveCardPlayerUI(findNewPlayerElements = true) { 
+        resetActiveCardPlayerUI(findNewPlayerElements = true) {
             const acp = this.data.activeCardPlayer;
             if (acp.playerElement) {
-                acp.playerElement.pause(); acp.playerElement.removeAttribute('src'); acp.playerElement.load(); 
+                acp.playerElement.pause();
+                acp.playerElement.removeAttribute('src');
+                acp.playerElement.load(); // Important to clear buffer and reset state
+                
+                // Remove all previously bound listeners
                 if (acp.boundPlayerTimeUpdate) acp.playerElement.removeEventListener('timeupdate', acp.boundPlayerTimeUpdate);
                 if (acp.boundPlayerLoadedMetadata) acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
                 if (acp.boundPlayerEnded) acp.playerElement.removeEventListener('ended', acp.boundPlayerEnded);
@@ -2483,23 +2487,26 @@
                 if (acp.boundPlayerPlay) acp.playerElement.removeEventListener('play', acp.boundPlayerPlay);
                 if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
 
-                if (acp.playerElement) acp.playerElement.classList.add('hidden');
-                if (acp.controlsContainerElement) { acp.controlsContainerElement.classList.remove('visible'); } 
+                acp.playerElement.classList.add('hidden');
+                if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
                 if (acp.promptElement) acp.promptElement.classList.add('hidden');
                 if (acp.thumbnailElement) acp.thumbnailElement.classList.remove('hidden');
                 if (acp.bigPlayButtonElement) acp.bigPlayButtonElement.classList.remove('hidden');
-
                 if (acp.timecodeElement) acp.timecodeElement.textContent = '00:00 / 00:00';
                 if (acp.progressBarElement) acp.progressBarElement.style.width = '0%';
                 clearTimeout(acp.controlsHideTimer);
             }
-             this.data.activeCardPlayer = {
+             // Reset the activeCardPlayer state object
+            this.data.activeCardPlayer = {
                 videoId: null, cardElement: null, playerElement: null, thumbnailElement: null,
                 bigPlayButtonElement: null, promptElement: null, fileInputElement: null,
                 controlsContainerElement: null, playPauseBtnElement: null, rewindBtnElement: null,
                 forwardBtnElement: null, progressBarContainerElement: null, progressBarElement: null,
-                timecodeElement: null, stopBtnElement: null, isPlaying: false, isScrubbing: false,
-                wasPlayingBeforeScrub: false, currentSegment: { startTime: 0, endTime: 0, duration: 0 },
+                timecodeElement: null, stopBtnElement: null, 
+                isPlaying: false, // Crucially reset isPlaying
+                isScrubbing: false,
+                wasPlayingBeforeScrub: false, 
+                currentSegment: { startTime: 0, endTime: 0, duration: 0 },
                 boundPlayerTimeUpdate: null, boundPlayerLoadedMetadata: null, boundPlayerEnded: null,
                 boundPlayerError: null, boundPlayerPlay: null, boundPlayerPause: null,
                 _boundCardPlayerScrubMove: null, _boundCardPlayerScrubEnd: null,
@@ -2508,132 +2515,109 @@
         },
 
         async playVideoOnCard(videoId, cardElement, segmentData = null) {
-            const videoData = this.getVideoById(this.data.currentProjectId, videoId); if (!videoData) return;
+            const videoData = this.getVideoById(this.data.currentProjectId, videoId);
+            if (!videoData) {
+                console.error("playVideoOnCard: videoData not found for videoId", videoId);
+                return;
+            }
+
             const acp = this.data.activeCardPlayer;
-            const previewArea = cardElement.querySelector(`#main-preview-area-${videoId}`); 
-
-            if (!previewArea) { console.error("Preview area not found for videoId:", videoId); return; }
-
-            // --- START: Optimization for same video, different clip ---
-            if (acp.videoId === videoId && acp.playerElement && acp.playerElement.src && !acp.promptElement.classList.contains('hidden')) {
-                let isNewSegment = false;
-                if (segmentData) {
-                    isNewSegment = (acp.currentSegment.startTime !== segmentData.startTime || acp.currentSegment.endTime !== segmentData.endTime);
-                } else { 
-                    isNewSegment = (acp.currentSegment.startTime !== 0 || acp.currentSegment.endTime !== (acp.playerElement.duration || 0));
-                }
-
-                if (isNewSegment) {
-                    this.handleCardPlayerLoadedMetadata(segmentData); 
-                    if (acp.playerElement.paused) {
-                        acp.playerElement.play().catch(e => {
-                            if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
-                        });
-                    }
-                } else { 
-                    if (acp.playerElement.currentTime >= acp.currentSegment.endTime - 0.1 && acp.currentSegment.duration > 0) {
-                        acp.playerElement.currentTime = acp.currentSegment.startTime;
-                    }
-                    if (acp.playerElement.paused) {
-                         acp.playerElement.play().catch(e => {
-                            if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
-                        });
-                    }
-                }
-                this.conditionallyScrollPlayerIntoView(previewArea, acp.cardElement);
-                return; 
+            const previewArea = cardElement.querySelector(`#main-preview-area-${videoId}`);
+            if (!previewArea) {
+                console.error("playVideoOnCard: Preview area not found for videoId:", videoId);
+                return;
             }
-            // --- END: Optimization ---
 
-            if (acp.videoId !== videoId || !acp.playerElement || !acp.playerElement.src || acp.promptElement.classList.contains('hidden') === false ) {
+            const isSwitchingVideo = acp.videoId !== videoId;
+            
+            if (isSwitchingVideo || !acp.playerElement || (acp.videoId === videoId && acp.promptElement && !acp.promptElement.classList.contains('hidden'))) {
                 this.resetActiveCardPlayerUI(false); 
-            }
-            
-            acp.videoId = videoId; 
-            acp.cardElement = cardElement;
-            acp.playerElement = previewArea.querySelector(`#main-player-${videoId}`);
-            acp.thumbnailElement = previewArea.querySelector(`#main-thumbnail-${videoId}`);
-            acp.bigPlayButtonElement = previewArea.querySelector(`#play-main-preview-btn-${videoId}`);
-            acp.promptElement = previewArea.querySelector(`#main-player-prompt-${videoId}`);
-            if(acp.promptElement) acp.fileInputElement = acp.promptElement.querySelector('.main-video-preview-file-input');
-            acp.controlsContainerElement = previewArea.querySelector(`#main-player-controls-${videoId}`);
-            
-            if(acp.controlsContainerElement){
-                acp.playPauseBtnElement = acp.controlsContainerElement.querySelector('.main-player-play-pause-btn');
-                acp.rewindBtnElement = acp.controlsContainerElement.querySelector('.main-player-rewind-btn');
-                acp.forwardBtnElement = acp.controlsContainerElement.querySelector('.main-player-forward-btn');
-                acp.progressBarContainerElement = acp.controlsContainerElement.querySelector('.main-player-progress-bar-container');
-                if(acp.progressBarContainerElement) acp.progressBarElement = acp.progressBarContainerElement.querySelector('.main-player-progress-bar');
-                acp.timecodeElement = acp.controlsContainerElement.querySelector('.main-player-timecode');
-                acp.stopBtnElement = acp.controlsContainerElement.querySelector('.main-player-stop-btn');
-            }
+                
+                acp.videoId = videoId;
+                acp.cardElement = cardElement;
 
-            if(!acp.playerElement || !acp.thumbnailElement || !acp.bigPlayButtonElement || !acp.promptElement || !acp.controlsContainerElement) {
-                this.showToast("Player UI error.", "error", 3000, 'x-circle'); return;
+                acp.playerElement = previewArea.querySelector(`#main-player-${videoId}`);
+                acp.thumbnailElement = previewArea.querySelector(`#main-thumbnail-${videoId}`);
+                acp.bigPlayButtonElement = previewArea.querySelector(`#play-main-preview-btn-${videoId}`);
+                acp.promptElement = previewArea.querySelector(`#main-player-prompt-${videoId}`);
+                if (acp.promptElement) acp.fileInputElement = acp.promptElement.querySelector('.main-video-preview-file-input');
+                acp.controlsContainerElement = previewArea.querySelector(`#main-player-controls-${videoId}`);
+                
+                if(acp.controlsContainerElement){
+                    acp.playPauseBtnElement = acp.controlsContainerElement.querySelector('.main-player-play-pause-btn');
+                    acp.rewindBtnElement = acp.controlsContainerElement.querySelector('.main-player-rewind-btn');
+                    acp.forwardBtnElement = acp.controlsContainerElement.querySelector('.main-player-forward-btn');
+                    acp.progressBarContainerElement = acp.controlsContainerElement.querySelector('.main-player-progress-bar-container');
+                    if(acp.progressBarContainerElement) acp.progressBarElement = acp.progressBarContainerElement.querySelector('.main-player-progress-bar');
+                    acp.timecodeElement = acp.controlsContainerElement.querySelector('.main-player-timecode');
+                    acp.stopBtnElement = acp.controlsContainerElement.querySelector('.main-player-stop-btn');
+                }
+
+                if (!acp.playerElement || !acp.thumbnailElement || !acp.bigPlayButtonElement || !acp.promptElement || !acp.controlsContainerElement) {
+                    this.showToast("Player UI error.", "error", 3000, 'x-circle');
+                    console.error("playVideoOnCard: Essential player UI elements missing for videoId:", videoId, acp);
+                    return;
+                }
+
+                acp.boundPlayerError = () => this.handleCardPlayerError(videoData.filename);
+                acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData, true); 
+                acp.boundPlayerTimeUpdate = () => this.handleCardPlayerTimeUpdate();
+                acp.boundPlayerEnded = () => this.handleCardPlayerEnded();
+                acp.boundPlayerPlay = () => {
+                    acp.isPlaying = true;
+                    if (acp.playPauseBtnElement) {
+                        const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                        if (iconSpan) iconSpan.innerHTML = this.getIcon('pause');
+                        acp.playPauseBtnElement.setAttribute('aria-label', 'Pause');
+                    }
+                    if (acp.controlsContainerElement) { clearTimeout(acp.controlsHideTimer); acp.controlsContainerElement.classList.add('visible'); }
+                };
+                acp.boundPlayerPause = () => {
+                    if(!acp.isScrubbing) acp.isPlaying = false;
+                    if (acp.playPauseBtnElement && !acp.isScrubbing) {
+                        const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                        if (iconSpan) iconSpan.innerHTML = this.getIcon('play');
+                        acp.playPauseBtnElement.setAttribute('aria-label', 'Play');
+                    }
+                    if (acp.controlsContainerElement && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover') && !acp.isScrubbing) {
+                        acp.controlsHideTimer = setTimeout(() => {
+                            if (acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
+                        }, 3000);
+                    }
+                };
+                acp.playerElement.addEventListener('error', acp.boundPlayerError);
+                acp.playerElement.addEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
+                acp.playerElement.addEventListener('timeupdate', acp.boundPlayerTimeUpdate);
+                acp.playerElement.addEventListener('ended', acp.boundPlayerEnded);
+                acp.playerElement.addEventListener('play', acp.boundPlayerPlay);
+                acp.playerElement.addEventListener('pause', acp.boundPlayerPause);
+            } else {
+                // Same video, player already initialized. Update segmentData for the existing listener.
+                acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata); 
+                acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData, true); 
+                acp.playerElement.addEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
             }
 
             acp.thumbnailElement.classList.add('hidden');
             acp.bigPlayButtonElement.classList.add('hidden');
             acp.playerElement.classList.remove('hidden');
             acp.promptElement.classList.add('hidden');
-
-            if (acp.boundPlayerError) acp.playerElement.removeEventListener('error', acp.boundPlayerError);
-            if (acp.boundPlayerLoadedMetadata) acp.playerElement.removeEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
-            if (acp.boundPlayerTimeUpdate) acp.playerElement.removeEventListener('timeupdate', acp.boundPlayerTimeUpdate);
-            if (acp.boundPlayerEnded) acp.playerElement.removeEventListener('ended', acp.boundPlayerEnded);
-            if (acp.boundPlayerPlay) acp.playerElement.removeEventListener('play', acp.boundPlayerPlay);
-            if (acp.boundPlayerPause) acp.playerElement.removeEventListener('pause', acp.boundPlayerPause);
-
-            acp.boundPlayerError = () => this.handleCardPlayerError(videoData.filename);
-            acp.boundPlayerLoadedMetadata = () => this.handleCardPlayerLoadedMetadata(segmentData);
-            acp.boundPlayerTimeUpdate = () => this.handleCardPlayerTimeUpdate();
-            acp.boundPlayerEnded = () => this.handleCardPlayerEnded(); 
-            acp.boundPlayerPlay = () => { 
-                acp.isPlaying = true; 
-                if(acp.playPauseBtnElement) { 
-                    const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
-                    if(iconSpan) iconSpan.innerHTML = this.getIcon('pause');
-                    acp.playPauseBtnElement.setAttribute('aria-label', 'Pause'); 
-                }
-                if(acp.controlsContainerElement) { clearTimeout(acp.controlsHideTimer); acp.controlsContainerElement.classList.add('visible'); }
-            };
-            acp.boundPlayerPause = () => { 
-                acp.isPlaying = false; 
-                if(acp.playPauseBtnElement && !acp.isScrubbing) {
-                    const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
-                    if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
-                    acp.playPauseBtnElement.setAttribute('aria-label', 'Play'); 
-                }
-                 if(acp.controlsContainerElement && !previewArea.matches(':hover') && !acp.controlsContainerElement.matches(':hover')) { 
-                    acp.controlsHideTimer = setTimeout(() => {
-                        if(acp.controlsContainerElement) acp.controlsContainerElement.classList.remove('visible');
-                    }, 3000);
-                 }
-            };
-
-            acp.playerElement.addEventListener('error', acp.boundPlayerError);
-            acp.playerElement.addEventListener('loadedmetadata', acp.boundPlayerLoadedMetadata);
-            acp.playerElement.addEventListener('timeupdate', acp.boundPlayerTimeUpdate);
-            acp.playerElement.addEventListener('ended', acp.boundPlayerEnded);
-            acp.playerElement.addEventListener('play', acp.boundPlayerPlay);
-            acp.playerElement.addEventListener('pause', acp.boundPlayerPause);
+            
+            acp.isPlaying = true; 
 
             const videoSrc = await this.getVideoSource(this.data.currentProjectId, videoId, videoData.filename);
+
             if (videoSrc) {
-                if(acp.playerElement.src !== videoSrc || acp.playerElement.readyState === 0) { 
-                    acp.playerElement.src = videoSrc; 
+                if (acp.playerElement.src !== videoSrc || isSwitchingVideo || acp.playerElement.readyState === 0) { 
+                    acp.playerElement.src = videoSrc;
                     acp.playerElement.load(); 
                 } else {
-                     this.handleCardPlayerLoadedMetadata(segmentData); 
+                    this.handleCardPlayerLoadedMetadata(segmentData, true); 
                 }
-                 acp.playerElement.play().catch(e => {
-                    if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
-                    this.showCardPlayerPrompt(videoData.filename);
-                });
-            } else { 
-                this.showCardPlayerPrompt(videoData.filename); 
+            } else {
+                acp.isPlaying = false;
+                this.showCardPlayerPrompt(videoData.filename);
             }
-            
             this.conditionallyScrollPlayerIntoView(previewArea, acp.cardElement);
         },
 
@@ -2654,26 +2638,52 @@
             });
         },
 
-        handleCardPlayerLoadedMetadata(segmentData) { 
+        handleCardPlayerLoadedMetadata(segmentData, autoPlay = false) {
             const acp = this.data.activeCardPlayer;
-            if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration)) return;
+            if (!acp.playerElement || !acp.playerElement.duration || isNaN(acp.playerElement.duration)) {
+                console.warn("handleCardPlayerLoadedMetadata: Player not ready or duration invalid.", acp.playerElement?.readyState, acp.playerElement?.duration);
+                 const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId); 
+                 if (videoData && acp.videoId === videoData.id ) { 
+                    this.showCardPlayerPrompt(videoData.filename);
+                 } else {
+                    console.error("handleCardPlayerLoadedMetadata: Could not retrieve videoData or acp.videoId is stale.");
+                 }
+                return;
+            }
 
-            if (segmentData && segmentData.endTime > segmentData.startTime) { 
+            if (segmentData && typeof segmentData.startTime === 'number' && typeof segmentData.endTime === 'number' && segmentData.endTime > segmentData.startTime) {
                 acp.currentSegment.startTime = segmentData.startTime;
-                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration); 
-                acp.currentSegment.duration = acp.currentSegment.endTime - acp.currentSegment.startTime;
-                acp.playerElement.currentTime = acp.currentSegment.startTime;
+                acp.currentSegment.endTime = Math.min(segmentData.endTime, acp.playerElement.duration);
             } else { 
                 acp.currentSegment.startTime = 0;
                 acp.currentSegment.endTime = acp.playerElement.duration;
-                acp.currentSegment.duration = acp.playerElement.duration;
-                if(acp.playerElement.currentTime >= acp.playerElement.duration - 0.1 && acp.playerElement.duration > 0) { 
-                    acp.playerElement.currentTime = 0;
-                }
             }
+            acp.currentSegment.duration = acp.currentSegment.endTime - acp.currentSegment.startTime;
+            
+            if (acp.playerElement.currentTime < acp.currentSegment.startTime || acp.playerElement.currentTime >= acp.currentSegment.endTime || autoPlay) {
+                 acp.playerElement.currentTime = acp.currentSegment.startTime;
+            }
+            
             this.updateCardPlayerTimeDisplay();
-             if (acp.isPlaying) { 
-                acp.playerElement.play().catch(e=>console.warn("Card player resume play error", e));
+
+            if (autoPlay && acp.isPlaying) { 
+                acp.playerElement.play().catch(e => {
+                    console.warn("Card player auto-play error in loadedmetadata:", e);
+                    if (e.name === "NotAllowedError") {
+                        this.showToast("Playback blocked by browser.", "warning", 4000, 'alert-triangle');
+                        const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId);
+                        if (videoData) this.showCardPlayerPrompt(videoData.filename);
+                        acp.isPlaying = false; 
+                        if (acp.playPauseBtnElement) { 
+                            const iconSpan = acp.playPauseBtnElement.querySelector('.button-icon');
+                            if(iconSpan) iconSpan.innerHTML = this.getIcon('play');
+                            acp.playPauseBtnElement.setAttribute('aria-label', 'Play');
+                        }
+                    } else {
+                         const videoData = this.getVideoById(this.data.currentProjectId, acp.videoId);
+                         if (videoData) this.showCardPlayerPrompt(videoData.filename); 
+                    }
+                });
             }
         },
         handleCardPlayerTimeUpdate() { 
@@ -2736,7 +2746,9 @@
             if (acp.isPlaying) { acp.playerElement.pause(); } 
             else {
                 if (acp.playerElement.currentTime >= acp.currentSegment.endTime - 0.1) { acp.playerElement.currentTime = acp.currentSegment.startTime; }
+                acp.isPlaying = true; // Set intent to play before calling play()
                 acp.playerElement.play().catch(e => {
+                    acp.isPlaying = false; // Play failed, reset intent
                     if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle');
                 });
             }
@@ -2821,8 +2833,13 @@
             if (acp.playerElement && acp.promptElement && acp.controlsContainerElement) {
                 acp.promptElement.classList.add('hidden'); acp.playerElement.classList.remove('hidden'); 
                 acp.controlsContainerElement.classList.add('visible'); 
-                acp.playerElement.src = objectURL; acp.playerElement.load(); 
-                acp.playerElement.play().catch(e => { if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle'); });
+                acp.playerElement.src = objectURL; 
+                acp.playerElement.load(); 
+                acp.isPlaying = true; // Set intent
+                acp.playerElement.play().catch(e => { 
+                    acp.isPlaying = false; // Reset intent if play fails
+                    if(e.name === "NotAllowedError") this.showToast("Playback blocked.", "warning", 3000, 'alert-triangle'); 
+                });
             } else { this.showToast("Player UI elements missing after file selection.", "error", 3000, 'x-circle'); }
             if(acp.fileInputElement) acp.fileInputElement.value = '';
         },
