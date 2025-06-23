@@ -575,7 +575,7 @@
         }
         .main-player-timecode {
             font-size: 0.85em;
-            color: color: rgba(255, 255, 255, 0.7); 
+            color: color: rgba(255, 255, 255, 0.5); 
             font-family: monospace;
             min-width: 90px; 
             text-align: right;
@@ -1011,12 +1011,12 @@
                         <select id="speed-select" aria-label="Playback speed" class="form-group"> <!-- No button class needed -->
                             <option value="0.5">0.5x</option>
                             <option value="0.75">0.75x</option>
-                            <option value="1" selected>1x</option>
+                            <option value="1">1x</option>
                             <option value="1.25">1.25x</option>
                             <option value="1.5">1.5x</option>
                             <option value="2">2x</option>
                             <option value="2.5">2.5x</option>
-                            <option value="3">3x</option>
+                            <option value="3" selected>3x</option>
                         </select>
                     </div>
                 </div>
@@ -2797,12 +2797,12 @@
                             <select id="main-player-speed-select-${video.id}" class="main-player-speed-select" aria-label="Playback speed">
                                 <option value="0.5">0.5x</option>
                                 <option value="0.75">0.75x</option>
-                                <option value="1" selected>1x</option>
+                                <option value="1">1x</option>
                                 <option value="1.25">1.25x</option>
                                 <option value="1.5">1.5x</option>
                                 <option value="2">2x</option>
                                 <option value="2.5">2.5x</option>
-                                <option value="3">3x</option>
+                                <option value="3" selected>3x</option>
                             </select>
                         </div>
                         <span class="main-player-timecode" id="main-player-timecode-${video.id}">00:00 / 00:00</span>
