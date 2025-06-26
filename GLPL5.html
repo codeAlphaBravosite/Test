@@ -6,10 +6,10 @@
     <title>CreateMode - Goalio Edition</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="./icon-192x192.png" type="image/png">
-    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
-    <link rel="apple-touch-icon" href="./icon-192x192.png">
-    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icon-192x192.png" type="image/png"> <!-- Placeholder: ensure you have this icon -->
+    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png"> <!-- Placeholder: ensure you have this icon -->
+    <link rel="apple-touch-icon" href="./icon-192x192.png"> <!-- Placeholder: ensure you have this icon -->
+    <link rel="manifest" href="./manifest.webmanifest"> <!-- Placeholder: ensure you have this manifest file -->
     
     <style>
         :root {
@@ -88,15 +88,14 @@
             box-shadow: var(--shadow);
         }
         
-        /* Dashboard Metrics Display - Positioned above the grid */
         .dashboard-metrics-display {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Allow flexible sizing */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
-            margin-bottom: 1rem; /* Space before the next grid */
+            margin-bottom: 1rem; 
         }
 
-        .top-info-grid { /* For calendar and other notices */
+        .top-info-grid { 
             display: grid; grid-template-columns: 1fr; 
             gap: 1rem; 
         }
@@ -112,7 +111,7 @@
             font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-light);
         }
         .info-item p, .dashboard-metric-item .metric-value { 
-            color: var(--text-color); font-size: 1.25rem; font-weight: 600; /* Value slightly larger */
+            color: var(--text-color); font-size: 1.25rem; font-weight: 600;
         }
         #clearDataNotification {
             grid-column: 1 / -1; 
@@ -174,16 +173,19 @@
         }
         .quest-list-section-header {
             font-size: 1.25rem; color: var(--primary-color);
-            display: flex; align-items: center; justify-content: center; 
+            display: flex; align-items: center; justify-content: space-between; /* Align title left, button right */
             gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; 
             border-bottom: 2px solid var(--primary-color); 
         }
+         .quest-list-section-header .quest-list-title { /* Wrapper for icon and text */
+            display: flex; align-items: center; gap: 0.5rem;
+         }
          .quest-list-section-header .toggle-section-button { 
             background: transparent; border: none; color: var(--text-light);
             padding: 0.4rem; border-radius: 50%; cursor: pointer;
             font-size: 0.9rem; width: 2rem; height: 2rem;
             display: flex; align-items: center; justify-content: center;
-            transition: color 0.2s ease-in-out; margin-left: auto; /* Push to right */
+            transition: color 0.2s ease-in-out; /* Removed margin-left: auto; */
         }
         .quest-list-section-header .toggle-section-button:hover { color: var(--primary-color); }
 
@@ -311,7 +313,7 @@
         .task-value-chip {
             font-size: 0.75rem; font-weight: 600; color: var(--success-color);
             background-color: #dcfce7; padding: 0.15rem 0.4rem; border-radius: 10px;
-            white-space: nowrap; margin-left: auto; /* Push chip to right */
+            white-space: nowrap; margin-left: auto; 
         }
         .task-item.completed .task-description,
         .subtask-item.completed .task-description {
@@ -358,7 +360,7 @@
             margin-bottom: 1.5rem; padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
-        .modal-header h2 { font-size: 1.25rem; color: var(--primary-color); margin: 0;}
+        .modal-header h2 { font-size: 1.25rem; color: var(--primary-color); margin: 0; display: flex; align-items: center; gap: 0.5rem;}
         .close-modal-button {
             background: transparent; border: none; color: var(--text-light);
             padding: 0.4rem; border-radius: 50%; cursor: pointer;
@@ -382,23 +384,22 @@
         }
         .modal-body h3 { 
             margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.1rem; color: var(--primary-color);
-            display: flex; align-items: center; gap: 0.5rem; /* For icon alignment */
+            display: flex; align-items: center; gap: 0.5rem; 
         }
         .modal-body h4 {
              margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1rem; color: var(--primary-color);
              display: flex; align-items: center; gap: 0.5rem;
         }
         
-        .task-editor-item { /* Main task item in modal */
+        .task-editor-item { 
             border: 1px solid var(--border-color); padding: 0.75rem; margin-bottom: 0.75rem;
-            border-radius: 0.5rem; background-color: #fdfdff; /* Slightly off-white */
+            border-radius: 0.5rem; background-color: #fdfdff; 
         }
-        .task-editor-header { /* For main task input and its buttons */
-            display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; /* Add margin if subtasks follow */
+        .task-editor-header { 
+            display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; 
         }
         .task-editor-header input[type="text"] { flex-grow: 1; margin-bottom: 0; }
         
-        /* Unified style for small icon buttons in task editors */
         .task-editor-item .btn-icon-action,
         .subtask-editor-item .btn-icon-action {
             background: transparent; border: 1px solid transparent; 
@@ -406,7 +407,7 @@
             font-size: 0.9rem; transition: background-color 0.2s, color 0.2s;
             width: 2rem; height: 2rem; 
             display: inline-flex; align-items: center; justify-content: center;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0; 
         }
         .task-editor-item .btn-icon-action:hover,
         .subtask-editor-item .btn-icon-action:hover { background-color: #e5e7eb; color: var(--text-color); }
@@ -416,11 +417,10 @@
         .task-editor-item .btn-icon-action.danger:hover,
         .subtask-editor-item .btn-icon-action.danger:hover { background-color: #fee2e2; color: var(--warning-hover); }
 
-        .modal-subtasks-list { /* Container for subtasks within a main task item */
-            padding-left: 1rem; /* Indent subtasks visually */
-            margin-top: 0.5rem;
+        .modal-subtasks-list { 
+            padding-left: 1rem; margin-top: 0.5rem;
         }
-        .subtask-editor-item { /* Individual subtask item in modal */
+        .subtask-editor-item { 
             display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;
         }
         .subtask-editor-item input[type="text"] { flex-grow: 1; margin-bottom: 0; }
@@ -437,7 +437,7 @@
         }
         .modal-footer .btn-primary { background: var(--primary-color); color: white; }
         .modal-footer .btn-primary:hover { background: var(--primary-hover); }
-        .modal-footer .button { background: #e2e8f0; color: var(--text-light); }
+        .modal-footer .button { background: #e2e8f0; color: var(--text-light); } /* For cancel */
         .modal-footer .button:hover { background: #cbd5e1; color: var(--text-color); }
         .modal-footer .btn-danger { background-color: var(--warning-color); color: white; }
         .modal-footer .btn-danger:hover { background-color: var(--warning-hover); }
@@ -460,14 +460,11 @@
             font-weight: 500; background-color: #fffbeb; 
         }
         #templateList .template-item span { flex-grow: 1; }
-        #templateList .template-item .template-actions { display: flex; gap: 0.5rem; } /* Increased gap */
+        #templateList .template-item .template-actions { display: flex; gap: 0.5rem; } 
         
-        /* Style for buttons within template list items */
         #templateList .template-item .template-actions button {
-            padding: 0.4rem 0.8rem; /* Decent padding */
-            border-radius: 0.3rem;
-            font-size: 0.85em; /* Slightly smaller font */
-            cursor: pointer;
+            padding: 0.4rem 0.8rem; border-radius: 0.3rem;
+            font-size: 0.85em; cursor: pointer;
             display: inline-flex; align-items: center; gap: 0.3rem;
             transition: background-color 0.2s, border-color 0.2s, color 0.2s;
         }
@@ -481,14 +478,13 @@
         }
         #templateList .template-item .template-actions .btn-set-default:hover { background-color: #fef3c7;}
 
-        #templateList .template-item .template-actions .btn-delete-template { /* Icon only */
+        #templateList .template-item .template-actions .btn-delete-template { 
             background: transparent; color: var(--warning-color); border: 1px solid transparent;
-            width: 2rem; height: 2rem; padding: 0; /* Override padding for icon centering */
+            width: 2rem; height: 2rem; padding: 0; justify-content: center; /* Center icon */
         }
         #templateList .template-item .template-actions .btn-delete-template:hover { background-color: #fee2e2; }
 
-
-        .btn-modal-utility { /* For "Add Main Task" / "New Template" */
+        .btn-modal-utility { 
             background: #f1f5f9; color: var(--primary-color); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 0.5rem;
             cursor: pointer; font-weight: 500; font-size: 0.875rem;
@@ -534,9 +530,9 @@
             body { font-size: 14px; }
             .app-header-title { font-size: 1.3em; }
             .container-wrapper { padding: 0 0.75rem; }
-            .dashboard-metrics-display { grid-template-columns: 1fr; } /* Stack dashboard items */
+            .dashboard-metrics-display { grid-template-columns: 1fr; } 
             .top-info-grid { grid-template-columns: 1fr; } 
-            .info-item p, .dashboard-metric-item .metric-value { font-size: 1.1rem; } /* Slightly smaller for mobile */
+            .info-item p, .dashboard-metric-item .metric-value { font-size: 1.1rem; } 
             .quest-title-text { font-size: 1.05em; }
             .quest-card-meta { font-size: 0.75rem; }
             .modal-content { margin: 5% auto; width: 95%; padding: 1.25rem; }
@@ -550,8 +546,8 @@
             .quest-card-action-buttons { width: 100%; justify-content: flex-end; margin-top: 0.5rem; }
             .quest-card-meta { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
             .subtask-item { margin-left: 1rem; }
-            .task-editor-header { flex-wrap: wrap; gap: 0.25rem; } /* Tighter gap on small screens */
-            .task-editor-header input[type="text"] { min-width: calc(100% - 5rem); } /* Adjust based on button sizes */
+            .task-editor-header { flex-wrap: wrap; gap: 0.25rem; } 
+            .task-editor-header input[type="text"] { min-width: calc(100% - 5rem); } 
         }
     </style>
 </head>
@@ -573,7 +569,6 @@
     <div class="container-wrapper">
         <div class="top-info-area">
             <div class="dashboard-metrics-display" id="dashboardMetricsHost">
-                <!-- Dashboard metrics will be dynamically placed here by JS -->
                  <div class="dashboard-metric-item">
                     <div class="metric-title">Earnings Today</div>
                     <p class="metric-value" id="valueToday">$0</p>
@@ -599,7 +594,7 @@
         </div>
         
         <div class="quest-list-section">
-            <h2 class="quest-list-section-header"><i class="fas fa-rocket"></i> Active Quests</h2>
+            <h2 class="quest-list-section-header"><span class="quest-list-title"><i class="fas fa-rocket"></i> Active Quests</span></h2>
             <div id="activeQuestsList" class="quests-list"></div>
         </div>
 
@@ -612,7 +607,7 @@
 
         <div class="quest-list-section" id="completedSectionContainer" style="display:none;">
             <h2 class="quest-list-section-header">
-                <span class="completed-section-title-text"><i class="fas fa-check-circle" style="color: var(--success-color);"></i>Completed (This Month)</span>
+                <span class="quest-list-title"><i class="fas fa-check-circle" style="color: var(--success-color);"></i>Completed (This Month)</span>
                 <button id="toggleCompletedListBtn" class="toggle-section-button" title="Toggle Completed Quests View" aria-label="Toggle Completed Quests View">
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -624,7 +619,7 @@
 
         <div class="quest-list-section" id="archivedSectionContainer" style="display:none;">
             <h2 class="quest-list-section-header">
-                <span class="archived-section-title-text"><i class="fas fa-archive" style="color: var(--text-light);"></i>Archived</span>
+                <span class="quest-list-title"><i class="fas fa-archive" style="color: var(--text-light);"></i>Archived</span>
                 <button id="toggleArchivedListBtn" class="toggle-section-button" title="Toggle Archived Quests View" aria-label="Toggle Archived Quests View">
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -743,9 +738,9 @@
     <script>
         // --- APP STATE & LOCAL STORAGE ---
         let appData = { projects: [], templates: [] };
-        const APP_DATA_KEY = 'creatorQuestLogData_v3_goalio_fixed';
+        const APP_DATA_KEY = 'creatorQuestLogData_v3_goalio_fixed_v2'; // Updated key
         let inactiveSectionsVisible = false;
-        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v1_goalio_fixed';
+        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v1_goalio_fixed_v2'; // Updated key
         let currentCalendarDate = new Date();
 
         const weekCalendarContainer = document.getElementById('weekCalendarContainer');
@@ -835,12 +830,71 @@
         let toggleInactiveSectionsBtn, inactiveSectionsToggleIcon, inactiveSectionsToggleText;
         let completedSectionContainer, archivedSectionContainer;
 
-        function initializeDefaultAppState() { /* जस का तस */
+        // --- All other JavaScript functions (initializeDefaultAppState, loadData, saveData, generateId, etc.) ---
+        // --- remain identical to the previous version. For brevity, they are not repeated here but are ---
+        // --- assumed to be included in the final combined file. Only functions with UI interaction changes ---
+        // --- or new functionalities are detailed or modified below.                                        ---
+
+        // [ PREVIOUSLY PROVIDED JAVASCRIPT FUNCTIONS GO HERE - THIS IS A CONTINUATION ]
+        // [ Ensure functions like initializeDefaultAppState, loadData, saveData, generateId, formatDateForDisplay, getTodayString, etc. are included ]
+        // [ Functions related to toast, custom confirm, inactive sections toggle, dashboard update, project rendering (FLIP), ]
+        // [ project card creation, task/subtask element creation, value distribution, completion toggles, priority toggles, ]
+        // [ CRUD operations (delete, archive, unarchive), modal handling (quest and settings), template management ]
+        // [ and data clearing are also assumed to be here from the previous version, with minor UI related tweaks already made. ]
+
+
+        // Minor adjustments to ensure button classes are correct in JS for add/remove tasks in modals if not already done:
+        function addModalTaskEditor(taskData = null) { 
+            const taskId = taskData ? taskData.id : generateId(); const taskDesc = taskData ? taskData.description : '';
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; taskDiv.dataset.taskId = taskId; 
+            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="modal-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-modal-task-btn btn-icon-action danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-modal-subtask-btn btn-icon-action" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="modal-subtasks-list"></div>`;
+            modalTasksContainer.appendChild(taskDiv);
+            if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), subtaskData)); }
+            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove();
+            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));
+        }
+        function addModalSubtaskEditor(parentList, subtaskData = null) { 
+            const subtaskId = subtaskData ? subtaskData.id : generateId(); const subtaskDesc = subtaskData ? subtaskData.description : '';
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; subtaskDiv.dataset.subtaskId = subtaskId; 
+            subtaskDiv.innerHTML = `<input type="text" class="modal-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-modal-subtask-btn btn-icon-action danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
+            parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+        function addTemplateTaskEditor(taskData = null) { 
+            const taskDesc = taskData ? taskData.description : ''; const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item';
+            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="template-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-template-task-btn btn-icon-action danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-template-subtask-btn btn-icon-action" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="template-subtasks-list"></div>`;
+            templateTasksContainer.appendChild(taskDiv);
+            if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), subtaskData)); }
+            taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove();
+            taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));
+        }
+        function addTemplateSubtaskEditor(parentList, subtaskData = null) {
+            const subtaskDesc = subtaskData ? subtaskData.description : ''; const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item';
+            subtaskDiv.innerHTML = `<input type="text" class="template-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-template-subtask-btn btn-icon-action danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
+            parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+
+
+        // Re-paste all other JS functions from the previous correct version here to make a complete file
+        // This includes:
+        // initializeDefaultAppState, loadData, saveData, generateId, formatDateForDisplay, getTodayString, showToast, 
+        // initCustomConfirmModal, showCustomConfirm, applyInactiveSectionsVisibilityState, initInactiveSectionsToggle,
+        // updateDashboard, renderProjects (with FLIP), animateThenRemoveQuest, createProjectCard, 
+        // createTaskElement, createSubtaskElement, distributeValueToTasks, toggleProjectComplete, 
+        // updateProjectCardDOM, toggleProjectPriority, toggleTaskComplete, toggleSubtaskComplete, 
+        // deleteProjectWithAnimation, archiveProject, unarchiveProject, 
+        // Quest Modal functions (openQuestModal, questTemplateSelect listener, saveQuestBtn listener),
+        // Settings Modal functions (settingsHeaderBtn listener, loadTemplateEditor, saveTemplateBtn listener, renderTemplateList, deleteTemplate, setDefaultTemplate, populateTemplateSelect),
+        // Data Management functions (checkClearDataNotification, clearOldDataBtn listener),
+        // DOMContentLoaded and beforeunload listeners.
+
+        // START OF COPIED JS FROM PREVIOUS VERSION (ensure it's complete)
+
+        function initializeDefaultAppState() {
             appData = {
                 projects: [],
                 templates: [{
                     id: 'default-' + Date.now(), name: 'Default Video Workflow', isDefault: true,
-                    tasks: [ /* ... default tasks ... */ 
+                    tasks: [ 
                         { id: 'dt1-' + generateId(), description: 'Ideation & Research', subtasks: [] },
                         { id: 'dt2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
                         { id: 'dt3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
@@ -851,7 +905,7 @@
                 }]
             };
         }
-        function loadData() { /* जस का तस, APP_DATA_KEY का प्रयोग */
+        function loadData() {
              const storedData = localStorage.getItem(APP_DATA_KEY);
             if (storedData) {
                 try {
@@ -885,7 +939,7 @@
                         if (p.completionTimestamp && typeof p.completionTimestamp !== 'number') p.completionTimestamp = new Date(p.completionTimestamp).getTime();
                         if (isNaN(p.completionTimestamp)) p.completionTimestamp = null;
                     });
-                    if (appData.templates.length === 0) { /* ... default template if none ... */ 
+                    if (appData.templates.length === 0) { 
                         appData.templates.push({
                             id: 'default-fallback-' + Date.now(), name: 'Default Video Workflow', isDefault: true,
                             tasks: [
@@ -901,7 +955,7 @@
                 }
             } else { initializeDefaultAppState(); appData.projects.forEach(p => distributeValueToTasks(p)); }
         }
-        function saveData() { /* जस का तस */
+        function saveData() { 
             try { localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); } catch (error) {
                 if (error.name === 'QuotaExceededError' || (error.code && (error.code === 22 || error.code === 1014))) { 
                     console.error("LocalStorage quota exceeded:", error); showToast("Storage full. Cannot save. Please clear data.", 'error', 7000);
@@ -909,16 +963,16 @@
             }
         }
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
-        function formatDateForDisplay(dateString) { /* जस का तस */
+        function formatDateForDisplay(dateString) { 
             if (!dateString) return 'No Deadline'; const date = new Date(dateString);
             const adjustedDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
             return adjustedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
         }
-        function getTodayString() { /* जस का तस */
+        function getTodayString() { 
             const today = new Date();
             return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         }
-        function showToast(message, type = 'info', durationVisible = 3000) { /* जस का तस */
+        function showToast(message, type = 'info', durationVisible = 3000) { 
             let toastContainer = document.getElementById('toastContainer'); const toast = document.createElement('div');
             toast.className = `toast-message ${type}`; let iconClass = 'fas fa-info-circle';
             if (type === 'success') iconClass = 'fas fa-check-circle'; else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
@@ -928,14 +982,15 @@
             toastContainer.appendChild(toast); const totalAnimationTime = 300 + durationVisible + 300 + 100;
             setTimeout(() => { if (toast.parentNode) { toast.remove(); } }, totalAnimationTime);
         }
+        
         let customConfirmModal, customConfirmModalTitleEl, customConfirmModalMessageEl, customConfirmModalConfirmBtn, customConfirmModalCancelBtn;
         let currentConfirmCallback = null; let currentCancelCallback = null;
-        function initCustomConfirmModal() { /* जस का तस */ 
+        function initCustomConfirmModal() {  
             customConfirmModal = document.getElementById('customConfirmModal'); customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle');
             customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage'); customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn');
             customConfirmModalCancelBtn = document.getElementById('customConfirmModalCancelBtn');
         }
-        function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { /* जस का तस */
+        function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { 
             customConfirmModalMessageEl.innerHTML = message; 
             customConfirmModalTitleEl.innerHTML = `<i class="fas fa-exclamation-triangle" style="margin-right:0.5rem; color: var(--warning-color);"></i>${title}`;
             currentConfirmCallback = onConfirm; currentCancelCallback = onCancel;
@@ -945,7 +1000,7 @@
             customConfirmModalCancelBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentCancelCallback) currentCancelCallback(); };
             customConfirmModal.style.display = 'flex'; customConfirmModalCancelBtn.focus();
         }
-        function applyInactiveSectionsVisibilityState() { /* जस का तस */
+        function applyInactiveSectionsVisibilityState() { 
             if (!completedSectionContainer || !archivedSectionContainer || !inactiveSectionsToggleIcon || !inactiveSectionsToggleText) return;
             if (inactiveSectionsVisible) {
                 completedSectionContainer.style.display = 'block'; archivedSectionContainer.style.display = 'block';
@@ -955,7 +1010,7 @@
                 inactiveSectionsToggleIcon.className = 'fas fa-chevron-down'; inactiveSectionsToggleText.textContent = 'Show Completed & Archived';
             } renderProjects();
         }
-        function initInactiveSectionsToggle() { /* जस का तस */ 
+        function initInactiveSectionsToggle() {  
             const storedVisibility = localStorage.getItem(INACTIVE_SECTIONS_VISIBILITY_KEY);
             if (storedVisibility !== null) inactiveSectionsVisible = JSON.parse(storedVisibility);
             applyInactiveSectionsVisibilityState(); 
@@ -964,7 +1019,7 @@
                 applyInactiveSectionsVisibilityState(); 
             });
         }
-        function updateDashboard() { /* जस का तस */ 
+        function updateDashboard() {  
             let valueToday = 0, valueMonth = 0, upcomingValueTotal = 0;
             const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0); const firstDayOfMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
             appData.projects.forEach(project => {
@@ -997,7 +1052,7 @@
             document.getElementById('upcomingValue').textContent = `$${upcomingValueTotal.toFixed(0)}`;
             checkClearDataNotification();
         }
-        function renderProjects() { /* जस का तस, FLIP animations शामिल */
+        function renderProjects() { 
             const listsToRender = [ { el: document.getElementById('activeQuestsList'), type: 'active' }, { el: document.getElementById('completedQuestsList'), type: 'completed' }, { el: document.getElementById('archivedQuestsList'), type: 'archived' }];
             const firstPassPositions = new Map();
             listsToRender.forEach(listInfo => {
@@ -1060,14 +1115,14 @@
                 }
             });
         }
-        function animateThenRemoveQuest(projectId) { /* जस का तस */
+        function animateThenRemoveQuest(projectId) { 
             const cardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
             if (cardElement) {
                 cardElement.classList.add('exiting');
                 cardElement.addEventListener('animationend', () => { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }, { once: true });
             } else { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }
         }
-        function createProjectCard(project) { /* जस का तस, Font Awesome आइकन और लेआउट ठीक किया गया */
+        function createProjectCard(project) { 
             const card = document.createElement('div'); card.className = 'quest-card'; card.dataset.id = project.id;
             if (project.isCompleted) card.classList.add('completed-quest'); if (project.isArchived) card.classList.add('archived-quest');
             project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []);
@@ -1098,7 +1153,7 @@
                 <div class="quest-card-meta">${deadlineHtml}<span class="quest-value-display" style="margin-left: auto;"><i class="fas fa-coins"></i> $${earnedVal.toFixed(0)} / $${totalVal.toFixed(0)}</span></div>
                 <div class="quest-progress-wrapper"><div class="quest-progress-bar-container" title="Progress: ${progressPercent.toFixed(0)}%"><div class="quest-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div></div><span class="quest-progress-value-text">${progressPercent.toFixed(0)}%</span></div>
                 <div class="tasks-container ${project.ui_isExpanded ? 'expanded' : ''}">${project.tasks.length > 0 ? project.tasks.map(task => createTaskElement(task, project.id, project.title, project.isArchived)).join('') : '<p style="font-size:0.85em; color: var(--text-light); text-align:center; padding:0.5rem 0;">No tasks for this quest.</p>'}</div>`;
-            card.querySelector('.toggle-tasks-button').addEventListener('click', (e) => { /* ... event listener ... */ 
+            card.querySelector('.toggle-tasks-button').addEventListener('click', (e) => { 
                 e.stopPropagation(); const projectToToggle = appData.projects.find(p => p.id === project.id);
                 if (projectToToggle) {
                     const tasksContainerEl = card.querySelector('.tasks-container'); const isCurrentlyExpanded = tasksContainerEl.classList.contains('expanded');
@@ -1125,23 +1180,23 @@
             card.querySelector('.action-delete-quest')?.addEventListener('click', () => { deleteProjectWithAnimation(project.id); actionsDropdown.style.display = 'none'; });
             return card;
         }
-        function createTaskElement(task, projectId, projectTitle, isProjectArchived) { /* जस का तस */ 
+        function createTaskElement(task, projectId, projectTitle, isProjectArchived) { 
             task.subtasks = task.subtasks || []; let valueDisplay = '';
             if (task.taskValue !== undefined && task.taskValue > 0 && task.subtasks.length === 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
             return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}"><input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} title="Complete task: ${task.description}" aria-label="Mark task '${task.description}' of quest '${projectTitle}' as ${task.isCompleted ? 'incomplete' : 'complete'}" ${isProjectArchived ? 'disabled' : ''}><span class="task-description">${task.description}</span>${valueDisplay}</div>${task.subtasks.map(subtask => createSubtaskElement(subtask, task.id, projectId, projectTitle, task.description, isProjectArchived)).join('')}`;
         }
-        function createSubtaskElement(subtask, mainTaskId, projectId, projectTitle, mainTaskDescription, isProjectArchived) { /* जस का तस */
+        function createSubtaskElement(subtask, mainTaskId, projectId, projectTitle, mainTaskDescription, isProjectArchived) {
              let valueDisplay = ''; if (subtask.subtaskValue !== undefined && subtask.subtaskValue > 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)}</span>`;
             return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}"><input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} title="Complete subtask: ${subtask.description}" aria-label="Mark subtask '${subtask.description}' of task '${mainTaskDescription}' as ${subtask.isCompleted ? 'incomplete' : 'complete'}" ${isProjectArchived ? 'disabled' : ''}><span class="task-description">${subtask.description}</span>${valueDisplay}</div>`;
         }
-        function distributeValueToTasks(project) { /* जस का तस */ 
+        function distributeValueToTasks(project) { 
             project.tasks = project.tasks || []; const totalVal = parseFloat(project.totalValue) || 0; let totalValueUnits = 0;
             project.tasks.forEach(task => { task.subtasks = task.subtasks || []; if (task.subtasks.length > 0) totalValueUnits += task.subtasks.length; else totalValueUnits += 1; });
             if (totalValueUnits === 0 || totalVal === 0) { project.tasks.forEach(task => { task.taskValue = 0; task.subtasks.forEach(sub => sub.subtaskValue = 0); }); return; }
             const valuePerUnit = totalVal / totalValueUnits;
             project.tasks.forEach(task => { if (task.subtasks.length > 0) { task.taskValue = 0; task.subtasks.forEach(sub => sub.subtaskValue = valuePerUnit); } else task.taskValue = valuePerUnit; });
         }
-        function toggleProjectComplete(projectId, isBeingMarkedCompleted) { /* जस का तस */
+        function toggleProjectComplete(projectId, isBeingMarkedCompleted) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return;
             project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []);
             const oldCompletedState = project.isCompleted; project.isCompleted = isBeingMarkedCompleted;
@@ -1152,7 +1207,7 @@
             } else { project.completionTimestamp = null; if (oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');}
             updateProjectCardDOM(projectId, true);
         }
-        function updateProjectCardDOM(projectId, forceRenderAll = false) { /* जस का तस */
+        function updateProjectCardDOM(projectId, forceRenderAll = false) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project) return;
             project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []); let newEarnedValue = 0;
             project.tasks.forEach(task => { if (task.subtasks.length > 0) task.subtasks.forEach(subtask => { if (subtask.isCompleted) newEarnedValue += (parseFloat(subtask.subtaskValue) || 0); }); else if (task.isCompleted) newEarnedValue += (parseFloat(task.taskValue) || 0); });
@@ -1187,12 +1242,12 @@
                 } saveData(); updateDashboard(); 
             }
         }
-        function toggleProjectPriority(projectId) { /* जस का तस */ 
+        function toggleProjectPriority(projectId) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; 
             project.priority = !project.priority; saveData(); renderProjects(); 
             if(project.priority) showToast(`Quest "<strong>${project.title}</strong>" prioritized.`, 'info'); else showToast(`Quest "<strong>${project.title}</strong>" unprioritized.`, 'info');
         }
-        function toggleTaskComplete(projectId, taskId, isCompleted, checkboxElement) { /* जस का तस */
+        function toggleTaskComplete(projectId, taskId, isCompleted, checkboxElement) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; 
             project.tasks = project.tasks || []; const task = project.tasks.find(t => t.id === taskId); if (!task) return; task.subtasks = task.subtasks || [];
             const wasTaskPreviouslyCompleted = task.isCompleted; task.isCompleted = isCompleted;
@@ -1211,7 +1266,7 @@
             else if (!isCompleted && wasTaskPreviouslyCompleted) showToast(`Task "<strong>${task.description}</strong>" un-checked.`, 'info');
             updateProjectCardDOM(projectId); 
         }
-        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted, checkboxElement) { /* जस का तस */
+        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted, checkboxElement) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; 
             project.tasks = project.tasks || []; const mainTask = project.tasks.find(t => t.id === mainTaskId); if (!mainTask) return; mainTask.subtasks = mainTask.subtasks || []; const subtask = mainTask.subtasks.find(s => s.id === subtaskId); if (!subtask) return;
             const wasSubtaskPreviouslyCompleted = subtask.isCompleted; subtask.isCompleted = isCompleted;
@@ -1229,21 +1284,21 @@
                 if (mainTaskItemElement) { mainTaskItemElement.classList.toggle('completed', mainTask.isCompleted); const mainTaskCheckbox = mainTaskItemElement.querySelector('.task-checkbox'); if (mainTaskCheckbox) mainTaskCheckbox.checked = mainTask.isCompleted; }
             } updateProjectCardDOM(projectId); 
         }
-        function deleteProjectWithAnimation(projectId) { /* जस का तस */
+        function deleteProjectWithAnimation(projectId) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project) return;
             showCustomConfirm( `Are you sure you want to PERMANENTLY DELETE "<strong>${project.title}</strong>"?`, "Delete Quest", () => { animateThenRemoveQuest(projectId); showToast(`Quest "<strong>${project.title}</strong>" deleted.`, 'info'); });
         }
-        function archiveProject(projectId) { /* जस का तस */ 
+        function archiveProject(projectId) {  
             const project = appData.projects.find(p => p.id === projectId); if (!project) return;
             project.isArchived = true; saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" archived.`, 'info');
         }
-        function unarchiveProject(projectId) { /* जस का तस */ 
+        function unarchiveProject(projectId) {  
             const project = appData.projects.find(p => p.id === projectId); if (!project) return;
             project.isArchived = false; saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" unarchived.`, 'info');
         }
 
         const questModal = document.getElementById('questModal'); const closeQuestModalBtn = document.getElementById('closeQuestModal'); const cancelQuestModalBtn = document.getElementById('cancelQuestModalBtn'); const addQuestHeaderBtn = document.getElementById('addQuestHeaderBtn'); const saveQuestBtn = document.getElementById('saveQuestBtn'); const questModalTitleEl = document.getElementById('questModalTitle'); const questIdInput = document.getElementById('questId'); const questTitleInput = document.getElementById('questTitle'); const questDeadlineInput = document.getElementById('questDeadline'); const questValueInput = document.getElementById('questValueInput'); const questTemplateSelect = document.getElementById('questTemplateSelect'); const modalTasksContainer = document.getElementById('modalTasksContainer'); const addModalMainTaskBtn = document.getElementById('addModalMainTaskBtn');
-        function openQuestModal(projectId = null) { /* जस का तस */ 
+        function openQuestModal(projectId = null) {  
             populateTemplateSelect(questTemplateSelect); modalTasksContainer.innerHTML = ''; 
             if (projectId) {
                 const project = appData.projects.find(p => p.id === projectId); project.tasks = project.tasks || [];
@@ -1260,7 +1315,7 @@
                 } else addModalTaskEditor(); 
             } questModal.style.display = 'flex'; questTitleInput.focus();
         }
-        questTemplateSelect.addEventListener('change', () => { /* जस का तस */
+        questTemplateSelect.addEventListener('change', () => { 
             if (!questIdInput.value) { 
                 modalTasksContainer.innerHTML = ''; const templateId = questTemplateSelect.value;
                 if (templateId) {
@@ -1269,26 +1324,12 @@
                 } else addModalTaskEditor(); 
             }
         });
-        function addModalTaskEditor(taskData = null) { /* जस का तस, updated button classes */ 
-            const taskId = taskData ? taskData.id : generateId(); const taskDesc = taskData ? taskData.description : '';
-            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; taskDiv.dataset.taskId = taskId; 
-            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="modal-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-modal-task-btn btn-icon-action danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-modal-subtask-btn btn-icon-action" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="modal-subtasks-list"></div>`;
-            modalTasksContainer.appendChild(taskDiv);
-            if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), subtaskData)); }
-            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove();
-            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));
-        }
-        function addModalSubtaskEditor(parentList, subtaskData = null) { /* जस का तस, updated button classes */ 
-            const subtaskId = subtaskData ? subtaskData.id : generateId(); const subtaskDesc = subtaskData ? subtaskData.description : '';
-            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; subtaskDiv.dataset.subtaskId = subtaskId; 
-            subtaskDiv.innerHTML = `<input type="text" class="modal-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-modal-subtask-btn btn-icon-action danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
-            parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
-        }
+        
         addModalMainTaskBtn.addEventListener('click', () => addModalTaskEditor());
         closeQuestModalBtn.addEventListener('click', () => questModal.style.display = 'none');
         cancelQuestModalBtn.addEventListener('click', () => questModal.style.display = 'none');
         addQuestHeaderBtn.addEventListener('click', () => openQuestModal());
-        saveQuestBtn.addEventListener('click', () => { /* जस का तस */ 
+        saveQuestBtn.addEventListener('click', () => {  
             const id = questIdInput.value || generateId(); const title = questTitleInput.value.trim(); const deadline = questDeadlineInput.value; const totalValue = parseFloat(questValueInput.value) || 0;
             if (!title) { showToast('Quest Title is required.', 'warning'); questTitleInput.focus(); return; }
             const tasksFromModal = [];
@@ -1315,32 +1356,20 @@
         });
 
         const settingsModal = document.getElementById('settingsModal'); const closeSettingsModalBtn = document.getElementById('closeSettingsModal'); const settingsHeaderBtn = document.getElementById('settingsHeaderBtn'); const templateIdInput = document.getElementById('templateId'); const templateNameInput = document.getElementById('templateName'); const templateTasksContainer = document.getElementById('templateTasksContainer'); const addTemplateMainTaskBtn = document.getElementById('addTemplateMainTaskBtn'); const saveTemplateBtn = document.getElementById('saveTemplateBtn'); const newTemplateBtn = document.getElementById('newTemplateBtn'); const templateListDiv = document.getElementById('templateList');
-        settingsHeaderBtn.addEventListener('click', () => { /* जस का तस */ loadTemplateEditor(); renderTemplateList(); settingsModal.style.display = 'flex'; templateNameInput.focus(); });
+        settingsHeaderBtn.addEventListener('click', () => {  loadTemplateEditor(); renderTemplateList(); settingsModal.style.display = 'flex'; templateNameInput.focus(); });
         closeSettingsModalBtn.addEventListener('click', () => settingsModal.style.display = 'none');
-        document.getElementById('goToSettingsFromNotification').addEventListener('click', () => { /* जस का तस */ settingsModal.style.display = 'flex'; loadTemplateEditor(); renderTemplateList(); templateNameInput.focus(); });
-        function loadTemplateEditor(templateId = null) { /* जस का तस */ 
+        document.getElementById('goToSettingsFromNotification').addEventListener('click', () => {  settingsModal.style.display = 'flex'; loadTemplateEditor(); renderTemplateList(); templateNameInput.focus(); });
+        function loadTemplateEditor(templateId = null) {  
             templateTasksContainer.innerHTML = '';
             if (templateId) {
                 const template = appData.templates.find(t => t.id === templateId);
                 if (template) { template.tasks = template.tasks || []; templateIdInput.value = template.id; templateNameInput.value = template.name; template.tasks.forEach(taskData => { taskData.subtasks = taskData.subtasks || []; addTemplateTaskEditor(taskData); }); }
             } else { templateIdInput.value = ''; templateNameInput.value = ''; addTemplateTaskEditor(); } templateNameInput.focus();
         }
-        function addTemplateTaskEditor(taskData = null) { /* जस का तस, updated button classes */ 
-            const taskDesc = taskData ? taskData.description : ''; const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item';
-            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="template-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-template-task-btn btn-icon-action danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-template-subtask-btn btn-icon-action" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="template-subtasks-list"></div>`;
-            templateTasksContainer.appendChild(taskDiv);
-            if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), subtaskData)); }
-            taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove();
-            taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));
-        }
-        function addTemplateSubtaskEditor(parentList, subtaskData = null) { /* जस का तस, updated button classes */
-            const subtaskDesc = subtaskData ? subtaskData.description : ''; const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item';
-            subtaskDiv.innerHTML = `<input type="text" class="template-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-template-subtask-btn btn-icon-action danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
-            parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();
-        }
+        
         addTemplateMainTaskBtn.addEventListener('click', () => addTemplateTaskEditor());
         newTemplateBtn.addEventListener('click', () => loadTemplateEditor()); 
-        saveTemplateBtn.addEventListener('click', () => { /* जस का तस */ 
+        saveTemplateBtn.addEventListener('click', () => {  
             const id = templateIdInput.value || generateId(); const name = templateNameInput.value.trim();
             if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; } const tasks = [];
             document.querySelectorAll('#templateTasksContainer .task-editor-item').forEach(taskDiv => {
@@ -1352,7 +1381,7 @@
             else { const isFirstTemplate = appData.templates.length === 0; appData.templates.push({ id, name, tasks, isDefault: isFirstTemplate }); showToast(`Template "<strong>${name}</strong>" saved.`, 'success'); }
             saveData(); renderTemplateList(); loadTemplateEditor(id); 
         });
-        function renderTemplateList() { /* जस का तस, updated button classes */ 
+        function renderTemplateList() {  
             templateListDiv.innerHTML = ''; if (appData.templates.length === 0) { templateListDiv.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No templates. Create one!</p>'; return; }
             appData.templates.forEach(template => {
                 const item = document.createElement('div'); item.className = 'template-item'; if (template.isDefault) item.classList.add('default-template');
@@ -1363,7 +1392,7 @@
             templateListDiv.querySelectorAll('.btn-delete-template').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id));
             templateListDiv.querySelectorAll('.btn-set-default').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));
         }
-        function deleteTemplate(templateId) { /* जस का तस */
+        function deleteTemplate(templateId) { 
             const templateToDelete = appData.templates.find(t => t.id === templateId); if (!templateToDelete) return;
             if (templateToDelete.isDefault && appData.templates.length <= 1) { showToast("Cannot delete the only default template.", 'warning', 4000); return; }
             if (templateToDelete.isDefault && appData.templates.length > 1) { showToast("Cannot delete active default. Change default first.", 'warning', 4000); return; }
@@ -1373,20 +1402,20 @@
                 saveData(); renderTemplateList(); loadTemplateEditor(); showToast(`Template "<strong>${name}</strong>" deleted.`, 'info');
             });
         }
-        function setDefaultTemplate(templateId) { /* जस का तस */ 
+        function setDefaultTemplate(templateId) {  
             let name = ''; appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; });
             saveData(); renderTemplateList(); if (name) showToast(`Template "<strong>${name}</strong>" set as default.`, 'info');
         }
-        function populateTemplateSelect(selectElement) { /* जस का तस */
+        function populateTemplateSelect(selectElement) { 
             selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null;
             appData.templates.forEach(template => { const option = document.createElement('option'); option.value = template.id; option.textContent = template.name; if (template.isDefault) { option.selected = true; defaultId = template.id; } selectElement.appendChild(option); });
             if (defaultId) selectElement.value = defaultId; return defaultId;
         }
         const clearOldDataBtn = document.getElementById('clearOldDataBtn'); const clearDataNotificationDiv = document.getElementById('clearDataNotification');
-        function checkClearDataNotification() { /* जस का तस */
+        function checkClearDataNotification() { 
             const today = new Date(); if (today.getDate() > 7) { const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1); const hasOld = appData.projects.some(p => p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth); clearDataNotificationDiv.style.display = hasOld ? 'flex' : 'none'; } else clearDataNotificationDiv.style.display = 'none';
         }
-        clearOldDataBtn.addEventListener('click', () => { /* जस का तस */
+        clearOldDataBtn.addEventListener('click', () => { 
             showCustomConfirm( 'Permanently DELETE old project data (completed BEFORE current month)? This CANNOT BE UNDONE.', "Clear Old Data", () => { 
                 const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0); const initialCount = appData.projects.length;
                 appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth));
@@ -1435,10 +1464,12 @@
                 });
             }
         });
-        window.addEventListener('beforeunload', () => { /* जस का तस */ 
+        window.addEventListener('beforeunload', () => { 
             appData.projects.forEach(project => { if (project.ui_isExpanded) { const projectCard = document.querySelector(`.quest-card[data-id="${project.id}"]`); if (projectCard) { const tasksContainerEl = projectCard.querySelector('.tasks-container'); if (tasksContainerEl) project.ui_scrollPosition = tasksContainerEl.scrollTop; } } }); saveData(); 
         });
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW registered.', reg.scope)).catch(err => console.log('SW reg failed:', err)); }); }
+
+        // END OF COPIED JS
     </script>
 </body>
 </html>
