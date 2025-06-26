@@ -385,8 +385,8 @@
         }
         .modal-content {
             background: var(--card-bg); padding: 1.5rem; border-radius: 1rem; width: 100%;
-            max-width: 98%; box-shadow: var(--shadow); 
-            margin: 1.5rem auto; 
+            max-width: 550px; box-shadow: var(--shadow); 
+            margin: 2rem auto; 
         }
         .modal-header { 
             display: flex; justify-content: space-between; align-items: center;
@@ -535,6 +535,12 @@
             .modal-content { margin: 5% auto; width: 95%; padding: 1.25rem; }
             .modal-header h2 { font-size: 1.15rem; }
             #toastContainer { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
+            .modal-content { 
+               margin: 3% auto; 
+               width: 97%; /* This tells it to take up 95% of the screen width */
+               max-width: 97%; /* MODIFIED: This overrides the desktop 550px limit */
+               padding: 1.25rem; 
+            }
         }
 
         @media (max-width: 480px) {
