@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Goal Achiever</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="./icon-192x192.png" type="image/png">
+    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./icon-192x192.png">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <style>
+        :root {
+            --primary-color: #0f172a; 
+            --primary-hover: #1e293b; 
+            --warning-color: #ef4444; 
+            --warning-hover: #dc2626;
+            --info-color: #3b82f6; 
+            --success-color: #10b981; /* Goalio's green for success */
+            --star-important-color: #facc15; 
+            --bg-color: #f8fafc;
+            --text-color: #0f172a; 
+            --text-light: #64748b; 
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --border-color: #e2e8f0; 
+            
+            --goal-done-bg: #eef2ff; 
+            --goal-done-text: var(--primary-color);
+            --goal-overdue-border: var(--warning-color); 
+            --input-bg: #ffffff; /* For consistency with modal inputs */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; } 
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 1rem;
+            font-size: 15px;
+        }
+
+        .container { max-width: 800px; margin: 1rem auto; }
+
+        /* --- DASHBOARD AREA (Replaces Notice Area) --- */
+        .dashboard-area {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem; padding: 1.25rem; margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); 
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        .dashboard-metric {
+            background-color: var(--bg-color); /* Slightly different for inner cards */
+            padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1.5px solid var(--border-color);
+            text-align: center;
+        }
+        .dashboard-metric h4 { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-light);}
+        .dashboard-metric p { color: var(--text-color); font-size: 1.5em; font-weight: 600; }
+
+        /* Single Row Calendar */
+        .week-calendar-container {
+            padding: 0.75rem; border: 1.5px solid var(--border-color); 
+            border-radius: 0.5rem; background-color: var(--card-bg);
+            margin-bottom: 1rem;
+        }
+        .week-calendar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.75rem; padding: 0 0.1rem;
+        }
+        .week-calendar-header button {
+            background: transparent; border: none; color: var(--primary-color);
+            padding: 0.4rem; border-radius: 50%; cursor: pointer;
+            font-size: 0.9rem; width: 2rem; height: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .week-calendar-header button:hover { background-color: #f1f5f9; }
+        .week-calendar-month-year { font-size: 1.1rem; font-weight: 600; color: var(--primary-color); }
+        
+        .week-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .week-calendar-day-name-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 0.25rem;}
+
+        .week-calendar-day, .week-calendar-day-name {
+            text-align: center; padding: 0.5rem 0.2rem; font-size: 0.85rem;
+            border-radius: 0.375rem; 
+        }
+        .week-calendar-day-name { font-weight: 500; color: var(--text-light); }
+        .week-calendar-day {
+            cursor: default; border: 1px solid transparent; 
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .week-calendar-day:not(.current-day):hover {
+            background-color: #f8fafc; border-color: var(--border-color);
+        }
+        .week-calendar-day.current-day {
+            background-color: var(--primary-color); color: white; font-weight: bold;
+            border-color: var(--primary-hover);
+        }
+        .week-calendar-day.other-month { color: #cbd5e1; /* For days from prev/next month if shown in week view */ }
+
+        .time-left-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 1rem; 
+        }
+        .time-left-item {
+            padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1.5px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+        .time-left-item h4 { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-light);}
+        .time-left-item p { color: var(--text-color); font-size: 0.95rem; font-weight: 500; }
+        
+        /* App Header for Settings Button */
+        .app-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem; /* Space before dashboard */
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .app-main-header h1 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+        }
+        .settings-btn-header {
+            background: var(--primary-color); color: white; border: none;
+            border-radius: 0.5rem; 
+            width: auto; height: 2.25rem; 
+            padding: 0 0.75rem;
+            font-size: 0.9rem; 
+            cursor: pointer; display: inline-flex;
+            align-items: center; justify-content: center;
+            gap: 0.4rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .settings-btn-header:hover { background: var(--primary-hover); }
+
+
+        /* --- GOAL/PROJECT SECTION --- */
+        .goal-section {
+            background: var(--card-bg); border-radius: 1rem; padding: 1.25rem;
+            margin-bottom: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border-color);
+        }
+        .goal-section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1rem; padding-bottom: 0.75rem; 
+            border-bottom: 2px solid var(--primary-color); 
+        }
+        .goal-section-header h3 {
+            font-size: 1.25rem; color: var(--primary-color);
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .active-goal-count {
+            font-size: 0.9rem; color: var(--text-light); margin-left: 0.5rem; font-weight: normal;
+        }
+        .add-goal-icon-btn { 
+            background: var(--primary-color); color: white; border: none;
+            border-radius: 50%; 
+            width: 2.25rem; height: 2.25rem; 
+            font-size: 1rem; 
+            cursor: pointer; display: inline-flex;
+            align-items: center; justify-content: center;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .add-goal-icon-btn:hover { background: var(--primary-hover); }
+
+        .goals-list { display: flex; flex-direction: column; gap: 1rem; }
+
+        /* --- GOAL/PROJECT CARD --- */
+        .goal-card {
+            border: 1px solid var(--border-color); border-radius: 0.75rem;
+            padding: 1.25rem; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
+            display: flex; flex-direction: column;
+            background-color: var(--card-bg); 
+            position: relative; 
+        }
+        
+        .goal-card.status-done {
+            background-color: var(--goal-done-bg); 
+            transition: background-color 0.3s ease-in-out;
+        }
+        .goal-card.status-done .goal-title,
+        .goal-card.type-project.status-done .project-title-text { /* Project title specific */
+             color: var(--goal-done-text); text-decoration: line-through; opacity: 0.7;
+        }
+        .goal-card.is-archived {
+            opacity: 0.7;
+            border-left: 4px solid var(--text-light);
+        }
+        
+        .goal-card.is-overdue:not(.status-done) { 
+            border-left: 4px solid var(--goal-overdue-border); 
+        }
+        
+        .goal-card-header-flex { /* New wrapper for checkbox, title, and right actions */
+            display: flex; align-items: flex-start; /* Align checkbox with title text */
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .goal-card-main-checkbox { /* For project complete checkbox */
+            margin-top: 0.2rem; /* Align with text better */
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+        }
+
+        .goal-title-container { flex-grow: 1; }
+        .goal-title, .project-title-text { /* project-title-text for project type */
+            font-size: 1.15rem; font-weight: 600; color: var(--text-color); 
+            cursor: pointer; /* To indicate clickable for editing */
+            line-height: 1.4;
+        }
+         .project-title-text:hover { color: var(--primary-hover); }
+
+        .goal-card-header-actions { /* Container for star, toggle, ellipsis */
+            display: flex; align-items: center; gap: 0.25rem;
+            margin-left: auto; /* Push to the right */
+        }
+        
+        .card-icon-btn { /* Common style for star, toggle, ellipsis */
+            background: transparent; border: none;
+            color: var(--text-light); font-size: 1.1rem; 
+            padding: 0.35rem; border-radius: 50%;
+            width: 2rem; height: 2rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background-color 0.2s, color 0.2s;
+        }
+        .card-icon-btn:hover { background-color: #f1f5f9; }
+        .card-icon-btn.star-btn.is-important .fas.fa-star { color: var(--star-important-color); }
+        .card-icon-btn.star-btn:hover { color: var(--star-important-color); }
+        .card-icon-btn.danger:hover { color: var(--warning-color); background-color: #fee2e2; }
+
+
+        .goal-description { 
+            font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.85rem; 
+            max-height: 40px; overflow-y: auto;
+            scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+        }
+        .goal-description::-webkit-scrollbar { width: 5px; }
+        .goal-description::-webkit-scrollbar-thumb { background-color: #d1d5db; border-radius: 3px; }
+
+        .goal-meta {
+            font-size: 0.8rem; color: var(--text-light); 
+            margin-bottom: 0.85rem; 
+            display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; 
+        }
+        /* Project Specific Meta */
+        .project-value-bar {
+            font-size: 0.9rem; font-weight: 500; color: var(--text-color);
+            margin-bottom: 0.75rem; padding: 0.3rem 0;
+        }
+        .project-progress-bar-container {
+            width: 100%; height: 8px; background-color: var(--border-color);
+            border-radius: 4px; overflow: hidden; margin-bottom: 0.75rem;
+        }
+        .project-progress-fill {
+            height: 100%; background-color: var(--info-color);
+            border-radius: 4px; transition: width 0.3s ease;
+        }
+        
+        .goal-countdown { 
+            font-weight: 500; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            flex-wrap: wrap; 
+        }
+        .goal-countdown-part { 
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .goal-countdown .fa-hourglass-half, .goal-countdown .fa-calendar-alt { 
+            font-size: 0.8rem; 
+        }
+        .goal-countdown-text { font-size: 0.8rem; }
+        .goal-countdown.overdue .goal-countdown-text { color: var(--warning-color); font-weight: 600; }
+        .goal-countdown.today .goal-countdown-text { color: var(--info-color); font-weight: 600; }
+
+        .goal-actions { display: flex; gap: 0.5rem; margin-top: auto; padding-top: 0.75rem; 
+                         border-top: 1px solid var(--border-color); 
+                       }
+        .goal-action-btn {
+            background: transparent; border: 1px solid transparent; 
+            color: var(--text-light); 
+            padding: 0.4rem; border-radius: 0.3rem; cursor: pointer;
+            font-size: 0.9rem; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            flex-grow: 0; width: 2rem; height: 2rem; 
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .goal-action-btn.toggle-done { 
+            flex-grow: 1; 
+            background-color: #f8fafc; 
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            width: auto; gap: 0.3rem; padding: 0.4rem 0.75rem;
+        }
+        .goal-action-btn.toggle-done:hover { background-color: var(--primary-color); color: white; }
+        .goal-action-btn.toggle-done.is-done { background-color: var(--border-color); color: var(--primary-color); } 
+        .goal-action-btn.toggle-done.is-done:hover { background-color: var(--primary-hover); color: white; }
+
+        .goal-action-btn.edit:hover, .goal-action-btn.delete:hover { 
+            background-color: #e5e7eb; 
+        }
+        .goal-action-btn.delete:hover { color: var(--warning-color); }
+
+        /* Dropdown for 3-dot menu on card */
+        .actions-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 1.25rem; /* Align with ellipsis button padding */
+            top: 3.5rem; /* Adjust based on card header height */
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            z-index: 20;
+            min-width: 150px;
+            padding: 0.25rem 0;
+        }
+        .actions-dropdown-menu button {
+            display: flex; align-items: center; gap: 0.5rem;
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            background: none; border: none;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .actions-dropdown-menu button:hover { background-color: #f1f5f9; }
+        .actions-dropdown-menu button .fas { width: 1em; text-align: center; color: var(--text-light); }
+        .actions-dropdown-menu button.danger { color: var(--warning-color); }
+        .actions-dropdown-menu button.danger:hover { background-color: #fee2e2; }
+        .actions-dropdown-menu button.danger .fas { color: var(--warning-color); }
+
+
+        /* Tasks Area */
+        .tasks-container {
+            padding-left: 0.5rem; 
+            max-height: 0;
+            overflow-y: auto;
+            transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, margin-top 0.3s ease-out;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: 1px dashed transparent; /* prepare for border */
+        }
+        .tasks-container.expanded {
+            max-height: 350px; 
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top-color: var(--border-color);
+        }
+        .task-item, .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f1f5f9; 
+            font-size: 0.9rem;
+        }
+        .task-item:last-child, .subtask-item:last-child { border-bottom: none; }
+        .subtask-item { margin-left: 1.5rem; font-size: 0.85rem; }
+        .task-checkbox, .subtask-checkbox {
+            transform: scale(1.1);
+            accent-color: var(--primary-color);
+        }
+        .task-description-text { flex-grow: 1; }
+        .task-item .task-description-text { font-weight: 500; }
+        
+        .task-value-chip {
+            font-size: 0.8em;
+            font-weight: 500;
+            color: var(--success-color); /* Use success color for value */
+            background-color: #e0f2f1; 
+            padding: 2px 6px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        .task-item.completed .task-description-text,
+        .subtask-item.completed .task-description-text {
+            text-decoration: line-through;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+
+        /* --- MODALS (Goalio base, adapted for CreateMode features) --- */
+        .modal {
+            display: none; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
+            justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
+            overflow-y: auto; 
+        }
+        .modal-content {
+            background: var(--card-bg); padding: 1.5rem; border-radius: 1rem; width: 100%;
+            max-width: 500px; /* Default for simple goal, settings */
+            box-shadow: var(--shadow); 
+            margin: 2rem auto; 
+        }
+        #goalFormModal .modal-content { max-width: 600px; /* Wider for project tasks */ }
+        #settingsModal .modal-content { max-width: 700px; /* Wider for templates */ }
+
+        .modal-header { /* New common modal header */
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header h3 { /* Replaces h3 inside modal-content directly */
+            margin-bottom: 0; font-size: 1.35rem; color: var(--primary-color);
+        }
+        .close-modal-btn { /* For top-right X */
+            background: transparent; border: none; font-size: 1.5rem;
+            color: var(--text-light); cursor: pointer; padding: 0.25rem;
+            line-height: 1;
+        }
+        .close-modal-btn:hover { color: var(--text-color); }
+
+
+        .modal label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500; }
+        .modal input[type="text"], .modal input[type="date"], .modal input[type="number"], 
+        .modal textarea, .modal select {
+            width: 100%; padding: 0.75rem; margin: 0.25rem 0 1rem 0;
+            border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.9rem;
+            background-color: var(--input-bg);
+        }
+        .modal textarea { min-height: 70px; resize: vertical; }
+        .modal input:focus, .modal textarea:focus, .modal select:focus {
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+        
+        /* Task Editor in Modal */
+        .modal-task-editor-item {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem; margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-color); /* Slightly different bg */
+        }
+        .modal-task-editor-header { display: flex; gap: 0.5rem; align-items: center; }
+        .modal-task-editor-header input[type="text"] { flex-grow: 1; margin-bottom: 0; }
+        
+        .modal-subtask-editor-item {
+            margin-left: 1.25rem; margin-top: 0.5rem; display: flex; gap: 0.5rem; align-items: center;
+        }
+        .modal-subtask-editor-item input[type="text"] { flex-grow: 1; margin-bottom: 0; }
+        
+        .modal-task-btn { /* For add task/subtask in modal */
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            padding: 0.5rem 0.8rem; border-radius: 0.3rem; cursor: pointer;
+            font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+        .modal-task-btn:hover { background-color: #f1f5f9; }
+        .modal-task-btn .fas { font-size: 0.8rem; }
+        .modal-icon-only-btn { /* For remove task/subtask in modal */
+            background: transparent; border: 1px solid transparent;
+            color: var(--text-light); padding: 0.4rem; border-radius: 50%;
+            cursor: pointer; font-size: 0.9rem;
+            width: 1.8rem; height: 1.8rem; display: inline-flex;
+            align-items: center; justify-content: center;
+        }
+        .modal-icon-only-btn:hover { background-color: #e5e7eb; }
+        .modal-icon-only-btn.danger:hover { color: var(--warning-color); background-color: #fee2e2; }
+
+
+        .modal-footer { /* Common modal footer */
+            display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;
+            padding-top: 1rem; border-top: 1px solid var(--border-color);
+        }
+        .modal-footer button {
+            padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
+            cursor: pointer; font-weight: 500; font-size: 0.875rem;
+        }
+        .modal-footer .save-btn, .modal-footer .confirm-btn { /* confirm-btn for custom confirm */
+             background: var(--primary-color); color: white; 
+        }
+        .modal-footer .save-btn:hover, .modal-footer .confirm-btn:hover { background: var(--primary-hover); }
+
+        .modal-footer .cancel-btn { background: #e2e8f0; color: var(--text-light); }
+        .modal-footer .cancel-btn:hover { background: #d1d5db; }
+        
+        .modal-footer .delete-btn { /* For specific delete actions in modal footers like settings */
+            background-color: var(--warning-color); color: white;
+        }
+        .modal-footer .delete-btn:hover { background-color: var(--warning-hover); }
+
+
+        .no-goals, .no-items-message { /* Common for empty lists */
+             text-align: center; padding: 2rem; color: var(--text-light); font-style: italic; 
+        }
+
+        /* Settings Modal Specifics */
+        .settings-section {
+            margin-bottom: 2rem; padding-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .settings-section h4 { font-size: 1.1rem; color: var(--primary-color); margin-bottom: 0.75rem; }
+        
+        .template-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem; border: 1px solid var(--border-color);
+            border-radius: 0.5rem; margin-bottom: 0.5rem;
+            background-color: var(--bg-color);
+        }
+        .template-list-item.is-default { 
+            border-left: 3px solid var(--star-important-color); 
+            font-weight: 500; 
+        }
+        .template-list-item span { flex-grow: 1; }
+        .template-actions-group { display: flex; gap: 0.3rem; }
+        .template-actions-group button { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
+        
+        .new-template-btn-settings { /* Specific styling for "New Template" in settings */
+            margin-left: auto; /* Pushes to the right in flex container */
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+        }
+        .new-template-btn-settings:hover { background-color: #f1f5f9; }
+
+
+        /* Collapsible Sections (Completed, Archived) */
+        .collapsible-section { margin-bottom: 2rem; }
+        .collapsible-section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem 1rem; background-color: #eef2ff; /* Light primary bg */
+            border-radius: 0.5rem; cursor: pointer;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem; /* Space before list if expanded */
+        }
+        .collapsible-section-header h3 {
+            font-size: 1.1rem; color: var(--primary-color); margin: 0;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .collapsible-section-header .toggle-icon {
+            transition: transform 0.2s ease-in-out;
+            color: var(--primary-color);
+        }
+        .collapsible-section-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 1000px; /* Adjust as needed */
+        }
+
+
+        /* Animation for goal card exiting (deletion) */
+        .goal-card.exiting {
+            animation: fadeOutCollapse 0.35s ease-out forwards;
+        }
+
+        @keyframes fadeOutCollapse {
+            0% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+                max-height: 350px; /* Estimate; adjust if cards can be taller */
+                padding-top: 1.25rem;
+                padding-bottom: 1.25rem;
+                margin-bottom: 1rem; /* From .goals-list gap */
+                border-width: 1px;
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50px) scale(0.9);
+                max-height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                margin-bottom: 0;
+                border-width: 0;
+                overflow: hidden;
+            }
+        }
+        .goal-card.entering {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+
+        /* --- TOAST NOTIFICATIONS (Goalio Themed) --- */
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000; 
+            display: flex;
+            flex-direction: column-reverse; 
+            gap: 10px;
+            max-width: 350px;
+        }
+        .toast-message {
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem; /* Goalio's rounded style */
+            color: white; /* Default text color on colored background */
+            font-size: 0.9rem;
+            box-shadow: var(--shadow);
+            opacity: 0; 
+            animation-name: toastFadeIn, toastFadeOut;
+            animation-duration: 0.3s, 0.3s; 
+            animation-fill-mode: forwards, forwards;
+            animation-timing-function: ease-out, ease-in;
+            animation-delay: 0s, var(--toast-visible-duration, 3000ms);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .toast-icon {
+            width: 1.3em; height: 1.3em;
+            flex-shrink: 0;
+            fill: currentColor; 
+        }
+        .toast-text-content { flex-grow: 1; }
+        .toast-message strong { font-weight: 600; }
+
+        .toast-message.success { background-color: var(--success-color); }
+        .toast-message.info { background-color: var(--info-color); }
+        .toast-message.warning { background-color: var(--star-important-color); color: var(--text-color); } /* Yellow warning */
+        .toast-message.warning .toast-icon { color: var(--text-color); }
+        .toast-message.error { background-color: var(--warning-color); } /* Red error */
+
+        @keyframes toastFadeIn {
+            from { opacity: 0; transform: translateX(100%); } /* Slide in from right */
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastFadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); } /* Slide out to right */
+        }
+
+        /* Responsive */
+        @media (max-width: 650px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .time-left-grid { grid-template-columns: 1fr; }
+            .app-main-header h1 { font-size: 1.5rem; }
+        }
+
+    </style>
+</head>
+    
+<body>
+    <!-- SVG Icon Definitions (Merged from Goalio & CreateMode, some might be unused after merge) -->
+    <svg style="display: none;">
+        <symbol id="icon-plus-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-trash" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-pencil" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-star" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></symbol>
+        <symbol id="icon-chevron-down" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-chevron-up" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-save" viewBox="0 0 20 20" fill="currentColor"> <path d="M17 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7.414A2 2 0 0016.414 6L14 3.586A2 2 0 0012.586 3H12V2a1 1 0 00-1-1H9a1 1 0 00-1 1v1H5zm2 12a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h3v2a1 1 0 001 1h4a1 1 0 001-1V3.414L17.586 6H17V5a2 2 0 00-2-2h-1V2a1 1 0 00-1-1H9a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7h-2v8zM9 6a1 1 0 011-1h2a1 1 0 010 2H10a1 1 0 01-1-1z"/></symbol>
+        <symbol id="icon-close" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-check-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-info-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-warning-triangle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.216 3.031-1.742 3.031H4.42c-1.526 0-2.492-1.697-1.742-3.031l5.58-9.92zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-error-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 101.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-new-template" viewBox="0 0 20 20" fill="currentColor"> <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V8.5H9.5A1.5 1.5 0 018 7V4H4zm5-2h-.086a1.992 1.992 0 00-1.406.586L4.586 5.5A1.992 1.992 0 004 6.914V8h4V2zM10.5 2H14a1 1 0 011 1v2.5h2.5a1 1 0 01.707 1.707L16.914 9H14V7.5A1.5 1.5 0 0012.5 6H10V2.5A.5.5 0 0110.5 2z"/><path d="M14 11h2v2a1 1 0 01-1 1h-1v1a1 1 0 01-2 0v-1h-1a1 1 0 010-2h1v-1a1 1 0 011-1z"/></symbol>
+        <symbol id="icon-ellipsis-vertical" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></symbol>
+        <symbol id="icon-archive" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2 4.75A2.75 2.75 0 014.75 2h10.5A2.75 2.75 0 0118 4.75v4.643a.75.75 0 01-1.5 0V4.75a1.25 1.25 0 00-1.25-1.25H4.75A1.25 1.25 0 003.5 4.75v10.5c0 .056.004.11.012.164L3.5 15.25V8.75a.75.75 0 011.5 0v5.69l.07-.056a1.25 1.25 0 00-.07-.02V8.75a.75.75 0 011.5 0v5.883l.087.025A1.25 1.25 0 008 14.5h4a1.25 1.25 0 001.163-.833l.087-.25V8.75a.75.75 0 011.5 0v4.667l-.087.25A1.25 1.25 0 0012 14.5H8a1.25 1.25 0 00-1.163.833L6.75 15.583V8.75a.75.75 0 011.5 0v6.01a.248.248 0 00.017.092l.075.165A2.75 2.75 0 017.58 16H4.75A2.75 2.75 0 012 13.25V4.75zm6.5 5a.75.75 0 000-1.5H6a.75.75 0 000 1.5h2.5z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-folder-open" viewBox="0 0 20 20" fill="currentColor"> <path d="M2 4.5A1.5 1.5 0 013.5 3h4.542a1.5 1.5 0 011.238.606l.678.904A.5.5 0 0010.252 5H16.5A1.5 1.5 0 0118 6.5v.5H2V4.5z"/><path d="M1.5 8A1.5 1.5 0 000 9.5v6A1.5 1.5 0 001.5 17h17a1.5 1.5 0 001.5-1.5v-6A1.5 1.5 0 0018.5 8H1.5zm8.25 4a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75z"/></symbol>
+        <symbol id="icon-settings" viewBox="0 0 20 20" fill="currentColor"> <!-- From CreateMode, simple cog -->
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.566.379-1.566 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.566 2.6 1.566 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01-.947-2.287c1.566-.379 1.566-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+        </symbol>
+    </svg>
+
+    <div class="container">
+        <header class="app-main-header">
+            <h1>AchieverSuite</h1>
+            <button class="settings-btn-header" id="openSettingsBtn">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+        </header>
+
+        <div class="dashboard-area">
+            <div class="dashboard-grid" id="dashboardMetricsGrid">
+                <div class="dashboard-metric"><h4>Earnings Today</h4><p id="metricValueToday">$0</p></div>
+                <div class="dashboard-metric"><h4>Earnings This Month</h4><p id="metricValueMonth">$0</p></div>
+                <div class="dashboard-metric"><h4>Upcoming Value</h4><p id="metricUpcomingValue">$0</p></div>
+            </div>
+            <div class="week-calendar-container" id="weekCalendarContainer">
+                <!-- Single row calendar will be rendered here by JS -->
+            </div>
+            <div class="time-left-grid">
+                <div class="time-left-item"><h4>Weeks Left (Month)</h4><p id="weeksLeftMonth">-</p></div>
+                <div class="time-left-item"><h4>Months Left (Year)</h4><p id="monthsLeftYear">-</p></div>
+            </div>
+        </div>
+
+        <div class="goal-section" id="goalSectionTarget">
+            <div class="goal-section-header">
+                <h3><i class="fas fa-bullseye"></i> Active Quests & Goals <span id="activeGoalCountHeader" class="active-goal-count"></span></h3>
+                <button class="add-goal-icon-btn" id="addGoalBtn" title="Add New Quest or Goal">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="goals-list" id="activeGoalsList"></div>
+        </div>
+
+        <div class="collapsible-section" id="completedGoalsSection">
+            <div class="collapsible-section-header" data-target="completedGoalsContent">
+                <h3><i class="fas fa-check-circle"></i> Completed</h3>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="collapsible-content" id="completedGoalsContent">
+                <div class="goals-list" id="completedGoalsList">
+                    <!-- Completed goals will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="collapsible-section" id="archivedGoalsSection">
+            <div class="collapsible-section-header" data-target="archivedGoalsContent">
+                <h3><i class="fas fa-archive"></i> Archived</h3>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="collapsible-content" id="archivedGoalsContent">
+                <div class="goals-list" id="archivedGoalsList">
+                    <!-- Archived goals will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Goal/Project Modal -->
+    <div class="modal" id="goalFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="goalModalTitle">Add New Goal</h3>
+                <button class="close-modal-btn" data-modal-id="goalFormModal" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <input type="hidden" id="goalIdInput">
+            
+            <label for="goalTypeSelect">Type:</label>
+            <select id="goalTypeSelect">
+                <option value="simple">Simple Goal</option>
+                <option value="project">Project Quest</option>
+            </select>
+
+            <label for="goalTitleInput">Title:</label>
+            <input type="text" id="goalTitleInput" placeholder="e.g., Learn Advanced JavaScript">
+
+            <div id="simpleGoalFieldsContainer">
+                <label for="goalDescriptionInput">Description (Optional):</label>
+                <textarea id="goalDescriptionInput" placeholder="e.g., Complete an online course..." rows="3"></textarea>
+                <label for="goalDeadlineInput">Deadline (Optional):</label>
+                <input type="date" id="goalDeadlineInput">
+            </div>
+
+            <div id="projectGoalFieldsContainer" style="display:none;">
+                <label for="projectDeadlineInput">Deadline (Optional):</label>
+                <input type="date" id="projectDeadlineInput">
+                <label for="projectValueInput">Total Value ($):</label>
+                <input type="number" id="projectValueInput" placeholder="100" min="0">
+                <label for="projectTemplateSelect">Use Template:</label>
+                <select id="projectTemplateSelect"></select>
+                
+                <h4>Tasks:</h4>
+                <div id="modalTasksContainer">
+                    <!-- Tasks for project will be dynamically added here -->
+                </div>
+                <button id="addModalMainTaskBtn" class="modal-task-btn">
+                    <i class="fas fa-plus-circle"></i> Add Main Task
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="save-btn" id="saveGoalBtnModal">Save</button>
+                <button class="cancel-btn" data-modal-id="goalFormModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="settingsModalTitle">Settings</h3>
+                 <button class="close-modal-btn" data-modal-id="settingsModal" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="settings-section">
+                <h4>Quest Templates</h4>
+                <div id="templateEditor">
+                    <input type="hidden" id="templateIdInput">
+                    <label for="templateNameInput">Template Name:</label>
+                    <input type="text" id="templateNameInput" placeholder="E.g., Standard Video, Quick Vlog">
+                    
+                    <h5>Tasks for this Template:</h5>
+                    <div id="templateTasksContainer">
+                        <!-- Template tasks will be dynamically added here -->
+                    </div>
+                    <button id="addTemplateMainTaskBtn" class="modal-task-btn">
+                         <i class="fas fa-plus-circle"></i> Add Main Task
+                    </button>
+                    <div style="margin-top: 1.25rem; display:flex; gap: 0.75rem;">
+                        <button id="saveTemplateBtn" class="save-btn"><i class="fas fa-save"></i> Save Template</button>
+                        <button id="newTemplateBtnSettings" class="new-template-btn-settings">
+                            <svg class="icon" style="width:1em; height:1em; vertical-align:middle; margin-right:0.3em;"><use xlink:href="#icon-new-template"></use></svg>
+                             New Template
+                        </button>
+                    </div>
+                </div>
+                <h5 style="margin-top: 2rem; margin-bottom:0.5rem;">Existing Templates:</h5>
+                <div id="templateList">
+                    <!-- List of templates will be injected here -->
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h4>Data Management</h4>
+                <p style="font-size:0.9rem; color:var(--text-light); margin-bottom:1rem;">Permanently delete all project data (titles, tasks, value) for quests completed <strong>before the current month</strong>. This action cannot be undone.</p>
+                <button id="clearOldDataBtn" class="delete-btn">
+                    <i class="fas fa-trash-alt"></i> Clear Old Project Data
+                </button>
+            </div>
+             <div class="modal-footer">
+                <button class="cancel-btn" data-modal-id="settingsModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div class="modal" id="customConfirmModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="customConfirmModalTitle">Confirm Action</h3>
+                <!-- No close button for confirm, user must choose an action -->
+            </div>
+            <p id="customConfirmModalMessage" style="margin-bottom: 1.5rem; font-size: 0.95rem; line-height:1.5;">Are you sure?</p>
+            <input type="hidden" id="goalIdToDeleteInput"> <!-- Re-using for goal deletion -->
+            <div class="modal-footer">
+                <button class="confirm-btn" id="customConfirmModalConfirmBtn">Confirm</button>
+                <button class="cancel-btn" id="customConfirmModalCancelBtn">Cancel</button> 
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        // --- APP STATE & LOCAL STORAGE ---
+        let userData = { 
+            goals: [], // Unified list for simple goals and project quests
+            templates: [] 
+        };
+        const APP_DATA_KEY = 'ultimateAchieverData_v1';
+        let currentCalendarDate = new Date(); 
+
+        // --- DOM ELEMENTS ---
+        // Modals
+        const goalFormModal = document.getElementById('goalFormModal');
+        const settingsModal = document.getElementById('settingsModal');
+        const customConfirmModal = document.getElementById('customConfirmModal');
+        
+        // Goal Form Modal Elements
+        const goalModalTitle = document.getElementById('goalModalTitle');
+        const goalIdInput = document.getElementById('goalIdInput');
+        const goalTypeSelect = document.getElementById('goalTypeSelect');
+        const goalTitleInput = document.getElementById('goalTitleInput');
+        const simpleGoalFieldsContainer = document.getElementById('simpleGoalFieldsContainer');
+        const goalDescriptionInput = document.getElementById('goalDescriptionInput');
+        const goalDeadlineInput = document.getElementById('goalDeadlineInput');
+        const projectGoalFieldsContainer = document.getElementById('projectGoalFieldsContainer');
+        const projectDeadlineInput = document.getElementById('projectDeadlineInput');
+        const projectValueInput = document.getElementById('projectValueInput');
+        const projectTemplateSelect = document.getElementById('projectTemplateSelect');
+        const modalTasksContainer = document.getElementById('modalTasksContainer'); // For tasks in goal form
+        const addModalMainTaskBtn = document.getElementById('addModalMainTaskBtn');
+        const saveGoalBtnModal = document.getElementById('saveGoalBtnModal');
+
+        // Lists
+        const activeGoalsList = document.getElementById('activeGoalsList');
+        const completedGoalsList = document.getElementById('completedGoalsList');
+        const archivedGoalsList = document.getElementById('archivedGoalsList');
+        const activeGoalCountHeader = document.getElementById('activeGoalCountHeader');
+        
+        // Dashboard & Calendar
+        const metricValueToday = document.getElementById('metricValueToday');
+        const metricValueMonth = document.getElementById('metricValueMonth');
+        const metricUpcomingValue = document.getElementById('metricUpcomingValue');
+        const weekCalendarContainer = document.getElementById('weekCalendarContainer');
+        const weeksLeftMonthEl = document.getElementById('weeksLeftMonth');
+        const monthsLeftYearEl = document.getElementById('monthsLeftYear');
+
+        // Settings Modal Elements
+        const openSettingsBtn = document.getElementById('openSettingsBtn');
+        const templateIdInput = document.getElementById('templateIdInput'); // In settings
+        const templateNameInput = document.getElementById('templateNameInput');
+        const templateTasksContainer = document.getElementById('templateTasksContainer');
+        const addTemplateMainTaskBtn = document.getElementById('addTemplateMainTaskBtn');
+        const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+        const newTemplateBtnSettings = document.getElementById('newTemplateBtnSettings');
+        const templateListDiv = document.getElementById('templateList');
+        const clearOldDataBtn = document.getElementById('clearOldDataBtn');
+
+        // Custom Confirm Modal Elements
+        const customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle');
+        const customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage');
+        const customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn');
+        const customConfirmModalCancelBtn = document.getElementById('customConfirmModalCancelBtn');
+        const goalIdToDeleteInput = document.getElementById('goalIdToDeleteInput'); // From Goalio, reused
+
+        // Add Goal Button
+        const addGoalBtn = document.getElementById('addGoalBtn');
+        const goalSectionTarget = document.getElementById('goalSectionTarget');
+
+        let currentConfirmCallback = null;
+        let currentCancelCallback = null;
+
+        // --- UTILITY FUNCTIONS ---
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
+        function getTodayString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+        function formatDateForDisplay(dateString, useUTC = true) {
+            if (!dateString) return 'No Deadline';
+            const date = new Date(dateString + (useUTC ? 'T00:00:00Z' : '')); // Handle as UTC or local based on context
+            const options = { month: 'short', day: 'numeric', year: 'numeric'};
+            if (useUTC) options.timeZone = 'UTC';
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // --- LOCAL STORAGE ---
+        function loadUserData() {
+            const savedData = localStorage.getItem(APP_DATA_KEY);
+            if (savedData) {
+                try {
+                    userData = JSON.parse(savedData);
+                    if (!Array.isArray(userData.goals)) userData.goals = [];
+                    if (!Array.isArray(userData.templates)) userData.templates = [];
+
+                    userData.goals.forEach(goal => { // Data migration/normalization
+                        if (typeof goal.isImportant === 'undefined') goal.isImportant = false;
+                        if (typeof goal.type === 'undefined') goal.type = 'simple'; // Assume old goals are simple
+                        if (goal.type === 'project') {
+                            if (goal.totalGoldValue !== undefined) { goal.totalValue = goal.totalGoldValue; delete goal.totalGoldValue; }
+                            if (goal.goldEarned !== undefined) { goal.valueEarned = goal.goldEarned; delete goal.goldEarned; }
+                            goal.totalValue = parseFloat(goal.totalValue) || 0;
+                            goal.valueEarned = parseFloat(goal.valueEarned) || 0;
+                            if (goal.isArchived === undefined) goal.isArchived = false;
+                            if (goal.priority === undefined) goal.priority = goal.isImportant; // Use isImportant as fallback
+                            goal.tasks = goal.tasks || [];
+                            goal.tasks.forEach(task => {
+                                task.subtasks = task.subtasks || [];
+                                if (task.goldValue !== undefined) { task.taskValue = task.goldValue; delete task.goldValue; }
+                                task.taskValue = parseFloat(task.taskValue) || 0;
+                                task.subtasks.forEach(st => st.subtaskValue = parseFloat(st.subtaskValue) || 0);
+                            });
+                            distributeValueToTasks(goal); // Recalculate task values
+                        }
+                         // Ensure timestamps are numbers
+                        if (goal.completionTimestamp && typeof goal.completionTimestamp !== 'number') goal.completionTimestamp = new Date(goal.completionTimestamp).getTime();
+                        if (isNaN(goal.completionTimestamp)) goal.completionTimestamp = null;
+                        if (goal.creationTimestamp && typeof goal.creationTimestamp !== 'number') goal.creationTimestamp = new Date(goal.creationTimestamp).getTime();
+                        if (isNaN(goal.creationTimestamp) && goal.type === 'project') goal.creationTimestamp = Date.now(); // Add if missing for projects
+                        if (goal.createdAt && typeof goal.createdAt !== 'string') goal.createdAt = new Date(goal.createdAt).toISOString();
+                        if (goal.updatedAt && typeof goal.updatedAt !== 'string') goal.updatedAt = new Date(goal.updatedAt).toISOString();
+                    });
+                     // Ensure default template exists
+                    if (userData.templates.length === 0) {
+                        userData.templates.push({
+                            id: 'default-tpl-' + Date.now(), name: 'Default Project Workflow', isDefault: true,
+                            tasks: [ { id: generateId(), description: 'Planning', subtasks: [] }, { id: generateId(), description: 'Execution', subtasks: [] }, { id: generateId(), description: 'Review', subtasks: [] }]
+                        });
+                    } else if (!userData.templates.some(t => t.isDefault)) {
+                        userData.templates[0].isDefault = true;
+                    }
+
+                } catch (e) { console.error("Error parsing user data:", e); initializeDefaultData(); }
+            } else { initializeDefaultData(); }
+            
+            renderAll();
+        }
+
+        function initializeDefaultData() {
+            userData = { goals: [], templates: [] };
+            userData.templates.push({
+                id: 'default-tpl-' + Date.now(), name: 'Default Project Workflow', isDefault: true,
+                tasks: [ { id: generateId(), description: 'Planning', subtasks: [] }, { id: generateId(), description: 'Execution', subtasks: [] }, { id: generateId(), description: 'Review', subtasks: [] }]
+            });
+        }
+
+        function saveUserData() {
+            localStorage.setItem(APP_DATA_KEY, JSON.stringify(userData));
+        }
+
+        function renderAll() {
+            renderAllGoals();
+            updateDashboardMetrics();
+            updateTimeLeftNotices();
+            renderCalendar(currentCalendarDate);
+        }
+
+        // --- CALENDAR (Single Week View) ---
+        function renderCalendar(dateToDisplay) {
+            weekCalendarContainer.innerHTML = ''; 
+
+            const year = dateToDisplay.getFullYear();
+            const month = dateToDisplay.getMonth(); 
+            const today = new Date(); // For highlighting current day
+            const currentDayDate = dateToDisplay.getDate(); // The specific day to center the week around
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'week-calendar-header';
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.onclick = () => {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() - 7); // Go back one week
+                renderCalendar(currentCalendarDate);
+            };
+            const monthYearText = document.createElement('span');
+            monthYearText.className = 'week-calendar-month-year';
+            // Display month/year of the Sunday of the current week view or the current day's month/year
+            const tempDateForHeader = new Date(dateToDisplay);
+            const dayOfWeek = tempDateForHeader.getDay(); // 0 for Sunday, 1 for Monday...
+            tempDateForHeader.setDate(tempDateForHeader.getDate() - dayOfWeek); // Go to Sunday of that week
+            monthYearText.textContent = `${tempDateForHeader.toLocaleDateString('en-US', { month: 'long' })} ${tempDateForHeader.getFullYear()}`;
+
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.onclick = () => {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() + 7); // Go forward one week
+                renderCalendar(currentCalendarDate);
+            };
+            header.appendChild(prevButton); header.appendChild(monthYearText); header.appendChild(nextButton);
+            weekCalendarContainer.appendChild(header);
+
+            // Day Names
+            const dayNameRow = document.createElement('div'); 
+            dayNameRow.className = 'week-calendar-day-name-row';
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(name => {
+                const dayNameCell = document.createElement('div');
+                dayNameCell.className = 'week-calendar-day-name'; dayNameCell.textContent = name;
+                dayNameRow.appendChild(dayNameCell);
+            });
+            weekCalendarContainer.appendChild(dayNameRow);
+
+            // Week Grid
+            const grid = document.createElement('div');
+            grid.className = 'week-calendar-grid';
+            const currentDayOfWeek = dateToDisplay.getDay(); // 0 for Sunday
+            
+            for (let i = 0; i < 7; i++) { // Iterate through 7 days of the week
+                const dayCell = document.createElement('div');
+                dayCell.className = 'week-calendar-day';
+                
+                const dayDate = new Date(dateToDisplay);
+                dayDate.setDate(currentDayDate - currentDayOfWeek + i); // Calculate date for this cell in the week
+                
+                dayCell.textContent = dayDate.getDate();
+
+                if (dayDate.getFullYear() === today.getFullYear() && 
+                    dayDate.getMonth() === today.getMonth() && 
+                    dayDate.getDate() === today.getDate()) {
+                    dayCell.classList.add('current-day');
+                }
+                // Optional: dim days not in the displayed month if the week spans two months
+                if (dayDate.getMonth() !== month) {
+                     dayCell.classList.add('other-month');
+                }
+                grid.appendChild(dayCell);
+            }
+            weekCalendarContainer.appendChild(grid);
+        }
+
+        // --- TIME LEFT NOTICES (Goalio) ---
+        function updateTimeLeftNotices() {
+            const now = new Date();
+            const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const daysLeftInMonth = lastDayOfMonth.getDate() - now.getDate();
+            let weeksLeftText = "";
+             if (daysLeftInMonth < 0) { weeksLeftText = "Month ended"; }
+             else if (daysLeftInMonth === 0 && now.getDate() === lastDayOfMonth.getDate()) { weeksLeftText = "Today is last day!"; }
+             else {
+                const fullWeeks = Math.floor(daysLeftInMonth / 7);
+                const remainingDays = daysLeftInMonth % 7;
+                if (fullWeeks > 0) weeksLeftText += `${fullWeeks} week${fullWeeks !== 1 ? 's' : ''}`;
+                if (remainingDays > 0) weeksLeftText += `${fullWeeks > 0 ? ', ' : ''}${remainingDays} day${remainingDays !== 1 ? 's' : ''}`;
+                if (weeksLeftText === "") weeksLeftText = (daysLeftInMonth === 0 && fullWeeks === 0) ? "Today is last day!" : (daysLeftInMonth === 1 ? "1 day" : `${daysLeftInMonth} days`);
+            }
+            weeksLeftMonthEl.textContent = weeksLeftText || "0 days";
+            monthsLeftYearEl.textContent = `${11 - now.getMonth()} month${(11 - now.getMonth()) !== 1 ? 's' : ''}`;
+        }
+
+        // --- DASHBOARD METRICS (CreateMode) ---
+        function updateDashboardMetrics() {
+            let valueToday = 0, valueMonth = 0, upcomingValue = 0;
+            const todayD = new Date(); todayD.setHours(0,0,0,0);
+            const firstDayCurrentMonth = new Date(todayD.getFullYear(), todayD.getMonth(), 1);
+
+            userData.goals.forEach(goal => {
+                if (goal.type === 'project' && !goal.isArchived) {
+                    const totalVal = parseFloat(goal.totalValue) || 0;
+                    let earnedVal = 0;
+
+                    (goal.tasks || []).forEach(task => {
+                        (task.subtasks || []).forEach(subtask => {
+                             if (subtask.isCompleted && subtask.completionTimestamp) {
+                                const subCompDate = new Date(subtask.completionTimestamp); subCompDate.setHours(0,0,0,0);
+                                const subV = parseFloat(subtask.subtaskValue) || 0;
+                                earnedVal += subV;
+                                if (subCompDate.getTime() === todayD.getTime()) valueToday += subV;
+                                if (subCompDate >= firstDayCurrentMonth) valueMonth += subV;
+                            }
+                        });
+                        if (task.subtasks.length === 0 && task.isCompleted && task.completionTimestamp) {
+                             const taskCompDate = new Date(task.completionTimestamp); taskCompDate.setHours(0,0,0,0);
+                             const taskV = parseFloat(task.taskValue) || 0;
+                             earnedVal += taskV;
+                             if (taskCompDate.getTime() === todayD.getTime()) valueToday += taskV;
+                             if (taskCompDate >= firstDayCurrentMonth) valueMonth += taskV;
+                        }
+                    });
+                     goal.valueEarned = Math.max(0, Math.min(earnedVal, totalVal)); // Update earned value
+                    
+                    if (!goal.isCompleted) {
+                        upcomingValue += (totalVal - goal.valueEarned);
+                    }
+                }
+            });
+            metricValueToday.textContent = `$${valueToday.toFixed(0)}`;
+            metricValueMonth.textContent = `$${valueMonth.toFixed(0)}`;
+            metricUpcomingValue.textContent = `$${upcomingValue.toFixed(0)}`;
+        }
+        
+        // --- GOAL/PROJECT MODAL LOGIC ---
+        function openGoalFormModal(goalToEdit = null) {
+            populateTemplateSelect(projectTemplateSelect, true); // For project type
+            if (goalToEdit) {
+                goalModalTitle.textContent = 'Edit Quest or Goal';
+                goalIdInput.value = goalToEdit.id;
+                goalTypeSelect.value = goalToEdit.type;
+                goalTitleInput.value = goalToEdit.title;
+
+                if (goalToEdit.type === 'simple') {
+                    goalDescriptionInput.value = goalToEdit.description || '';
+                    goalDeadlineInput.value = goalToEdit.deadline || '';
+                } else { // 'project'
+                    projectDeadlineInput.value = goalToEdit.deadline || '';
+                    projectValueInput.value = goalToEdit.totalValue || '0';
+                    modalTasksContainer.innerHTML = '';
+                     (goalToEdit.tasks || []).forEach(taskData => addModalTaskEditor(taskData, 'modalTasksContainer', false)); // For editing project
+                }
+            } else {
+                goalModalTitle.textContent = 'Add New Quest or Goal';
+                goalIdInput.value = '';
+                goalTypeSelect.value = 'simple'; // Default to simple
+                goalTitleInput.value = '';
+                goalDescriptionInput.value = '';
+                goalDeadlineInput.value = getTodayString(); // Default for simple
+                projectDeadlineInput.value = getTodayString(); // Default for project
+                projectValueInput.value = '100'; // Default for project
+                modalTasksContainer.innerHTML = ''; // Clear for new project
+                handleTemplateChangeForModal(); // Populate tasks if default template selected for project
+            }
+            handleGoalTypeChange(); // Show/hide fields based on type
+            goalFormModal.style.display = 'flex'; 
+            goalTitleInput.focus();
+        }
+
+        function closeGoalFormModal() { goalFormModal.style.display = 'none'; }
+
+        goalTypeSelect.addEventListener('change', handleGoalTypeChange);
+        function handleGoalTypeChange() {
+            if (goalTypeSelect.value === 'simple') {
+                simpleGoalFieldsContainer.style.display = 'block';
+                projectGoalFieldsContainer.style.display = 'none';
+            } else { // project
+                simpleGoalFieldsContainer.style.display = 'none';
+                projectGoalFieldsContainer.style.display = 'block';
+                if (!goalIdInput.value) { // Only load template for new projects
+                    handleTemplateChangeForModal();
+                }
+            }
+        }
+        projectTemplateSelect.addEventListener('change', () => {
+             if (!goalIdInput.value) handleTemplateChangeForModal(); // Only for new projects
+        });
+        
+        function handleTemplateChangeForModal() {
+            modalTasksContainer.innerHTML = '';
+            const templateId = projectTemplateSelect.value;
+            if (templateId) {
+                const template = userData.templates.find(t => t.id === templateId);
+                if (template && template.tasks) {
+                    template.tasks.forEach(taskData => addModalTaskEditor({
+                        ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null,
+                        subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0}))
+                    }, 'modalTasksContainer', false)); // isTemplate=false as these are new instances for a project
+                }
+            } else if (!goalIdInput.value) { // For "No Template" on new project
+                 addModalTaskEditor(null, 'modalTasksContainer', false);
+            }
+        }
+        
+        function addModalTaskEditor(taskData, containerId, isTemplateEditor) {
+            const editorContainer = document.getElementById(containerId);
+            const taskId = taskData ? taskData.id : generateId();
+            const taskDesc = taskData ? taskData.description : '';
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'modal-task-editor-item';
+            taskDiv.dataset.taskId = taskId; 
+            taskDiv.innerHTML = `
+                <div class="modal-task-editor-header">
+                    <input type="text" class="modal-task-desc-input" value="${taskDesc}" placeholder="Main Task Description">
+                    <button type="button" class="modal-icon-only-btn danger remove-modal-task-btn" title="Remove Task"><i class="fas fa-trash-alt"></i></button>
+                    <button type="button" class="modal-icon-only-btn add-modal-subtask-btn" title="Add Subtask"><i class="fas fa-plus-circle"></i></button>
+                </div>
+                <div class="modal-subtasks-list" style="padding-top: 5px;"></div>`;
+            editorContainer.appendChild(taskDiv);
+
+            const subtasksListEl = taskDiv.querySelector('.modal-subtasks-list');
+            if (taskData && taskData.subtasks) {
+                taskData.subtasks.forEach(subtaskData => addModalSubtaskEditor(subtasksListEl, subtaskData));
+            }
+            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove();
+            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(subtasksListEl);
+        }
+
+        function addModalSubtaskEditor(parentListEl, subtaskData) {
+            const subtaskId = subtaskData ? subtaskData.id : generateId();
+            const subtaskDesc = subtaskData ? subtaskData.description : '';
+            const subtaskDiv = document.createElement('div');
+            subtaskDiv.className = 'modal-subtask-editor-item';
+            subtaskDiv.dataset.subtaskId = subtaskId; 
+            subtaskDiv.innerHTML = `
+                <input type="text" class="modal-subtask-desc-input" value="${subtaskDesc}" placeholder="Subtask Description">
+                <button type="button" class="modal-icon-only-btn danger remove-modal-subtask-btn" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
+            parentListEl.appendChild(subtaskDiv);
+            subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+        addModalMainTaskBtn.onclick = () => addModalTaskEditor(null, 'modalTasksContainer', false);
+        
+        // --- SAVE GOAL/PROJECT ---
+        saveGoalBtnModal.onclick = function saveGoal() {
+            const id = goalIdInput.value || generateId();
+            const title = goalTitleInput.value.trim();
+            const type = goalTypeSelect.value;
+
+            if (!title) { showToast('Title is required.', 'warning'); goalTitleInput.focus(); return; }
+
+            let goalData = {
+                id, title, type,
+                status: 'todo', 
+                isImportant: false, // Default, can be changed later
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (type === 'simple') {
+                goalData.description = goalDescriptionInput.value.trim();
+                goalData.deadline = goalDeadlineInput.value || null;
+            } else { // project
+                goalData.deadline = projectDeadlineInput.value || null;
+                goalData.totalValue = parseFloat(projectValueInput.value) || 0;
+                goalData.valueEarned = 0;
+                goalData.isArchived = false;
+                goalData.priority = false; // Separate from isImportant for projects
+                goalData.ui_isExpanded = true;
+                goalData.creationTimestamp = Date.now();
+                goalData.tasks = [];
+                document.querySelectorAll('#modalTasksContainer .modal-task-editor-item').forEach(taskDiv => {
+                    const taskDesc = taskDiv.querySelector('.modal-task-desc-input').value.trim();
+                    if (taskDesc) {
+                        const mainTask = {
+                            id: taskDiv.dataset.taskId || generateId(), description: taskDesc, 
+                            isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: [] 
+                        };
+                        taskDiv.querySelectorAll('.modal-subtask-editor-item').forEach(subtaskDiv => {
+                            const subtaskDesc = subtaskDiv.querySelector('.modal-subtask-desc-input').value.trim();
+                            if (subtaskDesc) mainTask.subtasks.push({ 
+                                id: subtaskDiv.dataset.subtaskId || generateId(), description: subtaskDesc, 
+                                isCompleted: false, completionTimestamp: null, subtaskValue: 0 
+                            });
+                        });
+                        goalData.tasks.push(mainTask);
+                    }
+                });
+                distributeValueToTasks(goalData);
+            }
+
+            const existingGoalIndex = userData.goals.findIndex(g => g.id === id);
+            if (existingGoalIndex > -1) { // Editing
+                const oldGoal = userData.goals[existingGoalIndex];
+                // Preserve important/priority, status, and specific project values not directly edited in form
+                goalData.isImportant = oldGoal.isImportant;
+                goalData.status = oldGoal.status;
+                goalData.createdAt = oldGoal.createdAt; // Preserve original creation date
+                 if (type === 'project') {
+                    goalData.priority = oldGoal.priority;
+                    goalData.valueEarned = oldGoal.valueEarned; // Keep earned value
+                    goalData.isArchived = oldGoal.isArchived;
+                    goalData.ui_isExpanded = oldGoal.ui_isExpanded;
+                    goalData.creationTimestamp = oldGoal.creationTimestamp;
+
+                    // Preserve completion status of tasks/subtasks if they still exist
+                    if (oldGoal.tasks && goalData.tasks) {
+                        const oldTasksMap = new Map(oldGoal.tasks.map(t => [t.id, t]));
+                        goalData.tasks.forEach(newTask => {
+                            const oldTaskInstance = oldTasksMap.get(newTask.id);
+                            if (oldTaskInstance) {
+                                newTask.isCompleted = oldTaskInstance.isCompleted;
+                                newTask.completionTimestamp = oldTaskInstance.completionTimestamp;
+                                if (newTask.subtasks && oldTaskInstance.subtasks) {
+                                    const oldSubtasksMap = new Map(oldTaskInstance.subtasks.map(st => [st.id, st]));
+                                    newTask.subtasks.forEach(newSubtask => {
+                                        const oldSubtaskInstance = oldSubtasksMap.get(newSubtask.id);
+                                        if (oldSubtaskInstance) {
+                                            newSubtask.isCompleted = oldSubtaskInstance.isCompleted;
+                                            newSubtask.completionTimestamp = oldSubtaskInstance.completionTimestamp;
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    distributeValueToTasks(goalData); // Re-distribute value in case tasks changed
+                    recalculateProjectValueEarned(goalData); // Recalculate based on current task states
+                }
+                userData.goals[existingGoalIndex] = goalData;
+                showToast(`"${goalData.title}" updated.`, 'info');
+            } else { // Adding new
+                userData.goals.push(goalData);
+                showToast(`"${goalData.title}" added.`, 'success');
+            }
+            saveUserData();
+            renderAll();
+            closeGoalFormModal();
+        };
+
+        // --- RENDER GOAL/PROJECT CARDS ---
+        function calculateDaysLeft(deadlineString) { /* From Goalio, unchanged */ }
+
+        function renderGoalCard(goal) {
+            const card = document.createElement('div');
+            card.className = `goal-card type-${goal.type} status-${goal.status}`;
+            if (goal.isArchived) card.classList.add('is-archived');
+            
+            const deadlineInfo = calculateDaysLeft(goal.deadline);
+            if (goal.status !== 'done' && deadlineInfo.isOverdue && !goal.isArchived) {
+                card.classList.add('is-overdue');
+            }
+            card.setAttribute('data-goal-id', String(goal.id));
+
+            let headerHtml = '';
+            let bodyHtml = '';
+            let simpleGoalActionsHtml = ''; // For "Mark Done" button on simple goals
+
+            // Card Header Right Actions (Star, Toggle Expand for Projects, Ellipsis)
+            const starIconClass = (goal.isImportant || (goal.type === 'project' && goal.priority)) ? 'fas fa-star' : 'far fa-star';
+            const starButtonClass = (goal.isImportant || (goal.type === 'project' && goal.priority)) ? 'is-important' : '';
+            const starTitle = (goal.isImportant || (goal.type === 'project' && goal.priority)) ? 'Unmark as important/priority' : 'Mark as important/priority';
+
+            let cardHeaderActions = `
+                <button class="card-icon-btn star-btn ${starButtonClass}" data-action="toggleImportance" title="${starTitle}">
+                    <i class="${starIconClass}"></i>
+                </button>`;
+            
+            if (goal.type === 'project') {
+                cardHeaderActions += `
+                    <button class="card-icon-btn toggle-tasks-btn" data-action="toggleTasks" title="Toggle Tasks View">
+                        <i class="fas ${goal.ui_isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
+                    </button>`;
+            }
+            cardHeaderActions += `
+                <button class="card-icon-btn ellipsis-btn" data-action="toggleDropdown" title="More Actions">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="actions-dropdown-menu">
+                    <button data-action="edit"><i class="fas fa-edit"></i> Edit</button>
+                    ${goal.type === 'project' ? 
+                        (goal.isArchived 
+                            ? `<button data-action="unarchive"><i class="fas fa-folder-open"></i> Unarchive</button>`
+                            : `<button data-action="archive"><i class="fas fa-archive"></i> Archive</button>`)
+                        : ''}
+                    <button data-action="delete" class="danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                </div>`;
+
+
+            if (goal.type === 'simple') {
+                headerHtml = `
+                    <div class="goal-card-header-flex">
+                        <div class="goal-title-container">
+                            <h4 class="goal-title" data-action="edit">${goal.title}</h4>
+                        </div>
+                        <div class="goal-card-header-actions">${cardHeaderActions}</div>
+                    </div>`;
+                if (goal.description) {
+                    bodyHtml += `<p class="goal-description">${goal.description.replace(/\n/g, '<br>')}</p>`;
+                }
+                let deadlineHtml = '';
+                if (goal.deadline) {
+                     deadlineHtml = `<span class="goal-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">
+                        <span class="goal-countdown-part"><i class="fas fa-calendar-alt"></i> ${deadlineInfo.deadlineFormatted}</span>
+                        <span class="goal-countdown-part">&bull; <i class="fas fa-hourglass-half"></i> <span class="goal-countdown-text">${deadlineInfo.countdownText}</span></span>
+                    </span>`;
+                }
+                if (deadlineHtml) bodyHtml += `<div class="goal-meta">${deadlineHtml}</div>`;
+                
+                const doneButtonText = goal.status === 'done' ? 'Re-open' : 'Mark Done';
+                const doneButtonIcon = goal.status === 'done' ? 'fa-undo-alt' : 'fa-check-circle';
+                simpleGoalActionsHtml = `
+                    <div class="goal-actions">
+                        <button class="goal-action-btn toggle-done ${goal.status === 'done' ? 'is-done' : ''}" data-action="toggleSimpleDone" title="${doneButtonText}">
+                            <i class="fas ${doneButtonIcon}"></i> ${doneButtonText}
+                        </button>
+                    </div>`;
+
+            } else { // project type
+                headerHtml = `
+                    <div class="goal-card-header-flex">
+                        <input type="checkbox" class="goal-card-main-checkbox" data-action="toggleProjectComplete" ${goal.isCompleted ? 'checked' : ''} ${goal.isArchived ? 'disabled' : ''} title="Mark Project Complete/Active">
+                        <div class="goal-title-container">
+                             <h4 class="project-title-text" data-action="edit">${goal.title}</h4>
+                        </div>
+                        <div class="goal-card-header-actions">${cardHeaderActions}</div>
+                    </div>`;
+                
+                bodyHtml += `<div class="project-value-bar">Value: $${(parseFloat(goal.valueEarned) || 0).toFixed(0)} / $${(parseFloat(goal.totalValue) || 0).toFixed(0)}</div>`;
+                
+                let deadlineHtml = '';
+                 if (goal.deadline) {
+                     deadlineHtml = `<div class="goal-meta"><span class="goal-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">
+                        <span class="goal-countdown-part"><i class="fas fa-calendar-alt"></i> ${deadlineInfo.deadlineFormatted}</span>
+                        <span class="goal-countdown-part">&bull; <i class="fas fa-hourglass-half"></i> <span class="goal-countdown-text">${deadlineInfo.countdownText}</span></span>
+                    </span></div>`;
+                }
+                bodyHtml += deadlineHtml;
+
+                const progressPercent = (parseFloat(goal.totalValue) || 0) > 0 ? ((parseFloat(goal.valueEarned) || 0) / (parseFloat(goal.totalValue) || 0)) * 100 : (goal.isCompleted ? 100 : 0);
+                bodyHtml += `
+                    <div class="project-progress-bar-container" title="Progress: ${progressPercent.toFixed(0)}%">
+                        <div class="project-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div>
+                    </div>
+                    <div class="tasks-container ${goal.ui_isExpanded ? 'expanded' : ''}">
+                        ${(goal.tasks || []).map(task => createTaskElement(task, goal.id, goal.isArchived)).join('')}
+                    </div>`;
+            }
+
+            card.innerHTML = headerHtml + bodyHtml + simpleGoalActionsHtml;
+            
+            // Event Listeners for card actions (delegated if possible, or direct)
+            card.querySelectorAll('[data-action]').forEach(el => {
+                el.addEventListener('click', (e) => handleCardAction(e, goal.id));
+            });
+
+            return card;
+        }
+
+        function createTaskElement(task, goalId, isGoalArchived) {
+            let valueDisplay = '';
+            if (task.taskValue !== undefined && task.taskValue > 0) {
+                 valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
+            }
+            return `
+                <div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                    <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isGoalArchived ? 'disabled' : ''} title="Complete task: ${task.description}">
+                    <span class="task-description-text">${task.description}</span>
+                    ${valueDisplay}
+                </div>
+                ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, goalId, isGoalArchived)).join('')}`;
+        }
+
+        function createSubtaskElement(subtask, mainTaskId, goalId, isGoalArchived) {
+            return `
+                <div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
+                    <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isGoalArchived ? 'disabled' : ''} title="Complete subtask: ${subtask.description}">
+                    <span class="task-description-text">${subtask.description}</span>
+                </div>`;
+        }
+
+        // Centralized card action handler
+        function handleCardAction(event, goalId) {
+            const action = event.currentTarget.dataset.action;
+            const goal = userData.goals.find(g => g.id === goalId);
+            if (!goal) return;
+
+            switch(action) {
+                case 'edit': editGoal(goalId); break;
+                case 'delete': deleteGoalConfirmation(goalId); break;
+                case 'toggleImportance': toggleImportance(goalId); break;
+                case 'toggleSimpleDone': toggleSimpleGoalDoneStatus(goalId); break; // Simple goal done
+                case 'toggleProjectComplete': toggleProjectCompleteStatus(goalId, event.currentTarget.checked); break; // Project done
+                case 'toggleTasks': toggleTasksExpansion(goalId, event.currentTarget); break; // Project tasks expand/collapse
+                case 'archive': archiveGoal(goalId); break;
+                case 'unarchive': unarchiveGoal(goalId); break;
+                case 'toggleDropdown': 
+                    event.stopPropagation();
+                    const dropdown = event.currentTarget.closest('.goal-card').querySelector('.actions-dropdown-menu');
+                    document.querySelectorAll('.actions-dropdown-menu').forEach(d => { if (d !== dropdown) d.style.display = 'none';});
+                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                    break;
+            }
+             // Close dropdown if action was from within it (except toggleDropdown itself)
+            if (action !== 'toggleDropdown' && event.currentTarget.closest('.actions-dropdown-menu')) {
+                 event.currentTarget.closest('.actions-dropdown-menu').style.display = 'none';
+            }
+        }
+         // Listener to close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.ellipsis-btn') && !event.target.closest('.actions-dropdown-menu')) {
+                document.querySelectorAll('.actions-dropdown-menu').forEach(d => d.style.display = 'none');
+            }
+            if (event.target.classList.contains('modal')) { // Close modals on backdrop click
+                const modalId = event.target.id;
+                if (modalId && document.getElementById(modalId)) {
+                    if (modalId !== 'customConfirmModal') { // Don't close confirm on backdrop
+                         closeModalById(modalId);
+                    }
+                }
+            }
+        });
+
+
+        function renderAllGoals() { /* Adapted from Goalio for FLIP */ } // placeholder, full function below
+        
+        // Placeholder for the full renderAllGoals function that manages FLIP animations
+        // and distributes goals to Active, Completed, Archived lists.
+        function renderAllGoals() {
+            const firstPassPositions = new Map();
+            [activeGoalsList, completedGoalsList, archivedGoalsList].forEach(list => {
+                Array.from(list.children).forEach(cardElement => {
+                    const goalId = cardElement.dataset.goalId;
+                    if (goalId && !cardElement.classList.contains('exiting')) {
+                        firstPassPositions.set(goalId, cardElement.getBoundingClientRect());
+                    }
+                });
+            });
+
+            activeGoalsList.innerHTML = ''; 
+            completedGoalsList.innerHTML = '';
+            archivedGoalsList.innerHTML = '';
+
+            const active = [];
+            const completed = [];
+            const archived = [];
+
+            userData.goals.forEach(goal => {
+                if (goal.isArchived) archived.push(goal);
+                else if (goal.status === 'done') completed.push(goal);
+                else active.push(goal);
+            });
+
+            // Sort active: Important/Priority first, then by deadline (sooner first), then by creation
+            active.sort((a,b) => {
+                const aImp = a.isImportant || (a.type === 'project' && a.priority);
+                const bImp = b.isImportant || (b.type === 'project' && b.priority);
+                if (aImp && !bImp) return -1;
+                if (!aImp && bImp) return 1;
+                
+                const aDeadlineInfo = calculateDaysLeft(a.deadline);
+                const bDeadlineInfo = calculateDaysLeft(b.deadline);
+                if (aDeadlineInfo.days !== bDeadlineInfo.days) return aDeadlineInfo.days - bDeadlineInfo.days;
+                
+                const aCreated = a.type === 'project' ? (a.creationTimestamp || 0) : new Date(a.createdAt).getTime();
+                const bCreated = b.type === 'project' ? (b.creationTimestamp || 0) : new Date(b.createdAt).getTime();
+                return aCreated - bCreated;
+            });
+
+            // Sort completed by updated/completion timestamp (most recent first)
+            completed.sort((a,b) => (b.completionTimestamp || new Date(b.updatedAt).getTime()) - (a.completionTimestamp || new Date(a.updatedAt).getTime()));
+            // Sort archived by updated/completion timestamp (most recent first)
+            archived.sort((a,b) => (b.completionTimestamp || new Date(b.updatedAt).getTime()) - (a.completionTimestamp || new Date(a.updatedAt).getTime()));
+
+
+            const processList = (goals, listElement) => {
+                if (goals.length === 0) {
+                    listElement.innerHTML = `<p class="no-items-message">${listElement === activeGoalsList ? 'No active quests or goals. Time to start something new!' : (listElement === completedGoalsList ? 'No completed items yet.' : 'No archived items.')}</p>`;
+                } else {
+                    goals.forEach(goal => {
+                        const card = renderGoalCard(goal); 
+                        listElement.appendChild(card);
+                    });
+                }
+            };
+            processList(active, activeGoalsList);
+            processList(completed, completedGoalsList);
+            processList(archived, archivedGoalsList);
+            
+            // FLIP Animation Logic (simplified, apply to all lists)
+            [activeGoalsList, completedGoalsList, archivedGoalsList].forEach(list => {
+                Array.from(list.children).forEach(cardElement => {
+                    const goalId = cardElement.dataset.goalId;
+                    if (!goalId) return;
+                    const oldRect = firstPassPositions.get(goalId);
+                    if (!oldRect) { // Entering
+                        cardElement.classList.add('entering');
+                        requestAnimationFrame(() => { 
+                            cardElement.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                            cardElement.classList.remove('entering'); 
+                            cardElement.addEventListener('transitionend', () => cardElement.style.transition = '', { once: true });
+                        });
+                    } else { // Moving
+                        const newRect = cardElement.getBoundingClientRect();
+                        const deltaX = oldRect.left - newRect.left;
+                        const deltaY = oldRect.top - newRect.top;
+                        if (deltaX !== 0 || deltaY !== 0) {
+                            cardElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                            cardElement.style.transition = 'none'; 
+                            requestAnimationFrame(() => { 
+                                cardElement.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                                cardElement.style.transform = 'translate(0, 0)';
+                                cardElement.addEventListener('transitionend', () => {cardElement.style.transform = ''; cardElement.style.transition = '';}, { once: true });
+                            });
+                        }
+                    }
+                });
+            });
+            activeGoalCountHeader.textContent = `(${active.length} Active)`;
+        }
+
+
+        // --- GOAL/PROJECT ACTIONS (Importance, Status, Archive, Delete) ---
+        function editGoal(goalId) {
+            const goal = userData.goals.find(g => g.id === goalId);
+            if (goal) openGoalFormModal(goal);
+        }
+        function toggleImportance(goalId) {
+            const goal = userData.goals.find(g => g.id === goalId);
+            if (goal) {
+                if (goal.type === 'project') goal.priority = !goal.priority;
+                else goal.isImportant = !goal.isImportant;
+                goal.updatedAt = new Date().toISOString();
+                saveUserData(); renderAllGoals(); 
+            }
+        }
+        function toggleSimpleGoalDoneStatus(goalId) {
+            const goal = userData.goals.find(g => g.id === goalId && g.type === 'simple');
+            if (goal) {
+                goal.status = (goal.status === 'done') ? 'todo' : 'done';
+                goal.updatedAt = new Date().toISOString();
+                if (goal.status === 'done') goal.completionTimestamp = Date.now();
+                else goal.completionTimestamp = null;
+                saveUserData(); renderAll(); // Full re-render to move between lists
+            }
+        }
+        function toggleProjectCompleteStatus(goalId, isCompleted) {
+            const project = userData.goals.find(p => p.id === goalId && p.type === 'project');
+            if (!project || project.isArchived) return;
+
+            const oldCompletedState = project.isCompleted;
+            project.isCompleted = isCompleted;
+            project.status = isCompleted ? 'done' : 'todo';
+            project.updatedAt = new Date().toISOString();
+
+            if (isCompleted) {
+                project.completionTimestamp = project.completionTimestamp || Date.now();
+                project.valueEarned = parseFloat(project.totalValue) || 0;
+                (project.tasks || []).forEach(task => { 
+                    task.isCompleted = true; task.completionTimestamp = task.completionTimestamp || Date.now();
+                    (task.subtasks || []).forEach(sub => { sub.isCompleted = true; sub.completionTimestamp = sub.completionTimestamp || Date.now(); }); 
+                });
+                if (!oldCompletedState) showToast(`Quest "${project.title}" completed! +$${project.valueEarned.toFixed(0)} earned.`, 'success', 4000); 
+            } else { 
+                project.completionTimestamp = null;
+                // valueEarned will be recalculated. Tasks remain as they were or user can uncheck them.
+                if (oldCompletedState) showToast(`Quest "${project.title}" reactivated.`, 'info');
+            }
+            saveUserData();
+            renderAll(); // Full re-render for list changes and dashboard update
+        }
+
+        function toggleTasksExpansion(goalId, buttonElement) {
+            const project = userData.goals.find(p => p.id === goalId && p.type === 'project');
+            if (project) {
+                project.ui_isExpanded = !project.ui_isExpanded;
+                const tasksContainer = buttonElement.closest('.goal-card').querySelector('.tasks-container');
+                tasksContainer.classList.toggle('expanded', project.ui_isExpanded);
+                buttonElement.querySelector('i').className = `fas ${project.ui_isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`;
+                // Optional: Save scroll position if implementing
+                saveUserData();
+            }
+        }
+        function archiveGoal(goalId) {
+            const goal = userData.goals.find(g => g.id === goalId && g.type === 'project');
+            if (goal) {
+                goal.isArchived = true;
+                goal.updatedAt = new Date().toISOString();
+                saveUserData(); renderAll();
+                showToast(`"${goal.title}" archived.`, 'info');
+            }
+        }
+        function unarchiveGoal(goalId) {
+            const goal = userData.goals.find(g => g.id === goalId && g.type === 'project');
+            if (goal) {
+                goal.isArchived = false;
+                goal.updatedAt = new Date().toISOString();
+                saveUserData(); renderAll();
+                showToast(`"${goal.title}" unarchived.`, 'info');
+            }
+        }
+        function deleteGoalConfirmation(goalId) {
+            const goal = userData.goals.find(g => g.id === goalId);
+            if (goal) {
+                goalIdToDeleteInput.value = goalId; // For the confirm modal
+                showCustomConfirm(
+                    `Are you sure you want to delete "${goal.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}"? This action cannot be undone.`,
+                    "Confirm Deletion",
+                    () => animateThenRemoveGoal(goalId) 
+                );
+            }
+        }
+        function animateThenRemoveGoal(goalId) { /* From Goalio, adapted */
+            const listElements = [activeGoalsList, completedGoalsList, archivedGoalsList];
+            let cardElement = null;
+            for (const list of listElements) {
+                cardElement = list.querySelector(`.goal-card[data-goal-id="${goalId}"]`);
+                if (cardElement) break;
+            }
+
+            if (cardElement) {
+                cardElement.classList.add('exiting');
+                cardElement.addEventListener('animationend', () => {
+                    userData.goals = userData.goals.filter(g => g.id !== goalId);
+                    saveUserData(); renderAll(); 
+                }, { once: true });
+            } else { // Fallback
+                userData.goals = userData.goals.filter(g => g.id !== goalId);
+                saveUserData(); renderAll();
+            }
+        }
+
+
+        // --- TASK & SUBTASK LOGIC (from CreateMode, adapted) ---
+        function distributeValueToTasks(projectGoal) { /* Logic from CreateMode */ } // Full function below
+        function recalculateProjectValueEarned(projectGoal) { /* Logic from CreateMode */ } // Full function below
+        function toggleTaskComplete(goalId, taskId, isCompleted, checkboxElement) { /* From CreateMode, adapted */ } // Full function below
+        function toggleSubtaskComplete(goalId, mainTaskId, subtaskId, isCompleted, checkboxElement) { /* From CreateMode, adapted */ } // Full function below
+
+        function distributeValueToTasks(projectGoal) {
+            if (projectGoal.type !== 'project' || !projectGoal.tasks) return;
+            const mainTasks = projectGoal.tasks; 
+            const mainTaskCount = mainTasks.length;
+            const totalVal = parseFloat(projectGoal.totalValue) || 0;
+
+            if (mainTaskCount === 0 || totalVal === 0) {
+                mainTasks.forEach(task => { 
+                    task.taskValue = 0; 
+                    (task.subtasks || []).forEach(sub => sub.subtaskValue = 0); 
+                }); return;
+            }
+            const valuePerMainTask = totalVal / mainTaskCount;
+            mainTasks.forEach(task => {
+                task.taskValue = valuePerMainTask;
+                if (task.subtasks && task.subtasks.length > 0) {
+                    const valuePerSubtask = task.taskValue / task.subtasks.length;
+                    task.subtasks.forEach(sub => sub.subtaskValue = valuePerSubtask);
+                }
+            });
+        }
+        function recalculateProjectValueEarned(projectGoal) {
+            if (projectGoal.type !== 'project') return;
+            let newEarnedValue = 0;
+            (projectGoal.tasks || []).forEach(task => {
+                if (task.subtasks && task.subtasks.length > 0) {
+                    task.subtasks.forEach(subtask => {
+                        if (subtask.isCompleted) newEarnedValue += (parseFloat(subtask.subtaskValue) || 0);
+                    });
+                } else if (task.isCompleted) {
+                    newEarnedValue += (parseFloat(task.taskValue) || 0);
+                }
+            });
+            projectGoal.valueEarned = Math.max(0, Math.min(newEarnedValue, parseFloat(projectGoal.totalValue) || 0));
+        }
+
+        // Event delegation for task/subtask checkboxes
+        document.addEventListener('change', function(event) {
+            const target = event.target;
+            if (target.matches('.task-checkbox')) {
+                const goalId = target.closest('.goal-card').dataset.goalId;
+                const taskId = target.dataset.taskId;
+                toggleTaskComplete(goalId, taskId, target.checked, target);
+            } else if (target.matches('.subtask-checkbox')) {
+                const goalId = target.closest('.goal-card').dataset.goalId;
+                const mainTaskId = target.dataset.mainTaskId;
+                const subtaskId = target.dataset.subtaskId;
+                toggleSubtaskComplete(goalId, mainTaskId, subtaskId, target.checked, target);
+            }
+        });
+
+
+        function toggleTaskComplete(goalId, taskId, isCompleted, checkboxElement) {
+            const project = userData.goals.find(p => p.id === goalId && p.type === 'project');
+            if (!project || project.isArchived) return;
+            const task = (project.tasks || []).find(t => t.id === taskId);
+            if (!task) return;
+
+            const wasTaskPreviouslyCompleted = task.isCompleted;
+            task.isCompleted = isCompleted;
+            if (isCompleted && !wasTaskPreviouslyCompleted) task.completionTimestamp = Date.now();
+            else if (!isCompleted) task.completionTimestamp = null;
+            
+            let valueChangeForToast = 0;
+            (task.subtasks || []).forEach(sub => {
+                const wasSubtaskPreviouslyCompleted = sub.isCompleted;
+                sub.isCompleted = isCompleted;
+                if (isCompleted && !wasSubtaskPreviouslyCompleted) {
+                    sub.completionTimestamp = sub.completionTimestamp || Date.now();
+                    valueChangeForToast += (parseFloat(sub.subtaskValue) || 0);
+                } else if (!isCompleted) sub.completionTimestamp = null;
+            });
+            if ((task.subtasks || []).length === 0 && isCompleted && !wasTaskPreviouslyCompleted) {
+                 valueChangeForToast = parseFloat(task.taskValue) || 0;
+            }
+
+            recalculateProjectValueEarned(project);
+            checkAndAutoUpdateProjectStatus(project);
+            
+            if (isCompleted && !wasTaskPreviouslyCompleted) {
+                const message = valueChangeForToast > 0 ? `Task "${task.description}" completed! +$${valueChangeForToast.toFixed(0)}` : `Task "${task.description}" completed!`;
+                showToast(message, 'success');
+            } else if (!isCompleted && wasTaskPreviouslyCompleted) {
+                 showToast(`Task "${task.description}" un-checked.`, 'info');
+            }
+            saveUserData();
+            renderAll(); // Full re-render needed if project status changes or values update
+        }
+
+        function toggleSubtaskComplete(goalId, mainTaskId, subtaskId, isCompleted, checkboxElement) {
+            const project = userData.goals.find(p => p.id === goalId && p.type === 'project');
+            if (!project || project.isArchived) return;
+            const mainTask = (project.tasks || []).find(t => t.id === mainTaskId);
+            if (!mainTask) return;
+            const subtask = (mainTask.subtasks || []).find(s => s.id === subtaskId);
+            if (!subtask) return;
+
+            const wasSubtaskPreviouslyCompleted = subtask.isCompleted;
+            subtask.isCompleted = isCompleted;
+            if (isCompleted && !wasSubtaskPreviouslyCompleted) subtask.completionTimestamp = Date.now();
+            else if (!isCompleted) subtask.completionTimestamp = null;
+
+            if (isCompleted && !wasSubtaskPreviouslyCompleted) {
+                const subValue = parseFloat(subtask.subtaskValue) || 0;
+                const message = subValue > 0 ? `Subtask "${subtask.description}" completed! +$${subValue.toFixed(0)}` : `Subtask "${subtask.description}" completed!`;
+                showToast(message, 'success');
+            } else if (!isCompleted && wasSubtaskPreviouslyCompleted) {
+                showToast(`Subtask "${subtask.description}" un-checked.`, 'info');
+            }
+
+            const wasMainTaskPreviouslyCompleted = mainTask.isCompleted;
+            const allSubtasksDone = (mainTask.subtasks || []).every(s => s.isCompleted);
+            if (allSubtasksDone && !wasMainTaskPreviouslyCompleted) {
+                mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now();
+                showToast(`Task "${mainTask.description}" completed! (All subtasks done)`, 'success');
+            } else if (!allSubtasksDone && wasMainTaskPreviouslyCompleted) {
+                mainTask.isCompleted = false; mainTask.completionTimestamp = null;
+                showToast(`Task "${mainTask.description}" reactivated (subtask un-checked).`, 'info');
+            } else {
+                 mainTask.isCompleted = allSubtasksDone; // Ensure state consistency
+            }
+            
+            recalculateProjectValueEarned(project);
+            checkAndAutoUpdateProjectStatus(project);
+            saveUserData();
+            renderAll();
+        }
+
+        function checkAndAutoUpdateProjectStatus(project) {
+            if (project.type !== 'project' || project.isArchived) return;
+            const oldProjectCompletedState = project.isCompleted;
+            const allTasksEffectivelyDone = (project.tasks || []).length > 0 && (project.tasks || []).every(task => {
+                if (task.subtasks && task.subtasks.length > 0) return task.subtasks.every(st => st.isCompleted);
+                return task.isCompleted;
+            });
+
+            if (allTasksEffectivelyDone && !project.isCompleted) {
+                project.isCompleted = true; project.status = 'done';
+                project.completionTimestamp = project.completionTimestamp || Date.now();
+                project.valueEarned = parseFloat(project.totalValue); 
+                if (!oldProjectCompletedState) showToast(`Quest "${project.title}" auto-completed!`, 'success', 4000);
+            } else if (!allTasksEffectivelyDone && project.isCompleted) {
+                project.isCompleted = false; project.status = 'todo';
+                project.completionTimestamp = null;
+                // Value earned is recalculated, not reset entirely.
+                if (oldProjectCompletedState) showToast(`Quest "${project.title}" reactivated (task incomplete).`, 'info');
+            }
+        }
+
+
+        // --- SETTINGS MODAL & TEMPLATES (from CreateMode, adapted) ---
+        openSettingsBtn.onclick = () => {
+            loadTemplateEditor(); renderTemplateList();
+            settingsModal.style.display = 'flex';
+            templateNameInput.focus();
+        };
+        
+        function loadTemplateEditor(templateId = null) { /* Logic from CreateMode, uses addModalTaskEditor */
+            templateTasksContainer.innerHTML = '';
+            if (templateId) {
+                const template = userData.templates.find(t => t.id === templateId);
+                if (template) { 
+                    templateIdInput.value = template.id; 
+                    templateNameInput.value = template.name; 
+                    (template.tasks || []).forEach(taskData => addModalTaskEditor(taskData, 'templateTasksContainer', true));
+                }
+            } else { templateIdInput.value = ''; templateNameInput.value = ''; addModalTaskEditor(null, 'templateTasksContainer', true); }
+            templateNameInput.focus();
+        }
+        addTemplateMainTaskBtn.onclick = () => addModalTaskEditor(null, 'templateTasksContainer', true);
+        newTemplateBtnSettings.onclick = () => loadTemplateEditor();
+
+        saveTemplateBtn.onclick = () => { /* Logic from CreateMode */
+            const id = templateIdInput.value || generateId(); 
+            const name = templateNameInput.value.trim();
+            if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; }
+            const tasks = [];
+            document.querySelectorAll('#templateTasksContainer .modal-task-editor-item').forEach(taskDiv => {
+                const taskDesc = taskDiv.querySelector('.modal-task-desc-input').value.trim();
+                if (taskDesc) {
+                    const mainTask = { id: taskDiv.dataset.taskId || generateId(), description: taskDesc, subtasks: [] }; 
+                    taskDiv.querySelectorAll('.modal-subtask-editor-item').forEach(subtaskDiv => {
+                        const subtaskDesc = subtaskDiv.querySelector('.modal-subtask-desc-input').value.trim();
+                        if (subtaskDesc) mainTask.subtasks.push({ id: subtaskDiv.dataset.subtaskId || generateId(), description: subtaskDesc });
+                    });
+                    tasks.push(mainTask);
+                }
+            });
+            const existingIndex = userData.templates.findIndex(t => t.id === id);
+            if (existingIndex > -1) {
+                userData.templates[existingIndex].name = name; userData.templates[existingIndex].tasks = tasks;
+                showToast(`Template "${name}" updated.`, 'success');
+            } else {
+                const isFirstTemplate = userData.templates.length === 0;
+                userData.templates.push({ id, name, tasks, isDefault: isFirstTemplate });
+                showToast(`Template "${name}" saved.`, 'success');
+            }
+            saveUserData(); renderTemplateList(); loadTemplateEditor(id); 
+        };
+
+        function renderTemplateList() { /* Logic from CreateMode, styled for Goalio */ 
+            templateListDiv.innerHTML = '';
+            if (userData.templates.length === 0) { templateListDiv.innerHTML = '<p class="no-items-message">No templates. Create one!</p>'; return; }
+            userData.templates.forEach(template => {
+                const item = document.createElement('div');
+                item.className = 'template-list-item';
+                if (template.isDefault) item.classList.add('is-default');
+                item.innerHTML = `
+                    <span>${template.name} ${template.isDefault ? '<strong style="color:var(--star-important-color);">(Default)</strong>' : ''}</span>
+                    <div class="template-actions-group">
+                        <button class="modal-task-btn edit-template-btn" data-id="${template.id}" title="Edit ${template.name}"><i class="fas fa-edit"></i> Edit</button>
+                        ${!template.isDefault ? `<button class="modal-task-btn set-default-template-btn" data-id="${template.id}" title="Set Default" style="background-color:var(--star-important-color); color:var(--text-color); border-color:transparent;"><i class="fas fa-star"></i> Set Default</button>` : ''}
+                        <button class="modal-icon-only-btn danger delete-template-btn" data-id="${template.id}" title="Delete ${template.name}"><i class="fas fa-trash-alt"></i></button>
+                    </div>`;
+                templateListDiv.appendChild(item);
+            });
+            templateListDiv.querySelectorAll('.edit-template-btn').forEach(btn => btn.onclick = () => loadTemplateEditor(btn.dataset.id));
+            templateListDiv.querySelectorAll('.delete-template-btn').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id));
+            templateListDiv.querySelectorAll('.set-default-template-btn').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));
+        }
+        function deleteTemplate(templateId) { /* Logic from CreateMode */ 
+            const templateToDelete = userData.templates.find(t => t.id === templateId);
+            if (!templateToDelete) return;
+            if (templateToDelete.isDefault && userData.templates.length <= 1) { showToast("Cannot delete the only default template.", 'warning', 4000); return; }
+            if (templateToDelete.isDefault && userData.templates.length > 1) { showToast("Cannot delete active default. Change default first.", 'warning', 4000); return; }
+            showCustomConfirm(`Delete template "${templateToDelete.name}"?`, "Delete Template", () => { 
+                const name = templateToDelete.name;
+                userData.templates = userData.templates.filter(t => t.id !== templateId);
+                if (userData.templates.length > 0 && !userData.templates.some(t => t.isDefault)) userData.templates[0].isDefault = true;
+                saveUserData(); renderTemplateList(); loadTemplateEditor(); 
+                showToast(`Template "${name}" deleted.`, 'info');
+            });
+        }
+        function setDefaultTemplate(templateId) { /* Logic from CreateMode */ 
+            let name = '';
+            userData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; });
+            saveUserData(); renderTemplateList();
+            if (name) showToast(`Template "${name}" set as default.`, 'info');
+        }
+        function populateTemplateSelect(selectElement, isProjectModal) { /* Logic from CreateMode */ 
+            selectElement.innerHTML = '<option value="">-- No Template --</option>';
+            let defaultId = null;
+            userData.templates.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.id; option.textContent = template.name;
+                if (template.isDefault && isProjectModal) { option.selected = true; defaultId = template.id; }
+                selectElement.appendChild(option);
+            });
+            if (defaultId && isProjectModal) selectElement.value = defaultId;
+        }
+
+        // --- DATA MANAGEMENT (Clear Old Data) ---
+        clearOldDataBtn.onclick = () => { /* Logic from CreateMode */ 
+             showCustomConfirm(
+                'WARNING! Permanently DELETE old project data (completed BEFORE current month)? This action CANNOT BE UNDONE. Are you sure?',
+                "Clear Old Project Data",
+                () => { 
+                    const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0);
+                    const initialCount = userData.goals.length;
+                    userData.goals = userData.goals.filter(g => 
+                        !(g.type === 'project' && g.isCompleted && g.completionTimestamp && new Date(g.completionTimestamp) < firstDayCurrentMonth)
+                    );
+                    const cleared = initialCount - userData.goals.length;
+                    saveUserData(); renderAll(); 
+                    showToast(`${cleared} old project(s) cleared.`, 'success', 4000);
+                    settingsModal.style.display = 'none'; 
+                }
+            );
+        };
+
+        // --- TOAST & CONFIRM MODAL (CreateMode based, Goalio styled) ---
+        function showToast(message, type = 'info', durationVisible = 3000) { /* From CreateMode, styled for Goalio */ 
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            let iconClass = 'fas fa-info-circle'; // Default for info
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+            else if (type === 'error') iconClass = 'fas fa-times-circle'; // Or fa-exclamation-circle
+
+            toast.innerHTML = `<i class="${iconClass} toast-icon"></i> <span class="toast-text-content">${message}</span>`;
+            toast.style.setProperty('--toast-visible-duration', `${durationVisible}ms`);
+            toastContainer.appendChild(toast); 
+            const totalAnimationTime = 300 + durationVisible + 300 + 100;
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, totalAnimationTime);
+        }
+        function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { /* From CreateMode */ 
+            customConfirmModalMessageEl.innerHTML = message; // Use innerHTML to allow strong tags
+            customConfirmModalTitleEl.textContent = title;
+            currentConfirmCallback = onConfirm;
+            currentCancelCallback = onCancel;
+            // Re-clone buttons to ensure fresh event listeners
+            const newConfirmBtn = customConfirmModalConfirmBtn.cloneNode(true);
+            customConfirmModalConfirmBtn.parentNode.replaceChild(newConfirmBtn, customConfirmModalConfirmBtn);
+            customConfirmModalConfirmBtn = newConfirmBtn;
+            const newCancelBtn = customConfirmModalCancelBtn.cloneNode(true);
+            customConfirmModalCancelBtn.parentNode.replaceChild(newCancelBtn, customConfirmModalCancelBtn);
+            customConfirmModalCancelBtn = newCancelBtn;
+
+            customConfirmModalConfirmBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentConfirmCallback) currentConfirmCallback(); };
+            customConfirmModalCancelBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentCancelCallback) currentCancelCallback(); };
+            customConfirmModal.style.display = 'flex';
+            customConfirmModalCancelBtn.focus();
+        }
+
+        // --- COLLAPSIBLE SECTIONS ---
+        document.querySelectorAll('.collapsible-section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const contentId = header.dataset.target;
+                const content = document.getElementById(contentId);
+                const icon = header.querySelector('.toggle-icon');
+                header.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+                icon.className = `fas ${content.classList.contains('expanded') ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon`;
+                 // Persist state if needed
+                 // localStorage.setItem(`${contentId}_expanded`, content.classList.contains('expanded'));
+            });
+            // Optional: Load persisted state
+            // const contentId = header.dataset.target;
+            // if (localStorage.getItem(`${contentId}_expanded`) === 'true') {
+            //     header.click(); // Simulate click to expand
+            // }
+        });
+        // Start completed/archived sections collapsed
+        document.querySelectorAll('.collapsible-section-header').forEach(header => {
+            if (!header.classList.contains('collapsed')) header.classList.add('collapsed');
+            const content = document.getElementById(header.dataset.target);
+            if (content.classList.contains('expanded')) content.classList.remove('expanded');
+            header.querySelector('.toggle-icon').className = 'fas fa-chevron-down toggle-icon';
+        });
+
+        // --- GENERAL EVENT LISTENERS & INITIALIZATION ---
+        addGoalBtn.onclick = () => openGoalFormModal(null);
+        document.querySelectorAll('.close-modal-btn, .cancel-btn[data-modal-id]').forEach(btn => {
+            btn.addEventListener('click', () => closeModalById(btn.dataset.modalId));
+        });
+        function closeModalById(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+        }
+        
+        window.addEventListener('load', () => {
+            loadUserData(); 
+            if (goalSectionTarget) goalSectionTarget.scrollIntoView({ behavior: 'auto' }); // 'auto' for instant
+        });
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (goalFormModal.style.display === 'flex') closeGoalFormModal();
+                else if (settingsModal.style.display === 'flex') closeModalById('settingsModal');
+                else if (customConfirmModal.style.display === 'flex') closeModalById('customConfirmModal');
+            }
+        });
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js') 
+                    .then(reg => console.log('Service Worker registered.', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
