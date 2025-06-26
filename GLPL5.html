@@ -6,17 +6,16 @@
     <title>CreateMode - Goalio Edition</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="./icon-192x192.png" type="image/png"> <!-- Placeholder: ensure you have this icon -->
-    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png"> <!-- Placeholder: ensure you have this icon -->
-    <link rel="apple-touch-icon" href="./icon-192x192.png"> <!-- Placeholder: ensure you have this icon -->
-    <link rel="manifest" href="./manifest.webmanifest"> <!-- Placeholder: ensure you have this manifest file -->
+    <link rel="icon" href="./icon-192x192.png" type="image/png">
+    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./icon-192x192.png">
+    <link rel="manifest" href="./manifest.webmanifest">
     
     <style>
         :root {
             --primary-color: #0f172a; 
             --primary-hover: #1e293b; 
             --warning-color: #ef4444; 
-            --warning-hover: #dc2626; /* Darker warning for hover */
             --info-color: #3b82f6; 
             --star-important-color: #facc15; /* For priority star */
             --success-color: #22c55e; /* For success states/toasts */
@@ -45,6 +44,7 @@
             font-size: 15px;
         }
         
+        /* --- APP HEADER (Goalio Style) --- */
         .app-header {
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
@@ -58,64 +58,71 @@
             box-shadow: var(--shadow);
         }
         .app-header-title {
-            font-size: 1.5em; 
+            font-size: 1.5em; /* Goalio h3ish size */
             font-weight: 600;
             color: var(--primary-color);
             text-align: center;
             flex-grow: 1;
         }
         .app-header-actions button {
-            background: transparent; border: none; color: var(--primary-color);
-            padding: 0.5rem; border-radius: 50%; cursor: pointer;
-            font-size: 1.1rem; width: 2.5rem; height: 2.5rem;
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem; /* Adjust icon size */
+            width: 2.5rem; height: 2.5rem;
             display: flex; align-items: center; justify-content: center;
             transition: background-color 0.2s ease-in-out;
         }
-        .app-header-actions button:hover { background-color: #f1f5f9; }
+        .app-header-actions button:hover {
+            background-color: #f1f5f9; /* Light hover from Goalio */
+        }
         .app-header-actions .left-action { margin-right: auto; }
         .app-header-actions .right-action { margin-left: auto; }
 
-        .container-wrapper {
-            max-width: 900px; 
+        .container-wrapper { /* Replaces app-container-wrapper */
+            max-width: 900px; /* Consistent with Goalio but slightly wider for CreateMode needs */
             margin: 1rem auto;
-            padding: 0 1rem;
+            padding: 0 1rem; /* Add horizontal padding */
         }
         
+        /* Top Info Area (Dashboard + Calendar + Notices) */
         .top-info-area {
             border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem;
             border: 1px solid var(--border-color); 
             background-color: var(--card-bg);
             box-shadow: var(--shadow);
         }
-        
-        .dashboard-metrics-display {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem; 
-        }
-
-        .top-info-grid { 
+        .top-info-grid {
             display: grid; grid-template-columns: 1fr; 
             gap: 1rem; 
         }
-        @media (min-width: 700px) { 
+        @media (min-width: 700px) { /* Adjust breakpoint as needed */
             .top-info-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         }
 
-        .info-item, .dashboard-metric-item {
+        .dashboard-metrics-container { /* Wrapper for CreateMode dashboard items */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .info-item, .dashboard-metric-item { /* Unified style for notices and dashboard items */
             padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1.5px solid var(--border-color);
-            background-color: var(--card-bg);
+            background-color: var(--card-bg); /* Use card-bg or a slightly different one like #f9fafb */
         }
         .info-item h4, .dashboard-metric-item .metric-title { 
             font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-light);
         }
         .info-item p, .dashboard-metric-item .metric-value { 
-            color: var(--text-color); font-size: 1.25rem; font-weight: 600;
+            color: var(--text-color); font-size: 1.1rem; font-weight: 600; /* Made value larger */
         }
         #clearDataNotification {
             grid-column: 1 / -1; 
-            background-color: #fffbeb; color: #b45309; 
+            background-color: #fffbeb; /* Lighter yellow for warning */
+            color: #b45309; 
             padding: 0.75rem 1rem; border: 1.5px solid #fef3c7;
             border-radius: 0.5rem; font-size: 0.9em;
             display: flex; justify-content: space-between; align-items: center;
@@ -125,10 +132,13 @@
         #clearDataNotification button {
             font-size: 0.85em; background-color: var(--star-important-color);
             color: var(--text-color); border: 1px solid #f59e0b;
-            padding: 0.4rem 0.8rem; border-radius: 0.3rem; cursor: pointer;
+            padding: 0.4rem 0.8rem; border-radius: 0.3rem;
+            cursor: pointer;
         }
         #clearDataNotification button:hover { background-color: #f59e0b; }
 
+
+        /* Week Calendar Styles (Adapted from Goalio Calendar) */
         .week-calendar-container {
             padding: 0.75rem; border: 1.5px solid var(--border-color); 
             border-radius: 0.5rem; background-color: var(--card-bg);
@@ -146,8 +156,10 @@
         }
         .week-calendar-header button:hover { background-color: #f1f5f9; }
         .week-calendar-month-year { font-size: 1.1rem; font-weight: 600; color: var(--primary-color); }
+        
         .week-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .week-calendar-day-name-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 0.5rem;}
+
         .week-calendar-day, .week-calendar-day-name {
             text-align: center; padding: 0.5rem 0.2rem; font-size: 0.85rem;
             border-radius: 0.375rem; 
@@ -156,9 +168,10 @@
         .week-calendar-day {
             cursor: default; border: 1px solid transparent; 
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-            min-height: 2.2rem; display: flex; align-items: center; justify-content: center;
+            min-height: 2.2rem; /* Ensure consistent height */
+            display: flex; align-items: center; justify-content: center;
         }
-        .week-calendar-day.other-month { color: #cbd5e1; font-weight: 300; } 
+        .week-calendar-day.other-month-display { color: #cbd5e1; font-weight: 300; } /* Renamed from other-month for clarity */
         .week-calendar-day.current-day {
             background-color: var(--primary-color); color: white; font-weight: bold;
             border-color: var(--primary-hover);
@@ -167,79 +180,109 @@
             background-color: #f8fafc; border-color: var(--border-color);
         }
 
+
+        /* Quest Section (Goalio: .goal-section) */
         .quest-list-section {
             background: var(--card-bg); border-radius: 1rem; padding: 1.25rem;
             margin-bottom: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border-color);
         }
-        .quest-list-section-header {
+        .quest-list-section-header { /* For "Active", "Completed", "Archived" titles */
             font-size: 1.25rem; color: var(--primary-color);
-            display: flex; align-items: center; justify-content: space-between; /* Align title left, button right */
+            display: flex; align-items: center; justify-content: center; /* Center title */
             gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; 
             border-bottom: 2px solid var(--primary-color); 
         }
-         .quest-list-section-header .quest-list-title { /* Wrapper for icon and text */
-            display: flex; align-items: center; gap: 0.5rem;
-         }
-         .quest-list-section-header .toggle-section-button { 
+         .quest-list-section-header .toggle-section-button { /* For completed/archived expand buttons */
             background: transparent; border: none; color: var(--text-light);
             padding: 0.4rem; border-radius: 50%; cursor: pointer;
             font-size: 0.9rem; width: 2rem; height: 2rem;
             display: flex; align-items: center; justify-content: center;
-            transition: color 0.2s ease-in-out; /* Removed margin-left: auto; */
+            transition: color 0.2s ease-in-out;
+            margin-left: auto; /* Push to the right */
         }
         .quest-list-section-header .toggle-section-button:hover { color: var(--primary-color); }
 
+
+        /* Quest Cards (Goalio: .goal-card) */
         .quests-list { display: flex; flex-direction: column; gap: 1rem; }
         .quest-card {
             border: 1px solid var(--border-color); border-radius: 0.75rem;
-            padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
+            padding: 1.25rem; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
             display: flex; flex-direction: column;
-            background-color: var(--card-bg); position: relative;
+            background-color: var(--card-bg); 
+            position: relative;
         }
+        
         .quest-card.completed-quest {
             background-color: var(--quest-done-bg); 
-            transition: background-color 0.3s ease-in-out; opacity: 0.85;
+            transition: background-color 0.3s ease-in-out;
+            opacity: 0.85; 
         }
         .quest-card.completed-quest .quest-title-text,
         .quest-card.completed-quest .quest-deadline-text {
             color: var(--quest-done-text); text-decoration: line-through; opacity: 0.7;
         }
         .quest-card.archived-quest {
-            border-left: 4px solid var(--text-light); opacity: 0.7;
+            border-left: 4px solid var(--text-light); 
+            opacity: 0.7;
         }
-        .quest-card.is-overdue:not(.completed-quest) { border-left: 4px solid var(--quest-overdue-border); }
+        .quest-card.is-overdue:not(.completed-quest) { 
+            border-left: 4px solid var(--quest-overdue-border); 
+        }
         
-        .quest-card-header {
-            display: flex; align-items: flex-start; margin-bottom: 0.75rem; gap: 0.5rem;
+        .quest-card-header { 
+            display: flex; align-items: flex-start; 
+            margin-bottom: 0.75rem; 
+            gap: 0.5rem;
         }
         .quest-card-header .quest-complete-checkbox {
-            margin-top: 0.3rem; transform: scale(1.2); accent-color: var(--primary-color);
+            margin-top: 0.3rem; 
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        .quest-card-header .quest-complete-checkbox:disabled {
+            cursor: not-allowed;
+            opacity: var(--disabled-opacity);
         }
         .quest-title-text {
             font-size: 1.15rem; font-weight: 600; color: var(--text-color); 
-            margin-right: 0.5rem; flex-grow: 1; cursor: pointer;
+            margin-right: 0.5rem; flex-grow: 1;
+            cursor: pointer;
         }
         .quest-title-text:hover { color: var(--primary-hover); }
 
         .quest-card-action-buttons { 
             display: flex; gap: 0.25rem; margin-left: auto; align-items: center;
         }
-        .quest-card-action-buttons .btn-icon-only {
+        .quest-card-action-buttons .btn-icon-only { 
             background: transparent; border: 1px solid transparent; 
-            color: var(--text-light); padding: 0.3rem; border-radius: 50%; cursor: pointer;
+            color: var(--text-light); 
+            padding: 0.3rem; border-radius: 50%; cursor: pointer;
             font-size: 0.9rem; transition: background-color 0.2s, color 0.2s;
             width: 1.8rem; height: 1.8rem; 
             display: inline-flex; align-items: center; justify-content: center;
         }
         .quest-card-action-buttons .btn-icon-only:hover { background-color: #e5e7eb; color: var(--text-color); }
+        .quest-card-action-buttons .btn-icon-only:disabled {
+            cursor: not-allowed; opacity: var(--disabled-opacity); color: var(--text-light) !important;
+            background-color: transparent !important;
+        }
+
         .quest-card-action-buttons .priority-button.prioritized i { color: var(--star-important-color); }
+
 
         .quest-more-actions-container { position: relative; }
         .actions-dropdown {
-            display: none; position: absolute; right: 0; top: 100%; 
-            background-color: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 0.5rem; box-shadow: var(--shadow);
-            z-index: 10; min-width: 180px; padding: 0.5rem 0;
+            display: none; position: absolute;
+            right: 0; top: 100%; 
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem; 
+            box-shadow: var(--shadow);
+            z-index: 10; min-width: 180px;
+            padding: 0.5rem 0;
         }
         .actions-dropdown button {
             display: flex; align-items: center; gap: 0.75rem; 
@@ -254,28 +297,37 @@
         .actions-dropdown button.danger i { color: var(--warning-color); }
         .actions-dropdown button.danger:hover { background-color: #fee2e2; } 
         
+
         .quest-card-meta {
-            font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.85rem; 
+            font-size: 0.8rem; color: var(--text-light); 
+            margin-bottom: 0.85rem; 
             display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; 
-            border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 0.75rem;
         }
         .quest-deadline-details { display: flex; align-items: center; gap: 0.5rem; }
         .quest-deadline-details .fa-calendar-alt { font-size: 0.8rem; }
         .quest-deadline-text { font-weight: 500; }
-        .quest-countdown { font-weight: 500; display: flex; align-items: center; gap: 0.2rem; }
+        
+        .quest-countdown { 
+            font-weight: 500; display: flex; align-items: center; gap: 0.2rem; 
+        }
         .quest-countdown .fa-hourglass-half { font-size: 0.8rem; }
         .quest-countdown-text { font-size: 0.8rem; }
         .quest-countdown.overdue .quest-countdown-text { color: var(--warning-color); font-weight: 600; }
         .quest-countdown.today .quest-countdown-text { color: var(--info-color); font-weight: 600; }
+
         .quest-value-display { font-weight: 500; font-size: 0.8rem; }
         .quest-value-display .fa-coins { font-size: 0.8rem; color: var(--star-important-color); }
+
 
         .quest-progress-wrapper { 
             display: flex; align-items: center; gap: 0.5rem; 
             margin-top: 0.5rem; margin-bottom: 0.85rem; 
         }
         .quest-progress-bar-container {
-            flex-grow: 1; height: 8px; background-color: var(--border-color);
+            flex-grow: 1; height: 8px; 
+            background-color: var(--border-color);
             border-radius: 4px; overflow: hidden;
         }
         .quest-progress-fill {
@@ -288,32 +340,44 @@
         }
 
         .tasks-container {
-            padding-left: 0; max-height: 0; overflow-y: auto;
+            padding-left: 0; 
+            max-height: 0;
+            overflow-y: auto;
             transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, margin-top 0.3s ease-out;
             margin-top: 0; padding-top: 0;
             scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
         }
         .tasks-container::-webkit-scrollbar { width: 5px; }
         .tasks-container::-webkit-scrollbar-thumb { background-color: #d1d5db; border-radius: 3px; }
+
         .tasks-container.expanded {
-            max-height: 350px; margin-top: 1rem;
-            padding-top: 0.75rem; border-top: 1px solid var(--border-color); 
+            max-height: 350px; 
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-color); 
         }
         .task-item, .subtask-item {
             display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 0.25rem; border-bottom: 1px solid #f1f5f9;
+            padding: 0.5rem 0.25rem; 
+            border-bottom: 1px solid #f1f5f9; 
         }
         .task-item:last-child, .subtask-item:last-child { border-bottom: none; }
         .subtask-item { margin-left: 1.5rem; } 
+        
         .task-item .task-checkbox, .subtask-item .subtask-checkbox {
-            transform: scale(1.1); accent-color: var(--primary-color);
+            transform: scale(1.1); accent-color: var(--primary-color); cursor: pointer;
+        }
+        .task-item .task-checkbox:disabled, .subtask-item .subtask-checkbox:disabled {
+             cursor: not-allowed; opacity: var(--disabled-opacity);
         }
         .task-description { flex-grow: 1; font-size: 0.9rem; }
         .task-item .task-description { font-weight: 500; } 
+        
         .task-value-chip {
             font-size: 0.75rem; font-weight: 600; color: var(--success-color);
-            background-color: #dcfce7; padding: 0.15rem 0.4rem; border-radius: 10px;
-            white-space: nowrap; margin-left: auto; 
+            background-color: #dcfce7; 
+            padding: 0.15rem 0.4rem; border-radius: 10px;
+            white-space: nowrap;
         }
         .task-item.completed .task-description,
         .subtask-item.completed .task-description {
@@ -321,13 +385,19 @@
         }
 
         .collapsible-list-wrapper {
-            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
         .collapsible-list-wrapper.expanded {
-            max-height: 1500px; margin-top: 1rem; overflow-y: auto; 
+            max-height: 1500px; /* Generous height for many items */
+            margin-top: 1rem; 
+            overflow-y: auto; 
         }
 
-        .inactive-sections-toggle-container { text-align: center; margin-top: 2rem; margin-bottom: 1.5rem; }
+        .inactive-sections-toggle-container {
+            text-align: center;
+            margin-top: 2rem; margin-bottom: 1.5rem;
+        }
         #toggleInactiveSectionsBtn {
             background: var(--primary-color); color: white; border: none;
             padding: 0.6rem 1.2rem; border-radius: 0.5rem;
@@ -341,26 +411,32 @@
         .empty-list-message { 
            text-align: center; padding: 2rem; color: var(--text-light); 
            font-style: italic; font-size: 0.95em;
-           border: 2px dashed var(--border-color); border-radius: 0.75rem;
-           margin-top: 1rem; background-color: #fdfdfe;
+           border: 2px dashed var(--border-color);
+           border-radius: 0.75rem;
+           margin-top: 1rem;
+           background-color: #fdfdfe; 
         }
         
+
         .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
             justify-content: center; align-items: center; z-index: 1050; padding: 1rem;
             overflow-y: auto; 
         }
         .modal-content {
             background: var(--card-bg); padding: 1.5rem; border-radius: 1rem; width: 100%;
-            max-width: 550px; box-shadow: var(--shadow); margin: 2rem auto; 
+            max-width: 550px; 
+            box-shadow: var(--shadow); 
+            margin: 2rem auto; 
         }
-        .modal-header {
+        .modal-header { 
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 1.5rem; padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
-        .modal-header h2 { font-size: 1.25rem; color: var(--primary-color); margin: 0; display: flex; align-items: center; gap: 0.5rem;}
+        .modal-header h2 { font-size: 1.25rem; color: var(--primary-color); margin: 0;}
         .close-modal-button {
             background: transparent; border: none; color: var(--text-light);
             padding: 0.4rem; border-radius: 50%; cursor: pointer;
@@ -384,63 +460,67 @@
         }
         .modal-body h3 { 
             margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.1rem; color: var(--primary-color);
-            display: flex; align-items: center; gap: 0.5rem; 
         }
-        .modal-body h4 {
+        .modal-body h4 { 
              margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1rem; color: var(--primary-color);
-             display: flex; align-items: center; gap: 0.5rem;
         }
-        
-        .task-editor-item { 
-            border: 1px solid var(--border-color); padding: 0.75rem; margin-bottom: 0.75rem;
-            border-radius: 0.5rem; background-color: #fdfdff; 
+
+        .task-editor-item {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem; margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: #f9fafb; 
         }
-        .task-editor-header { 
-            display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; 
-        }
+        .task-editor-header { display: flex; gap: 0.5rem; align-items: center; }
         .task-editor-header input[type="text"] { flex-grow: 1; margin-bottom: 0; }
-        
-        .task-editor-item .btn-icon-action,
-        .subtask-editor-item .btn-icon-action {
+        .task-editor-header .btn-icon-only { 
             background: transparent; border: 1px solid transparent; 
             color: var(--text-light); padding: 0.4rem; border-radius: 0.3rem; cursor: pointer;
             font-size: 0.9rem; transition: background-color 0.2s, color 0.2s;
             width: 2rem; height: 2rem; 
             display: inline-flex; align-items: center; justify-content: center;
-            flex-shrink: 0; 
         }
-        .task-editor-item .btn-icon-action:hover,
-        .subtask-editor-item .btn-icon-action:hover { background-color: #e5e7eb; color: var(--text-color); }
-        
-        .task-editor-item .btn-icon-action.danger,
-        .subtask-editor-item .btn-icon-action.danger { color: var(--warning-color); }
-        .task-editor-item .btn-icon-action.danger:hover,
-        .subtask-editor-item .btn-icon-action.danger:hover { background-color: #fee2e2; color: var(--warning-hover); }
+        .task-editor-header .btn-icon-only:hover { background-color: #e5e7eb; }
+        .task-editor-header .btn-icon-only.danger:hover { color: var(--warning-color); background-color: #fee2e2; }
 
-        .modal-subtasks-list { 
-            padding-left: 1rem; margin-top: 0.5rem;
-        }
-        .subtask-editor-item { 
-            display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;
+
+        .subtask-editor-item {
+            margin-left: 1.25rem; margin-top: 0.5rem; display: flex; gap: 0.5rem; align-items: center;
         }
         .subtask-editor-item input[type="text"] { flex-grow: 1; margin-bottom: 0; }
+        .subtask-editor-item .btn-icon-only { /* Copied from .task-editor-header .btn-icon-only */
+            background: transparent; border: 1px solid transparent; 
+            color: var(--text-light); padding: 0.4rem; border-radius: 0.3rem; cursor: pointer;
+            font-size: 0.9rem; transition: background-color 0.2s, color 0.2s;
+            width: 2rem; height: 2rem; 
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .subtask-editor-item .btn-icon-only:hover { background-color: #e5e7eb; }
+        .subtask-editor-item .btn-icon-only.danger:hover { color: var(--warning-color); background-color: #fee2e2;}
         
         .modal-footer { 
             display: flex; justify-content: flex-end; gap: 0.75rem; 
             margin-top: 1.5rem; padding-top: 1rem; 
             border-top: 1px solid var(--border-color); 
         }
-        .modal-footer button {
+        .modal-footer button { 
             padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
             cursor: pointer; font-weight: 500; font-size: 0.875rem;
             display: inline-flex; align-items: center; gap: 0.5rem;
         }
         .modal-footer .btn-primary { background: var(--primary-color); color: white; }
         .modal-footer .btn-primary:hover { background: var(--primary-hover); }
-        .modal-footer .button { background: #e2e8f0; color: var(--text-light); } /* For cancel */
-        .modal-footer .button:hover { background: #cbd5e1; color: var(--text-color); }
+        .modal-footer .btn-secondary, 
+        .modal-footer .button { 
+            background: #e2e8f0; color: var(--text-light); 
+        }
+        .modal-footer .btn-secondary:hover,
+        .modal-footer .button:hover {
+            background: #cbd5e1; color: var(--text-color);
+        }
         .modal-footer .btn-danger { background-color: var(--warning-color); color: white; }
-        .modal-footer .btn-danger:hover { background-color: var(--warning-hover); }
+        .modal-footer .btn-danger:hover { background-color: #d03838; }
+
 
         #settingsModal .modal-content { max-width: 700px; }
         .settings-section {
@@ -460,31 +540,12 @@
             font-weight: 500; background-color: #fffbeb; 
         }
         #templateList .template-item span { flex-grow: 1; }
-        #templateList .template-item .template-actions { display: flex; gap: 0.5rem; } 
-        
-        #templateList .template-item .template-actions button {
-            padding: 0.4rem 0.8rem; border-radius: 0.3rem;
-            font-size: 0.85em; cursor: pointer;
-            display: inline-flex; align-items: center; gap: 0.3rem;
-            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+        #templateList .template-item .template-actions { display: flex; gap: 0.3rem; }
+        #templateList .template-item .template-actions button { 
+            font-size: 0.8em; padding: 0.4rem 0.6rem; border-radius: 0.3rem;
+            /* Using .btn-modal-utility or .btn-icon-only structure */
         }
-        #templateList .template-item .template-actions .btn-edit-template {
-            background-color: #f0f9ff; color: var(--info-color); border: 1px solid #e0f2fe;
-        }
-        #templateList .template-item .template-actions .btn-edit-template:hover { background-color: #e0f2fe; }
-        
-        #templateList .template-item .template-actions .btn-set-default {
-            background-color: #fffbeb; color: #b45309; border: 1px solid #fef3c7;
-        }
-        #templateList .template-item .template-actions .btn-set-default:hover { background-color: #fef3c7;}
-
-        #templateList .template-item .template-actions .btn-delete-template { 
-            background: transparent; color: var(--warning-color); border: 1px solid transparent;
-            width: 2rem; height: 2rem; padding: 0; justify-content: center; /* Center icon */
-        }
-        #templateList .template-item .template-actions .btn-delete-template:hover { background-color: #fee2e2; }
-
-        .btn-modal-utility { 
+        .btn-modal-utility {
             background: #f1f5f9; color: var(--primary-color); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 0.5rem;
             cursor: pointer; font-weight: 500; font-size: 0.875rem;
@@ -493,62 +554,99 @@
         }
         .btn-modal-utility:hover { background-color: #e2e8f0; }
 
+
         #toastContainer {
-            position: fixed; bottom: 20px; right: 20px; z-index: 2000; 
-            display: flex; flex-direction: column-reverse; gap: 10px; max-width: 350px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000; 
+            display: flex;
+            flex-direction: column-reverse; 
+            gap: 10px;
+            max-width: 350px;
         }
         .toast-message {
-            padding: 1rem 1.25rem; border-radius: 0.5rem; color: white; 
-            font-size: 0.95em; box-shadow: var(--shadow); opacity: 0; 
+            padding: 1rem 1.25rem; 
+            border-radius: 0.5rem; 
+            color: white; 
+            font-size: 0.95em;
+            box-shadow: var(--shadow);
+            opacity: 0; 
             word-wrap: break-word;
             animation-name: toastFadeIn, toastFadeOut;
             animation-duration: 0.3s, 0.3s; 
             animation-fill-mode: forwards, forwards;
             animation-timing-function: ease-out, ease-in;
             animation-delay: 0s, var(--toast-visible-duration, 3000ms); 
-            display: flex; align-items: center; gap: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        .toast-message i { font-size: 1.2em; }
+        .toast-message i { font-size: 1.2em; } 
         .toast-message.success { background-color: var(--success-color); }
         .toast-message.info { background-color: var(--info-color); }
         .toast-message.warning { background-color: var(--star-important-color); color: var(--text-color); }
         .toast-message.error { background-color: var(--warning-color); }
 
-        @keyframes toastFadeIn { from { opacity: 0; transform: translateX(100%);} to { opacity: 1; transform: translateX(0);}}
-        @keyframes toastFadeOut { from { opacity: 1; transform: translateX(0);} to { opacity: 0; transform: translateX(100%);}}
-        
-        .quest-card.exiting { animation: fadeOutCollapseQuest 0.35s ease-out forwards; }
-        @keyframes fadeOutCollapseQuest { 
-            0% { opacity: 1; transform: translateX(0) scale(1); max-height: 400px; 
-                 padding-top: 1.25rem; padding-bottom: 1.25rem; margin-bottom: 1rem; border-width: 1px; }
-            to { opacity: 0; transform: translateX(-50px) scale(0.9); max-height: 0; 
-                 padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; overflow: hidden; }
+        @keyframes toastFadeIn {
+            from { opacity: 0; transform: translateX(100%); } 
+            to { opacity: 1; transform: translateX(0); }
         }
-        .quest-card.entering { opacity: 0; transform: translateY(20px) scale(0.95); }
+        @keyframes toastFadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); } 
+        }
+        
+        .quest-card.exiting {
+            animation: fadeOutCollapseQuest 0.35s ease-out forwards;
+        }
+        @keyframes fadeOutCollapseQuest { 
+            0% {
+                opacity: 1; transform: translateX(0) scale(1);
+                max-height: 400px; 
+                padding-top: 1.25rem; padding-bottom: 1.25rem;
+                margin-bottom: 1rem; 
+                border-width: 1px;
+            }
+            to {
+                opacity: 0; transform: translateX(-50px) scale(0.9);
+                max-height: 0; padding-top: 0; padding-bottom: 0;
+                margin-bottom: 0; border-width: 0; overflow: hidden;
+            }
+        }
+        .quest-card.entering {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+
 
         @media (max-width: 768px) {
             body { font-size: 14px; }
             .app-header-title { font-size: 1.3em; }
             .container-wrapper { padding: 0 0.75rem; }
-            .dashboard-metrics-display { grid-template-columns: 1fr; } 
+            
             .top-info-grid { grid-template-columns: 1fr; } 
-            .info-item p, .dashboard-metric-item .metric-value { font-size: 1.1rem; } 
+            .dashboard-metrics-container { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+            .info-item p, .dashboard-metric-item .metric-value { font-size: 1rem; }
+
             .quest-title-text { font-size: 1.05em; }
             .quest-card-meta { font-size: 0.75rem; }
             .modal-content { margin: 5% auto; width: 95%; padding: 1.25rem; }
             .modal-header h2 { font-size: 1.15rem; }
             #toastContainer { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
         }
+
         @media (max-width: 480px) {
             .app-header { padding: 0.5rem 0.75rem; }
             .app-header-actions button { width: 2.2rem; height: 2.2rem; font-size: 1rem;}
+            .dashboard-metrics-container { grid-template-columns: 1fr; } 
+            
             .quest-card-header { flex-wrap: wrap; }
             .quest-card-action-buttons { width: 100%; justify-content: flex-end; margin-top: 0.5rem; }
             .quest-card-meta { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
             .subtask-item { margin-left: 1rem; }
-            .task-editor-header { flex-wrap: wrap; gap: 0.25rem; } 
-            .task-editor-header input[type="text"] { min-width: calc(100% - 5rem); } 
         }
+
     </style>
 </head>
 <body>
@@ -568,21 +666,21 @@
 
     <div class="container-wrapper">
         <div class="top-info-area">
-            <div class="dashboard-metrics-display" id="dashboardMetricsHost">
-                 <div class="dashboard-metric-item">
-                    <div class="metric-title">Earnings Today</div>
-                    <p class="metric-value" id="valueToday">$0</p>
-                </div>
-                <div class="dashboard-metric-item">
-                    <div class="metric-title">Earnings This Month</div>
-                    <p class="metric-value" id="valueMonth">$0</p>
-                </div>
-                <div class="dashboard-metric-item">
-                    <div class="metric-title">Upcoming Value</div>
-                    <p class="metric-value" id="upcomingValue">$0</p>
-                </div>
-            </div>
             <div class="top-info-grid">
+                <div class="dashboard-metrics-container" id="dashboardMetricsHost">
+                    <div class="dashboard-metric-item">
+                        <div class="metric-title">Earnings Today</div>
+                        <p class="metric-value" id="valueToday">$0</p>
+                    </div>
+                    <div class="dashboard-metric-item">
+                        <div class="metric-title">Earnings This Month</div>
+                        <p class="metric-value" id="valueMonth">$0</p>
+                    </div>
+                    <div class="dashboard-metric-item">
+                        <div class="metric-title">Upcoming Value</div>
+                        <p class="metric-value" id="upcomingValue">$0</p>
+                    </div>
+                </div>
                 <div class="week-calendar-container" id="weekCalendarContainer"></div>
                 <div class="info-item"><h4>Weeks Left (Month)</h4><p id="weeksLeftMonth">-</p></div>
                 <div class="info-item"><h4>Months Left (Year)</h4><p id="monthsLeftYear">-</p></div>
@@ -594,7 +692,7 @@
         </div>
         
         <div class="quest-list-section">
-            <h2 class="quest-list-section-header"><span class="quest-list-title"><i class="fas fa-rocket"></i> Active Quests</span></h2>
+            <h2 class="quest-list-section-header"><i class="fas fa-rocket" style="margin-right: 0.5rem;"></i> Active Quests</h2>
             <div id="activeQuestsList" class="quests-list"></div>
         </div>
 
@@ -607,7 +705,7 @@
 
         <div class="quest-list-section" id="completedSectionContainer" style="display:none;">
             <h2 class="quest-list-section-header">
-                <span class="quest-list-title"><i class="fas fa-check-circle" style="color: var(--success-color);"></i>Completed (This Month)</span>
+                <span class="completed-section-title-text"><i class="fas fa-check-circle" style="margin-right: 0.5rem; color: var(--success-color);"></i>Completed (This Month)</span>
                 <button id="toggleCompletedListBtn" class="toggle-section-button" title="Toggle Completed Quests View" aria-label="Toggle Completed Quests View">
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -619,7 +717,7 @@
 
         <div class="quest-list-section" id="archivedSectionContainer" style="display:none;">
             <h2 class="quest-list-section-header">
-                <span class="quest-list-title"><i class="fas fa-archive" style="color: var(--text-light);"></i>Archived</span>
+                <span class="archived-section-title-text"><i class="fas fa-archive" style="margin-right: 0.5rem; color: var(--text-light);"></i>Archived</span>
                 <button id="toggleArchivedListBtn" class="toggle-section-button" title="Toggle Archived Quests View" aria-label="Toggle Archived Quests View">
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -634,7 +732,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="questModalTitle">Start New Quest</h2>
-                <button class="close-modal-button" id="closeQuestModal" title="Close" aria-label="Close">
+                <button class="close-modal-button" id="closeQuestModal" title="Close Quest Modal" aria-label="Close Quest Modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -657,7 +755,7 @@
                     <select id="questTemplateSelect"></select>
                 </div>
                 
-                <h3><i class="fas fa-tasks"></i>Tasks for this Quest:</h3>
+                <h3><i class="fas fa-tasks" style="margin-right: 0.5rem;"></i>Tasks for this Quest:</h3>
                 <div id="modalTasksContainer"></div>
                 <button id="addModalMainTaskBtn" class="btn-modal-utility" style="margin-top:10px;">
                     <i class="fas fa-plus-circle"></i> Add Main Task
@@ -675,21 +773,21 @@
     <div id="settingsModal" class="modal" aria-modal="true" aria-labelledby="settingsModalTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="settingsModalTitle"><i class="fas fa-cog"></i>Settings</h2>
-                <button class="close-modal-button" id="closeSettingsModal" title="Close" aria-label="Close">
+                <h2 id="settingsModalTitle"><i class="fas fa-cog" style="margin-right: 0.5rem;"></i>Settings</h2>
+                <button class="close-modal-button" id="closeSettingsModal" title="Close Settings Modal" aria-label="Close Settings Modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="settings-section">
-                    <h3><i class="fas fa-clipboard-list"></i>Quest Templates</h3>
+                    <h3><i class="fas fa-clipboard-list" style="margin-right: 0.5rem;"></i>Quest Templates</h3>
                     <div id="templateEditor">
                         <input type="hidden" id="templateId">
                         <div class="form-group">
                             <label for="templateName">Template Name:</label>
                             <input type="text" id="templateName" placeholder="E.g., Standard Video, Quick Vlog">
                         </div>
-                        <h4><i class="fas fa-tasks"></i>Tasks for this Template:</h4>
+                        <h4><i class="fas fa-tasks" style="margin-right: 0.5rem;"></i>Tasks for this Template:</h4>
                         <div id="templateTasksContainer"></div>
                         <button id="addTemplateMainTaskBtn" class="btn-modal-utility" style="margin-top:10px;">
                              <i class="fas fa-plus-circle"></i> Add Main Task
@@ -703,13 +801,13 @@
                             </button>
                         </div>
                     </div>
-                    <h4 style="margin-top: 30px;"><i class="fas fa-list-alt"></i>Existing Templates:</h4>
+                    <h4 style="margin-top: 30px;"><i class="fas fa-list-alt" style="margin-right: 0.5rem;"></i>Existing Templates:</h4>
                     <div id="templateList"></div>
                 </div>
 
                 <div class="settings-section">
-                    <h3><i class="fas fa-database"></i>Data Management</h3>
-                    <p>Permanently delete all project data for quests completed <strong>before the current month</strong>. This action cannot be undone.</p>
+                    <h3><i class="fas fa-database" style="margin-right: 0.5rem;"></i>Data Management</h3>
+                    <p>Permanently delete all project data (titles, tasks, value) for quests completed <strong>before the current month</strong>. This action cannot be undone.</p>
                     <button id="clearOldDataBtn" class="btn-danger" style="margin-top:15px;">
                         <i class="fas fa-trash-alt"></i> Clear Old Project Data
                     </button>
@@ -721,7 +819,7 @@
     <div id="customConfirmModal" class="modal" aria-modal="true" aria-labelledby="customConfirmModalTitle">
         <div class="modal-content" style="max-width: 480px;">
             <div class="modal-header">
-                <h2 id="customConfirmModalTitle"><i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i>Confirm Action</h2>
+                <h2 id="customConfirmModalTitle"><i class="fas fa-exclamation-triangle" style="margin-right:0.5rem; color: var(--warning-color);"></i>Confirm Action</h2>
             </div>
             <div class="modal-body">
                 <p id="customConfirmModalMessage" style="line-height: 1.6; font-size: 0.95rem;">Are you sure?</p>
@@ -736,12 +834,11 @@
     <div id="toastContainer"></div>
 
     <script>
-        // --- APP STATE & LOCAL STORAGE ---
         let appData = { projects: [], templates: [] };
-        const APP_DATA_KEY = 'creatorQuestLogData_v3_goalio_fixed_v2'; // Updated key
+        const APP_DATA_KEY = 'creatorQuestLogData_v3_goalio_stable'; 
         let inactiveSectionsVisible = false;
-        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v1_goalio_fixed_v2'; // Updated key
-        let currentCalendarDate = new Date();
+        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v1_goalio_stable';
+        let currentCalendarDate = new Date(); 
 
         const weekCalendarContainer = document.getElementById('weekCalendarContainer');
         const weeksLeftMonthEl = document.getElementById('weeksLeftMonth');
@@ -749,18 +846,20 @@
 
         function calculateQuestDaysLeft(deadlineString) {
             if (!deadlineString) return { deadlineFormatted: 'No Deadline', countdownText: '', days: Infinity, isOverdue: false, isToday: false };
-            const deadlineDate = new Date(deadlineString + 'T00:00:00Z');
+            const deadlineDate = new Date(deadlineString + 'T00:00:00Z'); 
             const deadlineFormatted = deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
             const now = new Date();
             const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
             const diffTime = deadlineDate.getTime() - today.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             let countdownText = "", isOverdue = false, isToday = false;
+
             if (diffDays < 0) {
                 countdownText = `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} overdue`;
                 isOverdue = true;
             } else if (diffDays === 0) {
-                countdownText = "Due Today"; isToday = true;
+                countdownText = "Due Today";
+                isToday = true;
             } else {
                 countdownText = `${diffDays} day${diffDays !== 1 ? 's' : ''} left`;
             }
@@ -769,41 +868,73 @@
         
         function renderWeekCalendar(dateToDisplay) {
             weekCalendarContainer.innerHTML = ''; 
-            const year = dateToDisplay.getFullYear(); const month = dateToDisplay.getMonth(); const day = dateToDisplay.getDate();
-            const header = document.createElement('div'); header.className = 'week-calendar-header';
+            const year = dateToDisplay.getFullYear();
+            const month = dateToDisplay.getMonth();
+            const day = dateToDisplay.getDate();
+
+            const header = document.createElement('div');
+            header.className = 'week-calendar-header';
             const prevButton = document.createElement('button');
-            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; prevButton.title = "Previous Week";
-            prevButton.onclick = () => { currentCalendarDate.setDate(currentCalendarDate.getDate() - 7); renderWeekCalendar(currentCalendarDate); };
-            const monthYearText = document.createElement('span'); monthYearText.className = 'week-calendar-month-year';
-            const firstDayOfWeek = new Date(dateToDisplay); firstDayOfWeek.setDate(day - dateToDisplay.getDay());
-            const lastDayOfWeek = new Date(firstDayOfWeek); lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.title = "Previous Week";
+            prevButton.onclick = () => {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() - 7);
+                renderWeekCalendar(currentCalendarDate);
+            };
+            const monthYearText = document.createElement('span');
+            monthYearText.className = 'week-calendar-month-year';
+            const firstDayOfWeek = new Date(dateToDisplay);
+            firstDayOfWeek.setDate(day - dateToDisplay.getDay()); 
+            const lastDayOfWeek = new Date(firstDayOfWeek);
+            lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
             if (firstDayOfWeek.getMonth() === lastDayOfWeek.getMonth()) {
                 monthYearText.textContent = `${firstDayOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${year}`;
             } else {
                  monthYearText.textContent = `${firstDayOfWeek.toLocaleDateString('en-US', { month: 'short' })} - ${lastDayOfWeek.toLocaleDateString('en-US', { month: 'short' })} ${year}`;
             }
             const nextButton = document.createElement('button');
-            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; nextButton.title = "Next Week";
-            nextButton.onclick = () => { currentCalendarDate.setDate(currentCalendarDate.getDate() + 7); renderWeekCalendar(currentCalendarDate); };
-            header.appendChild(prevButton); header.appendChild(monthYearText); header.appendChild(nextButton);
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.title = "Next Week";
+            nextButton.onclick = () => {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() + 7);
+                renderWeekCalendar(currentCalendarDate);
+            };
+            header.appendChild(prevButton);
+            header.appendChild(monthYearText);
+            header.appendChild(nextButton);
             weekCalendarContainer.appendChild(header);
-            const dayNameRow = document.createElement('div'); dayNameRow.className = 'week-calendar-day-name-row';
-            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(name => {
-                const dayNameCell = document.createElement('div'); dayNameCell.className = 'week-calendar-day-name';
-                dayNameCell.textContent = name; dayNameRow.appendChild(dayNameCell);
+
+            const dayNameRow = document.createElement('div'); 
+            dayNameRow.className = 'week-calendar-day-name-row';
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(name => {
+                const dayNameCell = document.createElement('div');
+                dayNameCell.className = 'week-calendar-day-name';
+                dayNameCell.textContent = name;
+                dayNameRow.appendChild(dayNameCell);
             });
             weekCalendarContainer.appendChild(dayNameRow);
-            const grid = document.createElement('div'); grid.className = 'week-calendar-grid';
+
+            const grid = document.createElement('div');
+            grid.className = 'week-calendar-grid';
             const today = new Date();
-            const currentWeekStart = new Date(dateToDisplay); currentWeekStart.setDate(dateToDisplay.getDate() - dateToDisplay.getDay());
+            const currentWeekStart = new Date(dateToDisplay);
+            currentWeekStart.setDate(dateToDisplay.getDate() - dateToDisplay.getDay());
+
             for (let i = 0; i < 7; i++) {
-                const dayCellDate = new Date(currentWeekStart); dayCellDate.setDate(currentWeekStart.getDate() + i);
-                const dayCell = document.createElement('div'); dayCell.className = 'week-calendar-day';
+                const dayCellDate = new Date(currentWeekStart);
+                dayCellDate.setDate(currentWeekStart.getDate() + i);
+                const dayCell = document.createElement('div');
+                dayCell.className = 'week-calendar-day';
                 dayCell.textContent = dayCellDate.getDate();
-                if (dayCellDate.getFullYear() === today.getFullYear() && dayCellDate.getMonth() === today.getMonth() && dayCellDate.getDate() === today.getDate()) {
+                if (dayCellDate.getFullYear() === today.getFullYear() && 
+                    dayCellDate.getMonth() === today.getMonth() && 
+                    dayCellDate.getDate() === today.getDate()) {
                     dayCell.classList.add('current-day');
                 }
-                if (dayCellDate.getMonth() !== month) dayCell.classList.add('other-month');
+                if (dayCellDate.getMonth() !== month) { // month of the central dateToDisplay
+                     dayCell.classList.add('other-month-display');
+                }
                 grid.appendChild(dayCell);
             }
             weekCalendarContainer.appendChild(grid);
@@ -814,10 +945,13 @@
             const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
             const daysLeftInMonth = lastDayOfMonth.getDate() - now.getDate();
             let weeksLeftText = "";
-            if (daysLeftInMonth < 0) weeksLeftText = "Month ended";
-            else if (daysLeftInMonth === 0 && now.getDate() === lastDayOfMonth.getDate()) weeksLeftText = "Today is last day!";
-            else {
-                const fullWeeks = Math.floor(daysLeftInMonth / 7); const remainingDays = daysLeftInMonth % 7;
+            if (daysLeftInMonth < 0) { 
+                weeksLeftText = "Month ended";
+            } else if (daysLeftInMonth === 0 && now.getDate() === lastDayOfMonth.getDate()) {
+                weeksLeftText = "Today is last day!";
+            } else {
+                const fullWeeks = Math.floor(daysLeftInMonth / 7);
+                const remainingDays = daysLeftInMonth % 7;
                 if (fullWeeks > 0) weeksLeftText += `${fullWeeks} week${fullWeeks !== 1 ? 's' : ''}`;
                 if (remainingDays > 0) weeksLeftText += `${fullWeeks > 0 ? ', ' : ''}${remainingDays} day${remainingDays !== 1 ? 's' : ''}`;
                 if (weeksLeftText === "" && daysLeftInMonth > 0) weeksLeftText = `${daysLeftInMonth} day${daysLeftInMonth !== 1 ? 's' : ''}`;
@@ -830,71 +964,12 @@
         let toggleInactiveSectionsBtn, inactiveSectionsToggleIcon, inactiveSectionsToggleText;
         let completedSectionContainer, archivedSectionContainer;
 
-        // --- All other JavaScript functions (initializeDefaultAppState, loadData, saveData, generateId, etc.) ---
-        // --- remain identical to the previous version. For brevity, they are not repeated here but are ---
-        // --- assumed to be included in the final combined file. Only functions with UI interaction changes ---
-        // --- or new functionalities are detailed or modified below.                                        ---
-
-        // [ PREVIOUSLY PROVIDED JAVASCRIPT FUNCTIONS GO HERE - THIS IS A CONTINUATION ]
-        // [ Ensure functions like initializeDefaultAppState, loadData, saveData, generateId, formatDateForDisplay, getTodayString, etc. are included ]
-        // [ Functions related to toast, custom confirm, inactive sections toggle, dashboard update, project rendering (FLIP), ]
-        // [ project card creation, task/subtask element creation, value distribution, completion toggles, priority toggles, ]
-        // [ CRUD operations (delete, archive, unarchive), modal handling (quest and settings), template management ]
-        // [ and data clearing are also assumed to be here from the previous version, with minor UI related tweaks already made. ]
-
-
-        // Minor adjustments to ensure button classes are correct in JS for add/remove tasks in modals if not already done:
-        function addModalTaskEditor(taskData = null) { 
-            const taskId = taskData ? taskData.id : generateId(); const taskDesc = taskData ? taskData.description : '';
-            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; taskDiv.dataset.taskId = taskId; 
-            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="modal-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-modal-task-btn btn-icon-action danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-modal-subtask-btn btn-icon-action" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="modal-subtasks-list"></div>`;
-            modalTasksContainer.appendChild(taskDiv);
-            if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), subtaskData)); }
-            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove();
-            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));
-        }
-        function addModalSubtaskEditor(parentList, subtaskData = null) { 
-            const subtaskId = subtaskData ? subtaskData.id : generateId(); const subtaskDesc = subtaskData ? subtaskData.description : '';
-            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; subtaskDiv.dataset.subtaskId = subtaskId; 
-            subtaskDiv.innerHTML = `<input type="text" class="modal-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-modal-subtask-btn btn-icon-action danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
-            parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
-        }
-        function addTemplateTaskEditor(taskData = null) { 
-            const taskDesc = taskData ? taskData.description : ''; const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item';
-            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="template-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-template-task-btn btn-icon-action danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-template-subtask-btn btn-icon-action" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="template-subtasks-list"></div>`;
-            templateTasksContainer.appendChild(taskDiv);
-            if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), subtaskData)); }
-            taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove();
-            taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));
-        }
-        function addTemplateSubtaskEditor(parentList, subtaskData = null) {
-            const subtaskDesc = subtaskData ? subtaskData.description : ''; const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item';
-            subtaskDiv.innerHTML = `<input type="text" class="template-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-template-subtask-btn btn-icon-action danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
-            parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();
-        }
-
-
-        // Re-paste all other JS functions from the previous correct version here to make a complete file
-        // This includes:
-        // initializeDefaultAppState, loadData, saveData, generateId, formatDateForDisplay, getTodayString, showToast, 
-        // initCustomConfirmModal, showCustomConfirm, applyInactiveSectionsVisibilityState, initInactiveSectionsToggle,
-        // updateDashboard, renderProjects (with FLIP), animateThenRemoveQuest, createProjectCard, 
-        // createTaskElement, createSubtaskElement, distributeValueToTasks, toggleProjectComplete, 
-        // updateProjectCardDOM, toggleProjectPriority, toggleTaskComplete, toggleSubtaskComplete, 
-        // deleteProjectWithAnimation, archiveProject, unarchiveProject, 
-        // Quest Modal functions (openQuestModal, questTemplateSelect listener, saveQuestBtn listener),
-        // Settings Modal functions (settingsHeaderBtn listener, loadTemplateEditor, saveTemplateBtn listener, renderTemplateList, deleteTemplate, setDefaultTemplate, populateTemplateSelect),
-        // Data Management functions (checkClearDataNotification, clearOldDataBtn listener),
-        // DOMContentLoaded and beforeunload listeners.
-
-        // START OF COPIED JS FROM PREVIOUS VERSION (ensure it's complete)
-
         function initializeDefaultAppState() {
             appData = {
                 projects: [],
                 templates: [{
                     id: 'default-' + Date.now(), name: 'Default Video Workflow', isDefault: true,
-                    tasks: [ 
+                    tasks: [
                         { id: 'dt1-' + generateId(), description: 'Ideation & Research', subtasks: [] },
                         { id: 'dt2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
                         { id: 'dt3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
@@ -905,20 +980,23 @@
                 }]
             };
         }
+
         function loadData() {
-             const storedData = localStorage.getItem(APP_DATA_KEY);
+            const storedData = localStorage.getItem(APP_DATA_KEY);
             if (storedData) {
                 try {
-                    appData = JSON.parse(storedData); appData.projects = appData.projects || []; appData.templates = appData.templates || [];
+                    appData = JSON.parse(storedData);
+                    appData.projects = appData.projects || [];
+                    appData.templates = appData.templates || [];
                     appData.projects.forEach(p => { 
-                        p.tasks = p.tasks || []; if (p.ui_isExpanded === undefined) p.ui_isExpanded = false;
+                        p.tasks = p.tasks || [];
+                        if (p.ui_isExpanded === undefined) p.ui_isExpanded = false;
                         if (p.ui_scrollPosition === undefined) p.ui_scrollPosition = 0; 
-                        if (p.totalGoldValue !== undefined) { p.totalValue = p.totalGoldValue; delete p.totalGoldValue; }
-                        if (p.goldEarned !== undefined) { p.valueEarned = p.goldEarned; delete p.goldEarned; }
-                        p.totalValue = parseFloat(p.totalValue) || 0; p.valueEarned = parseFloat(p.valueEarned) || 0; 
-                        if (p.isArchived === undefined) p.isArchived = false; if (p.creationTimestamp === undefined) p.creationTimestamp = Date.now();
+                        p.totalValue = parseFloat(p.totalValue) || 0;
+                        if (p.isArchived === undefined) p.isArchived = false;
+                        if (p.creationTimestamp === undefined) p.creationTimestamp = Date.now();
                         p.tasks.forEach(t => {
-                             t.subtasks = t.subtasks || []; if (t.goldValue !== undefined) { t.taskValue = t.goldValue; delete t.goldValue; }
+                             t.subtasks = t.subtasks || [];
                              t.taskValue = parseFloat(t.taskValue) || 0; 
                              t.subtasks.forEach(st => {
                                  st.subtaskValue = parseFloat(st.subtaskValue) || 0; 
@@ -928,105 +1006,136 @@
                              if (t.completionTimestamp && typeof t.completionTimestamp !== 'number') t.completionTimestamp = new Date(t.completionTimestamp).getTime();
                              if (isNaN(t.completionTimestamp)) t.completionTimestamp = null;
                         });
-                        distributeValueToTasks(p); 
-                        let initialEarnedValue = 0;
-                        p.tasks.forEach(task => {
-                            if (task.subtasks.length > 0) {
-                                task.subtasks.forEach(subtask => { if (subtask.isCompleted) initialEarnedValue += (parseFloat(subtask.subtaskValue) || 0); });
-                            } else { if (task.isCompleted) initialEarnedValue += (parseFloat(task.taskValue) || 0); }
-                        });
-                        p.valueEarned = Math.max(0, Math.min(initialEarnedValue, p.totalValue));
-                        if (p.completionTimestamp && typeof p.completionTimestamp !== 'number') p.completionTimestamp = new Date(p.completionTimestamp).getTime();
-                        if (isNaN(p.completionTimestamp)) p.completionTimestamp = null;
+                        distributeValueToTasks(p); // This also recalculates valueEarned
                     });
-                    if (appData.templates.length === 0) { 
-                        appData.templates.push({
+                    if (appData.templates.length === 0 || !appData.templates.some(t => t.isDefault)) {
+                       const defaultTemplate = {
                             id: 'default-fallback-' + Date.now(), name: 'Default Video Workflow', isDefault: true,
                             tasks: [
-                                { id: 'dtf1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dtf2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
-                                { id: 'dtf3-' + generateId(), description: 'Filming/Recording', subtasks: [] }, { id: 'dtf4-' + generateId(), description: 'Editing', subtasks: [{id: 'dtfs1-' + generateId(), description: 'Rough Cut'}, {id: 'dtfs2-' + generateId(), description: 'Final Polish'}] },
-                                { id: 'dtf5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] }, { id: 'dtf6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
+                                { id: 'dtf1-' + generateId(), description: 'Ideation & Research', subtasks: [] },
+                                { id: 'dtf2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
+                                { id: 'dtf3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
+                                { id: 'dtf4-' + generateId(), description: 'Editing', subtasks: [{id: 'dtfs1-' + generateId(), description: 'Rough Cut'}, {id: 'dtfs2-' + generateId(), description: 'Final Polish'}] },
+                                { id: 'dtf5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] },
+                                { id: 'dtf6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
                             ]
-                        });
-                    } else if (!appData.templates.some(t => t.isDefault)) appData.templates[0].isDefault = true;
+                        };
+                        if (appData.templates.length === 0) appData.templates.push(defaultTemplate);
+                        else appData.templates[0].isDefault = true;
+                    }
                 } catch (error) {
-                    console.error("Error parsing data from localStorage:", error); showToast("Data load error. Resetting to defaults.", 'error', 6000);
-                    localStorage.removeItem(APP_DATA_KEY); initializeDefaultAppState(); appData.projects.forEach(p => distributeValueToTasks(p));
+                    console.error("Error parsing data from localStorage:", error);
+                    showToast("Data load error. Resetting to defaults.", 'error', 6000);
+                    localStorage.removeItem(APP_DATA_KEY); 
+                    initializeDefaultAppState(); 
+                    appData.projects.forEach(p => distributeValueToTasks(p));
                 }
-            } else { initializeDefaultAppState(); appData.projects.forEach(p => distributeValueToTasks(p)); }
+            } else { 
+                initializeDefaultAppState(); 
+                appData.projects.forEach(p => distributeValueToTasks(p));
+            }
         }
-        function saveData() { 
-            try { localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); } catch (error) {
-                if (error.name === 'QuotaExceededError' || (error.code && (error.code === 22 || error.code === 1014))) { 
-                    console.error("LocalStorage quota exceeded:", error); showToast("Storage full. Cannot save. Please clear data.", 'error', 7000);
-                } else { console.error("Error saving data to localStorage:", error); showToast("Save error. Data not saved.", 'error', 5000); }
+
+        function saveData() {
+             try {
+                localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData));
+            } catch (error) {
+                console.error("Error saving data to localStorage:", error);
+                showToast("Save error. Data not saved.", 'error', 5000);
             }
         }
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
-        function formatDateForDisplay(dateString) { 
-            if (!dateString) return 'No Deadline'; const date = new Date(dateString);
-            const adjustedDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-            return adjustedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-        }
-        function getTodayString() { 
+        function getTodayString() {
             const today = new Date();
             return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         }
-        function showToast(message, type = 'info', durationVisible = 3000) { 
-            let toastContainer = document.getElementById('toastContainer'); const toast = document.createElement('div');
-            toast.className = `toast-message ${type}`; let iconClass = 'fas fa-info-circle';
-            if (type === 'success') iconClass = 'fas fa-check-circle'; else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+
+        function showToast(message, type = 'info', durationVisible = 3000) {
+            let toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
             else if (type === 'error') iconClass = 'fas fa-times-circle';
             toast.innerHTML = `<i class="${iconClass}"></i> <span class="toast-text-content">${message}</span>`;
             toast.style.setProperty('--toast-visible-duration', `${durationVisible}ms`);
-            toastContainer.appendChild(toast); const totalAnimationTime = 300 + durationVisible + 300 + 100;
+            toastContainer.appendChild(toast); 
+            const totalAnimationTime = 300 + durationVisible + 300 + 100;
             setTimeout(() => { if (toast.parentNode) { toast.remove(); } }, totalAnimationTime);
         }
-        
+
         let customConfirmModal, customConfirmModalTitleEl, customConfirmModalMessageEl, customConfirmModalConfirmBtn, customConfirmModalCancelBtn;
         let currentConfirmCallback = null; let currentCancelCallback = null;
-        function initCustomConfirmModal() {  
-            customConfirmModal = document.getElementById('customConfirmModal'); customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle');
-            customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage'); customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn');
+
+        function initCustomConfirmModal() { 
+            customConfirmModal = document.getElementById('customConfirmModal');
+            customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle');
+            customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage');
+            customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn');
             customConfirmModalCancelBtn = document.getElementById('customConfirmModalCancelBtn');
         }
+        
         function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { 
             customConfirmModalMessageEl.innerHTML = message; 
             customConfirmModalTitleEl.innerHTML = `<i class="fas fa-exclamation-triangle" style="margin-right:0.5rem; color: var(--warning-color);"></i>${title}`;
             currentConfirmCallback = onConfirm; currentCancelCallback = onCancel;
-            const newConfirmBtn = customConfirmModalConfirmBtn.cloneNode(true); customConfirmModalConfirmBtn.parentNode.replaceChild(newConfirmBtn, customConfirmModalConfirmBtn); customConfirmModalConfirmBtn = newConfirmBtn;
-            const newCancelBtn = customConfirmModalCancelBtn.cloneNode(true); customConfirmModalCancelBtn.parentNode.replaceChild(newCancelBtn, customConfirmModalCancelBtn); customConfirmModalCancelBtn = newCancelBtn;
-            customConfirmModalConfirmBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentConfirmCallback) currentConfirmCallback(); };
-            customConfirmModalCancelBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentCancelCallback) currentCancelCallback(); };
-            customConfirmModal.style.display = 'flex'; customConfirmModalCancelBtn.focus();
+            const newConfirmBtn = customConfirmModalConfirmBtn.cloneNode(true);
+            customConfirmModalConfirmBtn.parentNode.replaceChild(newConfirmBtn, customConfirmModalConfirmBtn);
+            customConfirmModalConfirmBtn = newConfirmBtn;
+            const newCancelBtn = customConfirmModalCancelBtn.cloneNode(true);
+            customConfirmModalCancelBtn.parentNode.replaceChild(newCancelBtn, customConfirmModalCancelBtn);
+            customConfirmModalCancelBtn = newCancelBtn;
+            customConfirmModalConfirmBtn.onclick = () => {
+                customConfirmModal.style.display = 'none';
+                if (currentConfirmCallback) currentConfirmCallback();
+            };
+            customConfirmModalCancelBtn.onclick = () => {
+                customConfirmModal.style.display = 'none';
+                if (currentCancelCallback) currentCancelCallback();
+            };
+            customConfirmModal.style.display = 'flex'; 
+            customConfirmModalCancelBtn.focus();
         }
+
         function applyInactiveSectionsVisibilityState() { 
             if (!completedSectionContainer || !archivedSectionContainer || !inactiveSectionsToggleIcon || !inactiveSectionsToggleText) return;
             if (inactiveSectionsVisible) {
-                completedSectionContainer.style.display = 'block'; archivedSectionContainer.style.display = 'block';
-                inactiveSectionsToggleIcon.className = 'fas fa-chevron-up'; inactiveSectionsToggleText.textContent = 'Hide Completed & Archived';
+                completedSectionContainer.style.display = 'block';
+                archivedSectionContainer.style.display = 'block';
+                inactiveSectionsToggleIcon.className = 'fas fa-chevron-up';
+                inactiveSectionsToggleText.textContent = 'Hide Completed & Archived';
             } else {
-                completedSectionContainer.style.display = 'none'; archivedSectionContainer.style.display = 'none';
-                inactiveSectionsToggleIcon.className = 'fas fa-chevron-down'; inactiveSectionsToggleText.textContent = 'Show Completed & Archived';
-            } renderProjects();
+                completedSectionContainer.style.display = 'none';
+                archivedSectionContainer.style.display = 'none';
+                inactiveSectionsToggleIcon.className = 'fas fa-chevron-down';
+                inactiveSectionsToggleText.textContent = 'Show Completed & Archived';
+            }
+            renderProjects();
         }
-        function initInactiveSectionsToggle() {  
+
+        function initInactiveSectionsToggle() { 
             const storedVisibility = localStorage.getItem(INACTIVE_SECTIONS_VISIBILITY_KEY);
             if (storedVisibility !== null) inactiveSectionsVisible = JSON.parse(storedVisibility);
             applyInactiveSectionsVisibilityState(); 
             toggleInactiveSectionsBtn.addEventListener('click', () => {
-                inactiveSectionsVisible = !inactiveSectionsVisible; localStorage.setItem(INACTIVE_SECTIONS_VISIBILITY_KEY, JSON.stringify(inactiveSectionsVisible));
+                inactiveSectionsVisible = !inactiveSectionsVisible;
+                localStorage.setItem(INACTIVE_SECTIONS_VISIBILITY_KEY, JSON.stringify(inactiveSectionsVisible));
                 applyInactiveSectionsVisibilityState(); 
             });
         }
-        function updateDashboard() {  
+
+        function updateDashboard() { 
             let valueToday = 0, valueMonth = 0, upcomingValueTotal = 0;
-            const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0); const firstDayOfMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
+            const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0); 
+            const firstDayOfMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
             appData.projects.forEach(project => {
-                project.tasks = project.tasks || []; if (project.isArchived) return; 
-                const totalVal = parseFloat(project.totalValue) || 0; const earnedVal = parseFloat(project.valueEarned) || 0;
+                project.tasks = project.tasks || [];
+                if (project.isArchived) return; 
+                const totalVal = parseFloat(project.totalValue) || 0;
+                const earnedVal = parseFloat(project.valueEarned) || 0;
                 if (!project.isCompleted) upcomingValueTotal += (totalVal - earnedVal); 
-                project.tasks.forEach(task => {
+                project.tasks.forEach(task => { // This part contributes to earned value for dashboard
                     task.subtasks = task.subtasks || [];
                     if (task.subtasks.length > 0) {
                         task.subtasks.forEach(subtask => {
@@ -1052,424 +1161,736 @@
             document.getElementById('upcomingValue').textContent = `$${upcomingValueTotal.toFixed(0)}`;
             checkClearDataNotification();
         }
-        function renderProjects() { 
-            const listsToRender = [ { el: document.getElementById('activeQuestsList'), type: 'active' }, { el: document.getElementById('completedQuestsList'), type: 'completed' }, { el: document.getElementById('archivedQuestsList'), type: 'archived' }];
+
+        function renderProjects() {
+            const listsToProcess = [
+                { el: document.getElementById('activeQuestsList'), type: 'active', projects: [] },
+                { el: document.getElementById('completedQuestsList'), type: 'completed', projects: [] },
+                { el: document.getElementById('archivedQuestsList'), type: 'archived', projects: [] }
+            ];
             const firstPassPositions = new Map();
-            listsToRender.forEach(listInfo => {
+            listsToProcess.forEach(listInfo => {
                 Array.from(listInfo.el.children).forEach(cardElement => {
-                    const projectId = cardElement.dataset.id; if (projectId && !cardElement.classList.contains('exiting')) firstPassPositions.set(projectId, cardElement.getBoundingClientRect());
-                }); listInfo.el.innerHTML = '';
+                    const projectId = cardElement.dataset.id;
+                    if (projectId && !cardElement.classList.contains('exiting')) {
+                        firstPassPositions.set(projectId, cardElement.getBoundingClientRect());
+                    }
+                });
+                listInfo.el.innerHTML = ''; 
             });
-            const active = [], completedThisMonth = [], archived = []; const firstDayOfCurrentMonth = new Date(); firstDayOfCurrentMonth.setDate(1); firstDayOfCurrentMonth.setHours(0, 0, 0, 0);
+            
+            const firstDayOfCurrentMonth = new Date(); firstDayOfCurrentMonth.setDate(1); firstDayOfCurrentMonth.setHours(0, 0, 0, 0);
             appData.projects.forEach(project => {
-                project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []); 
-                if (project.isArchived === undefined) project.isArchived = false; if (project.creationTimestamp === undefined) project.creationTimestamp = Date.now();
-                if (project.isArchived) archived.push(project);
-                else if (project.isCompleted) { if (!project.completionTimestamp || new Date(project.completionTimestamp) >= firstDayOfCurrentMonth) completedThisMonth.push(project); } 
-                else active.push(project);
+                project.tasks = project.tasks || []; 
+                project.tasks.forEach(t => t.subtasks = t.subtasks || []); 
+                if (project.isArchived) listsToProcess.find(l => l.type === 'archived').projects.push(project);
+                else if (project.isCompleted) {
+                    if (!project.completionTimestamp || new Date(project.completionTimestamp) >= firstDayOfCurrentMonth) {
+                        listsToProcess.find(l => l.type === 'completed').projects.push(project);
+                    } // Older completed projects are not rendered in "completed this month"
+                } else listsToProcess.find(l => l.type === 'active').projects.push(project);
             });
-            active.sort((a, b) => { 
-                if (a.priority !== b.priority) return a.priority ? -1 : 1; const aDeadlineInfo = calculateQuestDaysLeft(a.deadline); const bDeadlineInfo = calculateQuestDaysLeft(b.deadline);
-                if (aDeadlineInfo.days !== bDeadlineInfo.days) return aDeadlineInfo.days - bDeadlineInfo.days; return (b.creationTimestamp || 0) - (a.creationTimestamp || 0);
+
+            listsToProcess.find(l => l.type === 'active').projects.sort((a, b) => { 
+                if (a.priority !== b.priority) return a.priority ? -1 : 1;
+                const aDeadlineInfo = calculateQuestDaysLeft(a.deadline); const bDeadlineInfo = calculateQuestDaysLeft(b.deadline);
+                if (aDeadlineInfo.days !== bDeadlineInfo.days) return aDeadlineInfo.days - bDeadlineInfo.days;
+                return (b.creationTimestamp || 0) - (a.creationTimestamp || 0);
             });
-            completedThisMonth.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0));
-            archived.sort((a,b) => { const aSortTime = a.completionTimestamp || a.creationTimestamp || 0; const bSortTime = b.completionTimestamp || b.creationTimestamp || 0; return bSortTime - aSortTime; });
-            const projectMap = { active, completed: completedThisMonth, archived };
-            listsToRender.forEach(listInfo => {
-                const projectsForList = projectMap[listInfo.type];
-                if (projectsForList.length === 0 && (listInfo.type === 'active' || (listInfo.type === 'completed' && inactiveSectionsVisible && document.getElementById('completedQuestsListWrapper').classList.contains('expanded')) || (listInfo.type === 'archived' && inactiveSectionsVisible && document.getElementById('archivedQuestsListWrapper').classList.contains('expanded')))) {
-                    let message = "No active quests. Time to start a new one!"; if (listInfo.type === 'completed') message = "No quests completed this month yet."; if (listInfo.type === 'archived') message = "No archived quests.";
+            listsToProcess.find(l => l.type === 'completed').projects.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0));
+            listsToProcess.find(l => l.type === 'archived').projects.sort((a,b) => ((b.completionTimestamp || b.creationTimestamp || 0)) - (a.completionTimestamp || a.creationTimestamp || 0));
+
+            listsToProcess.forEach(listInfo => {
+                if (listInfo.projects.length === 0 && 
+                    (listInfo.type === 'active' || 
+                     (listInfo.type === 'completed' && inactiveSectionsVisible && document.getElementById('completedQuestsListWrapper').classList.contains('expanded')) ||
+                     (listInfo.type === 'archived' && inactiveSectionsVisible && document.getElementById('archivedQuestsListWrapper').classList.contains('expanded'))
+                    )) {
+                    let message = "No active quests. Time to start a new one!";
+                    if (listInfo.type === 'completed') message = "No quests completed this month yet.";
+                    if (listInfo.type === 'archived') message = "No archived quests.";
                     listInfo.el.innerHTML = `<p class="empty-list-message">${message}</p>`;
-                } else projectsForList.forEach(project => listInfo.el.appendChild(createProjectCard(project)));
+                } else {
+                    listInfo.projects.forEach(project => {
+                        const card = createProjectCard(project);
+                        listInfo.el.appendChild(card);
+                    });
+                }
             });
-            listsToRender.forEach(listInfo => {
+            
+            listsToProcess.forEach(listInfo => {
                 Array.from(listInfo.el.children).forEach(cardElement => {
-                    const projectId = cardElement.dataset.id; if (!projectId || cardElement.classList.contains('empty-list-message')) return;
+                    const projectId = cardElement.dataset.id;
+                    if (!projectId || cardElement.classList.contains('empty-list-message')) return;
                     const oldRect = firstPassPositions.get(projectId);
                     if (!oldRect) { 
                         cardElement.classList.add('entering');
                         requestAnimationFrame(() => { 
-                            cardElement.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out'; cardElement.classList.remove('entering'); 
+                            cardElement.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                            cardElement.classList.remove('entering'); 
                             cardElement.addEventListener('transitionend', () => cardElement.style.transition = '', { once: true });
                         });
                     } else { 
-                        const newRect = cardElement.getBoundingClientRect(); const deltaX = oldRect.left - newRect.left; const deltaY = oldRect.top - newRect.top;
+                        const newRect = cardElement.getBoundingClientRect();
+                        const deltaX = oldRect.left - newRect.left; const deltaY = oldRect.top - newRect.top;
                         if (deltaX !== 0 || deltaY !== 0) {
-                            cardElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`; cardElement.style.transition = 'none'; 
+                            cardElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                            cardElement.style.transition = 'none'; 
                             requestAnimationFrame(() => { 
-                                cardElement.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)'; cardElement.style.transform = 'translate(0, 0)';
-                                cardElement.addEventListener('transitionend', () => { cardElement.style.transform = ''; cardElement.style.transition = ''; }, { once: true });
+                                cardElement.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                                cardElement.style.transform = 'translate(0, 0)';
+                                cardElement.addEventListener('transitionend', () => {
+                                    cardElement.style.transform = ''; cardElement.style.transition = '';
+                                }, { once: true });
                             });
                         }
                     }
                 });
             });
             updateDashboard();
-            appData.projects.forEach(project => {
+            appData.projects.forEach(project => { // Restore scroll positions
                 if (project.ui_isExpanded) {
-                    const projectCard = document.querySelector(`.quest-card[data-id="${project.id}"]`);
-                    if (projectCard) {
-                        const tasksContainerEl = projectCard.querySelector('.tasks-container');
-                        if (tasksContainerEl && tasksContainerEl.classList.contains('expanded')) setTimeout(() => { tasksContainerEl.scrollTop = project.ui_scrollPosition || 0; }, 50); 
-                    }
+                    const projectCard = document.querySelector(`.quest-card[data-id="${project.id}"] .tasks-container.expanded`);
+                    if (projectCard) setTimeout(() => { projectCard.scrollTop = project.ui_scrollPosition || 0; }, 50); 
                 }
             });
         }
+        
         function animateThenRemoveQuest(projectId) { 
             const cardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
             if (cardElement) {
                 cardElement.classList.add('exiting');
-                cardElement.addEventListener('animationend', () => { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }, { once: true });
-            } else { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }
+                cardElement.addEventListener('animationend', () => {
+                    appData.projects = appData.projects.filter(p => p.id !== projectId);
+                    saveData();
+                    renderProjects(); 
+                }, { once: true });
+            } else { 
+                appData.projects = appData.projects.filter(p => p.id !== projectId);
+                saveData(); renderProjects();
+            }
         }
-        function createProjectCard(project) { 
-            const card = document.createElement('div'); card.className = 'quest-card'; card.dataset.id = project.id;
-            if (project.isCompleted) card.classList.add('completed-quest'); if (project.isArchived) card.classList.add('archived-quest');
-            project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []);
-            const totalVal = parseFloat(project.totalValue) || 0; const earnedVal = parseFloat(project.valueEarned) || 0;
-            let progressPercent = totalVal > 0 ? (earnedVal / totalVal) * 100 : 0; if(project.isCompleted && project.tasks.length > 0) progressPercent = 100;
-            const deadlineInfo = calculateQuestDaysLeft(project.deadline); if (deadlineInfo.isOverdue && !project.isCompleted) card.classList.add('is-overdue');
+
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'quest-card';
+            card.dataset.id = project.id;
+            if (project.isCompleted) card.classList.add('completed-quest');
+            if (project.isArchived) card.classList.add('archived-quest');
+
+            const totalVal = parseFloat(project.totalValue) || 0;
+            const earnedVal = parseFloat(project.valueEarned) || 0;
+            let progressPercent = totalVal > 0 ? (earnedVal / totalVal) * 100 : 0;
+            if(project.isCompleted && project.tasks.length > 0) progressPercent = 100;
+            else if (totalVal === 0 && project.tasks.length === 0 && project.isCompleted) progressPercent = 100; // Completed, no tasks, no value
+            else if (totalVal === 0 && project.tasks.length > 0 && project.isCompleted) progressPercent = 100; // All tasks done implies 100%
+
+
+            const deadlineInfo = calculateQuestDaysLeft(project.deadline);
+            if (deadlineInfo.isOverdue && !project.isCompleted) card.classList.add('is-overdue');
+            
             let deadlineHtml = `<span class="quest-deadline-details"><i class="fas fa-calendar-alt"></i> <span class="quest-deadline-text">${deadlineInfo.deadlineFormatted}</span></span>`;
             if (deadlineInfo.countdownText && !project.isCompleted) {
-                deadlineHtml += `<span class="quest-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}"> &bull; <i class="fas fa-hourglass-half"></i> <span class="quest-countdown-text">${deadlineInfo.countdownText}</span></span>`;
+                deadlineHtml += `<span class="quest-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">&bull; <i class="fas fa-hourglass-half"></i> <span class="quest-countdown-text">${deadlineInfo.countdownText}</span></span>`;
             }
+
             card.innerHTML = `
                 <div class="quest-card-header">
                     <input type="checkbox" class="quest-complete-checkbox" ${project.isCompleted ? 'checked' : ''} title="Mark Quest Complete/Active" aria-label="Mark quest '${project.title}' as ${project.isCompleted ? 'active' : 'complete'}" ${project.isArchived ? 'disabled' : ''}>
                     <p class="quest-title-text" title="Edit Quest: ${project.title}">${project.title}</p>
                     <div class="quest-card-action-buttons">
-                        <button class="toggle-tasks-button btn-icon-only" title="Toggle Tasks" aria-label="Toggle tasks for ${project.title}"><i class="fas fa-chevron-${project.ui_isExpanded ? 'up' : 'down'}"></i></button>
-                        <button class="priority-button btn-icon-only ${project.priority ? 'prioritized' : ''}" title="${project.priority ? 'Unprioritize' : 'Prioritize'}" aria-label="${project.priority ? 'Unprioritize' : 'Prioritize'} ${project.title}" ${project.isArchived ? 'disabled' : ''}><i class="fas fa-star"></i></button>
+                        <button class="toggle-tasks-button btn-icon-only" title="Toggle Tasks View" aria-label="Toggle tasks for quest '${project.title}'"><i class="fas fa-chevron-${project.ui_isExpanded ? 'up' : 'down'}"></i></button>
+                        <button class="priority-button btn-icon-only ${project.priority ? 'prioritized' : ''}" title="${project.priority ? 'Remove Priority' : 'Set Priority'}" aria-label="${project.priority ? 'Remove priority from' : 'Set priority for'} quest '${project.title}'" ${project.isArchived || project.isCompleted ? 'disabled' : ''}><i class="fas fa-star"></i></button>
                         <div class="quest-more-actions-container">
-                            <button class="more-actions-button btn-icon-only" title="More Actions" aria-label="More actions for ${project.title}"><i class="fas fa-ellipsis-v"></i></button>
+                            <button class="more-actions-button btn-icon-only" title="More Actions" aria-label="More actions for quest '${project.title}'"><i class="fas fa-ellipsis-v"></i></button>
                             <div class="actions-dropdown">
                                 <button class="action-edit-quest" data-id="${project.id}"><i class="fas fa-edit"></i> Edit</button>
-                                ${project.isArchived ? `<button class="action-unarchive-quest" data-id="${project.id}"><i class="fas fa-folder-open"></i> Unarchive</button>` : `<button class="action-archive-quest" data-id="${project.id}"><i class="fas fa-archive"></i> Archive</button>`}
+                                ${project.isArchived
+                                    ? `<button class="action-unarchive-quest" data-id="${project.id}"><i class="fas fa-folder-open"></i> Unarchive</button>`
+                                    : `<button class="action-archive-quest" data-id="${project.id}" ${project.isCompleted ? 'disabled' : ''}><i class="fas fa-archive"></i> Archive</button>`}
                                 <button class="action-delete-quest danger" data-id="${project.id}"><i class="fas fa-trash-alt"></i> Delete</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="quest-card-meta">${deadlineHtml}<span class="quest-value-display" style="margin-left: auto;"><i class="fas fa-coins"></i> $${earnedVal.toFixed(0)} / $${totalVal.toFixed(0)}</span></div>
-                <div class="quest-progress-wrapper"><div class="quest-progress-bar-container" title="Progress: ${progressPercent.toFixed(0)}%"><div class="quest-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div></div><span class="quest-progress-value-text">${progressPercent.toFixed(0)}%</span></div>
-                <div class="tasks-container ${project.ui_isExpanded ? 'expanded' : ''}">${project.tasks.length > 0 ? project.tasks.map(task => createTaskElement(task, project.id, project.title, project.isArchived)).join('') : '<p style="font-size:0.85em; color: var(--text-light); text-align:center; padding:0.5rem 0;">No tasks for this quest.</p>'}</div>`;
-            card.querySelector('.toggle-tasks-button').addEventListener('click', (e) => { 
+                <div class="quest-card-meta">
+                    ${deadlineHtml}
+                    <span class="quest-value-display" style="margin-left: auto;"><i class="fas fa-coins"></i> $${earnedVal.toFixed(0)} / $${totalVal.toFixed(0)}</span>
+                </div>
+                <div class="quest-progress-wrapper">
+                    <div class="quest-progress-bar-container" title="Progress: ${progressPercent.toFixed(0)}%"><div class="quest-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div></div>
+                    <span class="quest-progress-value-text">${progressPercent.toFixed(0)}%</span>
+                </div>
+                <div class="tasks-container ${project.ui_isExpanded ? 'expanded' : ''}">
+                    ${project.tasks.length > 0 ? project.tasks.map(task => createTaskElement(task, project.id, project.title, project.isArchived || project.isCompleted)).join('') : '<p style="font-size:0.85em; color: var(--text-light); text-align:center; padding:0.5rem 0;">No tasks defined for this quest.</p>'}
+                </div>`;
+
+            card.querySelector('.toggle-tasks-button').addEventListener('click', (e) => {
                 e.stopPropagation(); const projectToToggle = appData.projects.find(p => p.id === project.id);
                 if (projectToToggle) {
-                    const tasksContainerEl = card.querySelector('.tasks-container'); const isCurrentlyExpanded = tasksContainerEl.classList.contains('expanded');
-                    if (isCurrentlyExpanded) projectToToggle.ui_scrollPosition = tasksContainerEl.scrollTop; else projectToToggle.ui_scrollPosition = 0;
-                    projectToToggle.ui_isExpanded = !projectToToggle.ui_isExpanded; tasksContainerEl.classList.toggle('expanded', projectToToggle.ui_isExpanded);
+                    const tasksContainerEl = card.querySelector('.tasks-container');
+                    if (tasksContainerEl.classList.contains('expanded')) projectToToggle.ui_scrollPosition = tasksContainerEl.scrollTop; else projectToToggle.ui_scrollPosition = 0;
+                    projectToToggle.ui_isExpanded = !projectToToggle.ui_isExpanded;
+                    tasksContainerEl.classList.toggle('expanded', projectToToggle.ui_isExpanded);
                     e.currentTarget.querySelector('i').className = `fas fa-chevron-${projectToToggle.ui_isExpanded ? 'up' : 'down'}`;
                     if (projectToToggle.ui_isExpanded) requestAnimationFrame(() => requestAnimationFrame(() => { tasksContainerEl.scrollTop = projectToToggle.ui_scrollPosition || 0; }));
                     saveData(); 
                 }
             });
-            const completeCheckbox = card.querySelector('.quest-complete-checkbox'); if (completeCheckbox) completeCheckbox.addEventListener('change', (e) => toggleProjectComplete(project.id, e.target.checked));
-            const priorityBtn = card.querySelector('.priority-button'); if (priorityBtn) priorityBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleProjectPriority(project.id); });
+            const completeCheckbox = card.querySelector('.quest-complete-checkbox');
+            if (completeCheckbox) completeCheckbox.addEventListener('change', (e) => toggleProjectComplete(project.id, e.target.checked));
+            const priorityBtn = card.querySelector('.priority-button');
+            if (priorityBtn) priorityBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleProjectPriority(project.id); });
             card.querySelector('.quest-title-text').addEventListener('click', () => openQuestModal(project.id));
             card.querySelectorAll('.task-checkbox').forEach(cb => cb.addEventListener('change', (e) => toggleTaskComplete(project.id, e.target.dataset.taskId, e.target.checked, e.target)));
             card.querySelectorAll('.subtask-checkbox').forEach(cb => cb.addEventListener('change', (e) => toggleSubtaskComplete(project.id, e.target.dataset.mainTaskId, e.target.dataset.subtaskId, e.target.checked, e.target)));
-            const moreActionsBtn = card.querySelector('.more-actions-button'); const actionsDropdown = card.querySelector('.actions-dropdown');
+            const moreActionsBtn = card.querySelector('.more-actions-button');
+            const actionsDropdown = card.querySelector('.actions-dropdown');
             moreActionsBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); document.querySelectorAll('.actions-dropdown').forEach(dd => { if (dd !== actionsDropdown) dd.style.display = 'none'; });
+                e.stopPropagation();
+                document.querySelectorAll('.actions-dropdown').forEach(dd => { if (dd !== actionsDropdown) dd.style.display = 'none'; });
                 actionsDropdown.style.display = actionsDropdown.style.display === 'none' ? 'block' : 'none';
             });
             card.querySelector('.action-edit-quest')?.addEventListener('click', () => { openQuestModal(project.id); actionsDropdown.style.display = 'none'; });
-            card.querySelector('.action-archive-quest')?.addEventListener('click', () => { archiveProject(project.id); actionsDropdown.style.display = 'none'; });
+            card.querySelector('.action-archive-quest')?.addEventListener('click', (e) => { if(!e.target.disabled) { archiveProject(project.id); actionsDropdown.style.display = 'none';} });
             card.querySelector('.action-unarchive-quest')?.addEventListener('click', () => { unarchiveProject(project.id); actionsDropdown.style.display = 'none'; });
             card.querySelector('.action-delete-quest')?.addEventListener('click', () => { deleteProjectWithAnimation(project.id); actionsDropdown.style.display = 'none'; });
             return card;
         }
-        function createTaskElement(task, projectId, projectTitle, isProjectArchived) { 
-            task.subtasks = task.subtasks || []; let valueDisplay = '';
-            if (task.taskValue !== undefined && task.taskValue > 0 && task.subtasks.length === 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
-            return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}"><input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} title="Complete task: ${task.description}" aria-label="Mark task '${task.description}' of quest '${projectTitle}' as ${task.isCompleted ? 'incomplete' : 'complete'}" ${isProjectArchived ? 'disabled' : ''}><span class="task-description">${task.description}</span>${valueDisplay}</div>${task.subtasks.map(subtask => createSubtaskElement(subtask, task.id, projectId, projectTitle, task.description, isProjectArchived)).join('')}`;
+
+        function createTaskElement(task, projectId, projectTitle, isProjectInactive) { 
+            task.subtasks = task.subtasks || [];
+            let valueDisplay = '';
+            if (task.taskValue > 0 && task.subtasks.length === 0) { 
+                 valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
+            }
+            return `
+                <div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                    <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} title="Complete task: ${task.description}" aria-label="Mark task '${task.description}' of quest '${projectTitle}' as ${task.isCompleted ? 'incomplete' : 'complete'}" ${isProjectInactive ? 'disabled' : ''}>
+                    <span class="task-description">${task.description}</span>
+                    ${valueDisplay}
+                </div>
+                ${task.subtasks.map(subtask => createSubtaskElement(subtask, task.id, projectId, projectTitle, task.description, isProjectInactive)).join('')}`;
         }
-        function createSubtaskElement(subtask, mainTaskId, projectId, projectTitle, mainTaskDescription, isProjectArchived) {
-             let valueDisplay = ''; if (subtask.subtaskValue !== undefined && subtask.subtaskValue > 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)}</span>`;
-            return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}"><input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} title="Complete subtask: ${subtask.description}" aria-label="Mark subtask '${subtask.description}' of task '${mainTaskDescription}' as ${subtask.isCompleted ? 'incomplete' : 'complete'}" ${isProjectArchived ? 'disabled' : ''}><span class="task-description">${subtask.description}</span>${valueDisplay}</div>`;
+        function createSubtaskElement(subtask, mainTaskId, projectId, projectTitle, mainTaskDescription, isProjectInactive) {
+             let valueDisplay = '';
+             if (subtask.subtaskValue > 0) {
+                 valueDisplay = `<span class="task-value-chip">$${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)}</span>`;
+             }
+            return `
+                <div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
+                    <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} title="Complete subtask: ${subtask.description}" aria-label="Mark subtask '${subtask.description}' of task '${mainTaskDescription}' as ${subtask.isCompleted ? 'incomplete' : 'complete'}" ${isProjectInactive ? 'disabled' : ''}>
+                    <span class="task-description">${subtask.description}</span>
+                    ${valueDisplay}
+                </div>`;
         }
         function distributeValueToTasks(project) { 
-            project.tasks = project.tasks || []; const totalVal = parseFloat(project.totalValue) || 0; let totalValueUnits = 0;
-            project.tasks.forEach(task => { task.subtasks = task.subtasks || []; if (task.subtasks.length > 0) totalValueUnits += task.subtasks.length; else totalValueUnits += 1; });
-            if (totalValueUnits === 0 || totalVal === 0) { project.tasks.forEach(task => { task.taskValue = 0; task.subtasks.forEach(sub => sub.subtaskValue = 0); }); return; }
-            const valuePerUnit = totalVal / totalValueUnits;
-            project.tasks.forEach(task => { if (task.subtasks.length > 0) { task.taskValue = 0; task.subtasks.forEach(sub => sub.subtaskValue = valuePerUnit); } else task.taskValue = valuePerUnit; });
+            project.tasks = project.tasks || [];
+            const mainTasks = project.tasks;
+            const mainTaskCount = mainTasks.length;
+            const totalProjectValue = parseFloat(project.totalValue) || 0;
+
+            if (mainTaskCount === 0 || totalProjectValue === 0) {
+                project.tasks.forEach(task => { task.taskValue = 0; task.subtasks.forEach(sub => sub.subtaskValue = 0); });
+                project.valueEarned = 0; return;
+            }
+            const valuePerMainTask = totalProjectValue / mainTaskCount;
+            mainTasks.forEach(task => {
+                task.taskValue = valuePerMainTask; 
+                task.subtasks = task.subtasks || [];
+                if (task.subtasks.length > 0) {
+                    const valuePerSubtask = task.taskValue / task.subtasks.length; 
+                    task.subtasks.forEach(sub => sub.subtaskValue = valuePerSubtask);
+                }
+            });
+            let newEarnedValue = 0;
+            project.tasks.forEach(task => {
+                if (task.subtasks.length > 0) task.subtasks.forEach(sub => { if (sub.isCompleted) newEarnedValue += (parseFloat(sub.subtaskValue) || 0); });
+                else if (task.isCompleted) newEarnedValue += (parseFloat(task.taskValue) || 0);
+            });
+            project.valueEarned = Math.max(0, Math.min(newEarnedValue, totalProjectValue));
         }
-        function toggleProjectComplete(projectId, isBeingMarkedCompleted) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return;
-            project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []);
-            const oldCompletedState = project.isCompleted; project.isCompleted = isBeingMarkedCompleted;
+        
+        function toggleProjectComplete(projectId, isBeingMarkedCompleted) {
+            const project = appData.projects.find(p => p.id === projectId);
+            if (!project || project.isArchived) return;
+            const oldCompletedState = project.isCompleted;
+            project.isCompleted = isBeingMarkedCompleted;
             if (isBeingMarkedCompleted) {
-                project.completionTimestamp = project.completionTimestamp || Date.now(); project.valueEarned = parseFloat(project.totalValue) || 0;
-                project.tasks.forEach(task => { task.isCompleted = true; task.completionTimestamp = task.completionTimestamp || Date.now(); task.subtasks.forEach(sub => { sub.isCompleted = true; sub.completionTimestamp = sub.completionTimestamp || Date.now(); }); });
+                project.completionTimestamp = project.completionTimestamp || Date.now();
+                project.valueEarned = parseFloat(project.totalValue) || 0;
+                project.tasks.forEach(task => { 
+                    task.isCompleted = true; task.completionTimestamp = task.completionTimestamp || Date.now(); 
+                    task.subtasks.forEach(sub => { sub.isCompleted = true; sub.completionTimestamp = sub.completionTimestamp || Date.now(); }); 
+                });
                 if (!oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" completed! +$${project.valueEarned.toFixed(0)} earned.`, 'success', 4000); 
-            } else { project.completionTimestamp = null; if (oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');}
-            updateProjectCardDOM(projectId, true);
+            } else { 
+                project.completionTimestamp = null;
+                // ValueEarned is recalculated in updateProjectCardDOM based on actual task states
+                if (oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+            }
+            updateProjectCardDOM(projectId, true); // Force full render as it moves lists
         }
-        function updateProjectCardDOM(projectId, forceRenderAll = false) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project) return;
-            project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []); let newEarnedValue = 0;
-            project.tasks.forEach(task => { if (task.subtasks.length > 0) task.subtasks.forEach(subtask => { if (subtask.isCompleted) newEarnedValue += (parseFloat(subtask.subtaskValue) || 0); }); else if (task.isCompleted) newEarnedValue += (parseFloat(task.taskValue) || 0); });
-            project.valueEarned = Math.max(0, Math.min(newEarnedValue, parseFloat(project.totalValue) || 0));
+        
+        function updateProjectCardDOM(projectId, forceRenderAll = false) {
+            const project = appData.projects.find(p => p.id === projectId);
+            if (!project) return;
+            distributeValueToTasks(project); // Recalculate values and earned value
+
             const oldProjectCompletedState = project.isCompleted;
-            const allTasksEffectivelyDone = project.tasks.length > 0 && project.tasks.every(task => { if (task.subtasks.length > 0) return task.subtasks.every(st => st.isCompleted); return task.isCompleted; });
+            const allTasksEffectivelyDone = project.tasks.length > 0 && project.tasks.every(task => task.subtasks.length > 0 ? task.subtasks.every(st => st.isCompleted) : task.isCompleted);
+
             if (allTasksEffectivelyDone && !project.isCompleted && !project.isArchived) {
-                project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now(); project.valueEarned = parseFloat(project.totalValue); 
+                project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now();
+                project.valueEarned = parseFloat(project.totalValue); 
                  if (!oldProjectCompletedState) showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success', 4000);
             } else if (!allTasksEffectivelyDone && project.isCompleted && !project.isArchived) {
-                project.isCompleted = false; project.completionTimestamp = null; if (oldProjectCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+                project.isCompleted = false; project.completionTimestamp = null;
+                if (oldProjectCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated (task incomplete).`, 'info');
             }
-            if (forceRenderAll || oldProjectCompletedState !== project.isCompleted) { saveData(); renderProjects(); } 
-            else { 
+            
+            if (forceRenderAll || oldProjectCompletedState !== project.isCompleted) {
+                saveData(); renderProjects(); 
+            } else { 
                 const projectCardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
                 if (projectCardElement) {
-                    const valueDisplay = projectCardElement.querySelector('.quest-value-display'); if (valueDisplay) valueDisplay.innerHTML = `<i class="fas fa-coins"></i> $${project.valueEarned.toFixed(0)} / $${(parseFloat(project.totalValue) || 0).toFixed(0)}`;
-                    const totalVal = parseFloat(project.totalValue) || 0; let progressPercent = totalVal > 0 ? (project.valueEarned / totalVal) * 100 : 0; if(project.isCompleted && project.tasks.length > 0) progressPercent = 100;
-                    const progressFill = projectCardElement.querySelector('.quest-progress-fill'); const progressText = projectCardElement.querySelector('.quest-progress-value-text');
-                    if (progressFill) progressFill.style.width = `${Math.min(100, progressPercent).toFixed(0)}%`; if (progressText) progressText.textContent = `${progressPercent.toFixed(0)}%`;
-                    if (progressFill && progressFill.parentElement) progressFill.parentElement.title = `Progress: ${progressPercent.toFixed(0)}%`;
-                    const mainCheckbox = projectCardElement.querySelector('.quest-complete-checkbox'); if (mainCheckbox && mainCheckbox.checked !== project.isCompleted) mainCheckbox.checked = project.isCompleted;
+                    projectCardElement.querySelector('.quest-value-display').innerHTML = `<i class="fas fa-coins"></i> $${project.valueEarned.toFixed(0)} / $${(parseFloat(project.totalValue) || 0).toFixed(0)}`;
+                    const totalVal = parseFloat(project.totalValue) || 0;
+                    let progressPercent = totalVal > 0 ? (project.valueEarned / totalVal) * 100 : 0;
+                     if(project.isCompleted && project.tasks.length > 0) progressPercent = 100;
+                     else if (totalVal === 0 && project.tasks.length === 0 && project.isCompleted) progressPercent = 100;
+                     else if (totalVal === 0 && project.tasks.length > 0 && project.isCompleted) progressPercent = 100;
+
+
+                    projectCardElement.querySelector('.quest-progress-fill').style.width = `${Math.min(100, progressPercent).toFixed(0)}%`;
+                    projectCardElement.querySelector('.quest-progress-value-text').textContent = `${progressPercent.toFixed(0)}%`;
+                    projectCardElement.querySelector('.quest-progress-bar-container').title = `Progress: ${progressPercent.toFixed(0)}%`;
+                    const mainCheckbox = projectCardElement.querySelector('.quest-complete-checkbox');
+                    if (mainCheckbox) mainCheckbox.checked = project.isCompleted;
                     projectCardElement.classList.toggle('completed-quest', project.isCompleted);
-                    const deadlineInfo = calculateQuestDaysLeft(project.deadline); projectCardElement.classList.toggle('is-overdue', deadlineInfo.isOverdue && !project.isCompleted);
-                    const deadlineTextEl = projectCardElement.querySelector('.quest-deadline-text'); if (deadlineTextEl) deadlineTextEl.textContent = deadlineInfo.deadlineFormatted;
-                    const countdownTextEl = projectCardElement.querySelector('.quest-countdown-text'); if (countdownTextEl) countdownTextEl.textContent = deadlineInfo.countdownText;
-                    const countdownContainerEl = projectCardElement.querySelector('.quest-countdown');
-                    if(countdownContainerEl) {
-                        countdownContainerEl.classList.toggle('overdue', deadlineInfo.isOverdue); countdownContainerEl.classList.toggle('today', deadlineInfo.isToday);
-                        countdownContainerEl.style.display = (deadlineInfo.countdownText && !project.isCompleted) ? 'flex' : 'none';
+                    // Update deadline display dynamically if needed (e.g. if countdown text changes but card doesn't move)
+                    const deadlineInfo = calculateQuestDaysLeft(project.deadline);
+                    projectCardElement.classList.toggle('is-overdue', deadlineInfo.isOverdue && !project.isCompleted);
+                    const deadlineTextEl = projectCardElement.querySelector('.quest-deadline-text');
+                    if(deadlineTextEl) deadlineTextEl.textContent = deadlineInfo.deadlineFormatted;
+                    const countdownTextEl = projectCardElement.querySelector('.quest-countdown-text');
+                    const countdownContainer = projectCardElement.querySelector('.quest-countdown');
+                    if(countdownTextEl && countdownContainer){
+                        countdownTextEl.textContent = deadlineInfo.countdownText;
+                        countdownContainer.classList.toggle('overdue', deadlineInfo.isOverdue);
+                        countdownContainer.classList.toggle('today', deadlineInfo.isToday);
+                        countdownContainer.style.display = (deadlineInfo.countdownText && !project.isCompleted) ? 'flex' : 'none';
+                    } else if (countdownContainer) { // Handle case where countdown text might not exist if no deadline
+                        countdownContainer.style.display = 'none';
                     }
-                } saveData(); updateDashboard(); 
+                }
+                saveData(); updateDashboard(); 
             }
         }
         function toggleProjectPriority(projectId) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; 
-            project.priority = !project.priority; saveData(); renderProjects(); 
-            if(project.priority) showToast(`Quest "<strong>${project.title}</strong>" prioritized.`, 'info'); else showToast(`Quest "<strong>${project.title}</strong>" unprioritized.`, 'info');
+            const project = appData.projects.find(p => p.id === projectId);
+            if (!project || project.isArchived || project.isCompleted) return; 
+            project.priority = !project.priority;
+            saveData(); renderProjects(); 
+            showToast(`Quest "<strong>${project.title}</strong>" ${project.priority ? 'prioritized' : 'unprioritized'}.`, 'info'); 
         }
-        function toggleTaskComplete(projectId, taskId, isCompleted, checkboxElement) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; 
-            project.tasks = project.tasks || []; const task = project.tasks.find(t => t.id === taskId); if (!task) return; task.subtasks = task.subtasks || [];
-            const wasTaskPreviouslyCompleted = task.isCompleted; task.isCompleted = isCompleted;
-            if (isCompleted && !wasTaskPreviouslyCompleted) task.completionTimestamp = task.completionTimestamp || Date.now(); else if (!isCompleted) task.completionTimestamp = null;
-            const taskItemElement = checkboxElement.closest('.task-item'); if (taskItemElement) taskItemElement.classList.toggle('completed', isCompleted);
+        function toggleTaskComplete(projectId, taskId, isCompleted, checkboxElement) {
+            const project = appData.projects.find(p => p.id === projectId);
+            if (!project || project.isArchived || project.isCompleted) return; 
+            const task = project.tasks.find(t => t.id === taskId); if (!task) return;
+            const wasTaskPreviouslyCompleted = task.isCompleted; 
+            task.isCompleted = isCompleted;
+            if (isCompleted && !wasTaskPreviouslyCompleted) task.completionTimestamp = task.completionTimestamp || Date.now();
+            else if (!isCompleted) task.completionTimestamp = null;
+            checkboxElement.closest('.task-item')?.classList.toggle('completed', isCompleted);
+
             let valueChangeForToast = 0;
             task.subtasks.forEach(sub => {
                 const wasSubtaskPreviouslyCompleted = sub.isCompleted; sub.isCompleted = isCompleted; 
-                if (isCompleted && !wasSubtaskPreviouslyCompleted) { sub.completionTimestamp = sub.completionTimestamp || Date.now(); valueChangeForToast += (parseFloat(sub.subtaskValue) || 0); } 
+                if (isCompleted && !wasSubtaskPreviouslyCompleted) { sub.completionTimestamp = sub.completionTimestamp || Date.now(); valueChangeForToast += (parseFloat(sub.subtaskValue) || 0); }
                 else if (!isCompleted) sub.completionTimestamp = null;
                 const subtaskItemElement = document.querySelector(`.subtask-item[data-subtask-id="${sub.id}"][data-main-task-id="${task.id}"]`);
-                if (subtaskItemElement) { subtaskItemElement.classList.toggle('completed', isCompleted); const subtaskCheckbox = subtaskItemElement.querySelector('.subtask-checkbox'); if (subtaskCheckbox) subtaskCheckbox.checked = isCompleted; }
+                if (subtaskItemElement) { subtaskItemElement.classList.toggle('completed', isCompleted); subtaskItemElement.querySelector('.subtask-checkbox').checked = isCompleted; }
             });
             if (task.subtasks.length === 0 && isCompleted && !wasTaskPreviouslyCompleted) valueChangeForToast = parseFloat(task.taskValue) || 0;
-            if (isCompleted && !wasTaskPreviouslyCompleted) { const message = valueChangeForToast > 0 ? `Task "<strong>${task.description}</strong>" completed! +$${valueChangeForToast.toFixed(0)}` : `Task "<strong>${task.description}</strong>" completed!`; showToast(message, 'success'); } 
+            if (isCompleted && !wasTaskPreviouslyCompleted) showToast(`Task "<strong>${task.description}</strong>" completed${valueChangeForToast > 0 ? '! +$'+valueChangeForToast.toFixed(0) : '!'}`, 'success');
             else if (!isCompleted && wasTaskPreviouslyCompleted) showToast(`Task "<strong>${task.description}</strong>" un-checked.`, 'info');
             updateProjectCardDOM(projectId); 
         }
-        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted, checkboxElement) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; 
-            project.tasks = project.tasks || []; const mainTask = project.tasks.find(t => t.id === mainTaskId); if (!mainTask) return; mainTask.subtasks = mainTask.subtasks || []; const subtask = mainTask.subtasks.find(s => s.id === subtaskId); if (!subtask) return;
-            const wasSubtaskPreviouslyCompleted = subtask.isCompleted; subtask.isCompleted = isCompleted;
-            if (isCompleted && !wasSubtaskPreviouslyCompleted) subtask.completionTimestamp = subtask.completionTimestamp || Date.now(); else if (!isCompleted) subtask.completionTimestamp = null;
-            const subtaskItemElement = checkboxElement.closest('.subtask-item'); if (subtaskItemElement) subtaskItemElement.classList.toggle('completed', isCompleted);
-            if (isCompleted && !wasSubtaskPreviouslyCompleted) { const subValue = parseFloat(subtask.subtaskValue) || 0; const message = subValue > 0 ? `Subtask "<strong>${subtask.description}</strong>" completed! +$${subValue.toFixed(0)}` : `Subtask "<strong>${subtask.description}</strong>" completed!`; showToast(message, 'success'); } 
-            else if (!isCompleted && wasSubtaskPreviouslyCompleted) showToast(`Subtask "<strong>${subtask.description}</strong>" un-checked.`, 'info');
+        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted, checkboxElement) {
+            const project = appData.projects.find(p => p.id === projectId);
+            if (!project || project.isArchived || project.isCompleted) return; 
+            const mainTask = project.tasks.find(t => t.id === mainTaskId); if (!mainTask) return;
+            const subtask = mainTask.subtasks.find(s => s.id === subtaskId); if (!subtask) return;
+            const wasSubtaskPreviouslyCompleted = subtask.isCompleted;
+            subtask.isCompleted = isCompleted;
+            if (isCompleted && !wasSubtaskPreviouslyCompleted) subtask.completionTimestamp = subtask.completionTimestamp || Date.now();
+            else if (!isCompleted) subtask.completionTimestamp = null;
+            checkboxElement.closest('.subtask-item')?.classList.toggle('completed', isCompleted);
+
+            if (isCompleted && !wasSubtaskPreviouslyCompleted) {
+                const subValue = parseFloat(subtask.subtaskValue) || 0;
+                showToast(`Subtask "<strong>${subtask.description}</strong>" completed${subValue > 0 ? '! +$'+subValue.toFixed(0) : '!'}`, 'success');
+            } else if (!isCompleted && wasSubtaskPreviouslyCompleted) showToast(`Subtask "<strong>${subtask.description}</strong>" un-checked.`, 'info');
+
             const wasMainTaskPreviouslyCompleted = mainTask.isCompleted;
             if (mainTask.subtasks.length > 0) {
                 const allSubtasksDone = mainTask.subtasks.every(s => s.isCompleted);
-                if (allSubtasksDone && !wasMainTaskPreviouslyCompleted) { mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now(); showToast(`Task "<strong>${mainTask.description}</strong>" auto-completed.`, 'success'); } 
-                else if (!allSubtasksDone && wasMainTaskPreviouslyCompleted) { mainTask.isCompleted = false; mainTask.completionTimestamp = null; showToast(`Task "<strong>${mainTask.description}</strong>" reactivated.`, 'info'); } 
+                if (allSubtasksDone && !wasMainTaskPreviouslyCompleted) { mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now(); showToast(`Task "<strong>${mainTask.description}</strong>" completed! (All subtasks done)`, 'success');}
+                else if (!allSubtasksDone && wasMainTaskPreviouslyCompleted) { mainTask.isCompleted = false; mainTask.completionTimestamp = null; showToast(`Task "<strong>${mainTask.description}</strong>" reactivated (subtask un-checked).`, 'info');}
                 else mainTask.isCompleted = allSubtasksDone;
                 const mainTaskItemElement = document.querySelector(`.task-item[data-task-id="${mainTask.id}"]`);
-                if (mainTaskItemElement) { mainTaskItemElement.classList.toggle('completed', mainTask.isCompleted); const mainTaskCheckbox = mainTaskItemElement.querySelector('.task-checkbox'); if (mainTaskCheckbox) mainTaskCheckbox.checked = mainTask.isCompleted; }
-            } updateProjectCardDOM(projectId); 
+                if (mainTaskItemElement) { mainTaskItemElement.classList.toggle('completed', mainTask.isCompleted); mainTaskItemElement.querySelector('.task-checkbox').checked = mainTask.isCompleted; }
+            }
+            updateProjectCardDOM(projectId); 
         }
+        
         function deleteProjectWithAnimation(projectId) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project) return;
-            showCustomConfirm( `Are you sure you want to PERMANENTLY DELETE "<strong>${project.title}</strong>"?`, "Delete Quest", () => { animateThenRemoveQuest(projectId); showToast(`Quest "<strong>${project.title}</strong>" deleted.`, 'info'); });
+            showCustomConfirm(`Are you sure you want to PERMANENTLY DELETE the quest "<strong>${project.title}</strong>"? This cannot be undone.`, "Delete Quest",
+                () => { animateThenRemoveQuest(projectId); showToast(`Quest "<strong>${project.title}</strong>" deleted.`, 'info'); }
+            );
         }
-        function archiveProject(projectId) {  
-            const project = appData.projects.find(p => p.id === projectId); if (!project) return;
+        function archiveProject(projectId) { 
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isCompleted) return;
             project.isArchived = true; saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" archived.`, 'info');
         }
-        function unarchiveProject(projectId) {  
+        function unarchiveProject(projectId) { 
             const project = appData.projects.find(p => p.id === projectId); if (!project) return;
             project.isArchived = false; saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" unarchived.`, 'info');
         }
 
-        const questModal = document.getElementById('questModal'); const closeQuestModalBtn = document.getElementById('closeQuestModal'); const cancelQuestModalBtn = document.getElementById('cancelQuestModalBtn'); const addQuestHeaderBtn = document.getElementById('addQuestHeaderBtn'); const saveQuestBtn = document.getElementById('saveQuestBtn'); const questModalTitleEl = document.getElementById('questModalTitle'); const questIdInput = document.getElementById('questId'); const questTitleInput = document.getElementById('questTitle'); const questDeadlineInput = document.getElementById('questDeadline'); const questValueInput = document.getElementById('questValueInput'); const questTemplateSelect = document.getElementById('questTemplateSelect'); const modalTasksContainer = document.getElementById('modalTasksContainer'); const addModalMainTaskBtn = document.getElementById('addModalMainTaskBtn');
-        function openQuestModal(projectId = null) {  
+        const questModal = document.getElementById('questModal');
+        const closeQuestModalBtn = document.getElementById('closeQuestModal');
+        const cancelQuestModalBtn = document.getElementById('cancelQuestModalBtn');
+        const addQuestHeaderBtn = document.getElementById('addQuestHeaderBtn');
+        const saveQuestBtn = document.getElementById('saveQuestBtn');
+        const questModalTitleEl = document.getElementById('questModalTitle');
+        const questIdInput = document.getElementById('questId');
+        const questTitleInput = document.getElementById('questTitle');
+        const questDeadlineInput = document.getElementById('questDeadline');
+        const questValueInput = document.getElementById('questValueInput');
+        const questTemplateSelect = document.getElementById('questTemplateSelect');
+        const modalTasksContainer = document.getElementById('modalTasksContainer');
+        const addModalMainTaskBtn = document.getElementById('addModalMainTaskBtn');
+
+        function openQuestModal(projectId = null) { 
             populateTemplateSelect(questTemplateSelect); modalTasksContainer.innerHTML = ''; 
             if (projectId) {
-                const project = appData.projects.find(p => p.id === projectId); project.tasks = project.tasks || [];
-                questModalTitleEl.innerHTML = `<i class="fas fa-edit"></i>Edit Quest`; questIdInput.value = project.id; questTitleInput.value = project.title;
+                const project = appData.projects.find(p => p.id === projectId);
+                questModalTitleEl.innerHTML = `<i class="fas fa-edit" style="margin-right:0.5rem;"></i>Edit Quest`;
+                questIdInput.value = project.id; questTitleInput.value = project.title;
                 questDeadlineInput.value = project.deadline || ''; questValueInput.value = project.totalValue;
-                project.tasks.forEach(taskData => { taskData.subtasks = taskData.subtasks || []; addModalTaskEditor(taskData); });
+                (project.tasks || []).forEach(taskData => addModalTaskEditor(taskData));
             } else {
-                questModalTitleEl.innerHTML = `<i class="fas fa-plus-circle"></i>Start New Quest`; questIdInput.value = ''; questTitleInput.value = '';
+                questModalTitleEl.innerHTML = `<i class="fas fa-plus-circle" style="margin-right:0.5rem;"></i>Start New Quest`;
+                questIdInput.value = ''; questTitleInput.value = '';
                 questDeadlineInput.value = getTodayString(); questValueInput.value = '100'; 
                 const defaultTemplateId = questTemplateSelect.value;
                 if (defaultTemplateId) {
                     const template = appData.templates.find(t => t.id === defaultTemplateId);
-                    if (template) (template.tasks || []).forEach(taskData => addModalTaskEditor({ ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null, subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) }));
-                } else addModalTaskEditor(); 
-            } questModal.style.display = 'flex'; questTitleInput.focus();
+                    if (template) (template.tasks || []).forEach(taskData => addModalTaskEditor({ 
+                         ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null,
+                         subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0}))
+                    }));
+                } else { addModalTaskEditor(); } 
+            }
+            questModal.style.display = 'flex'; questTitleInput.focus();
         }
-        questTemplateSelect.addEventListener('change', () => { 
+        questTemplateSelect.addEventListener('change', () => {
             if (!questIdInput.value) { 
-                modalTasksContainer.innerHTML = ''; const templateId = questTemplateSelect.value;
+                modalTasksContainer.innerHTML = ''; 
+                const templateId = questTemplateSelect.value;
                 if (templateId) {
                     const template = appData.templates.find(t => t.id === templateId);
-                    if (template) (template.tasks || []).forEach(taskData => addModalTaskEditor({ ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null, subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) }));
-                } else addModalTaskEditor(); 
+                    if (template) (template.tasks || []).forEach(taskData => addModalTaskEditor({ 
+                        ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null,
+                        subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) 
+                    }));
+                } else { addModalTaskEditor(); } 
             }
         });
-        
+        function addModalTaskEditor(taskData = null) { 
+            const taskId = taskData ? taskData.id : generateId(); const taskDesc = taskData ? taskData.description : '';
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; taskDiv.dataset.taskId = taskId; 
+            taskDiv.innerHTML = `
+                <div class="task-editor-header">
+                    <input type="text" class="modal-task-desc" value="${taskDesc}" placeholder="Main Task Description">
+                    <button type="button" class="remove-modal-task-btn btn-icon-only danger" title="Remove This Task"><i class="fas fa-trash-alt"></i></button>
+                    <button type="button" class="add-modal-subtask-btn btn-icon-only" title="Add Subtask"><i class="fas fa-plus-circle"></i></button>
+                </div><div class="modal-subtasks-list" style="padding-top: 5px;"></div>`;
+            modalTasksContainer.appendChild(taskDiv);
+            if (taskData && taskData.subtasks) (taskData.subtasks || []).forEach(subtaskData => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), subtaskData));
+            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove();
+            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));
+        }
+        function addModalSubtaskEditor(parentList, subtaskData = null) { 
+            const subtaskId = subtaskData ? subtaskData.id : generateId(); const subtaskDesc = subtaskData ? subtaskData.description : '';
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; subtaskDiv.dataset.subtaskId = subtaskId; 
+            subtaskDiv.innerHTML = `
+                <input type="text" class="modal-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description">
+                <button type="button" class="remove-modal-subtask-btn btn-icon-only danger" title="Remove This Subtask"><i class="fas fa-trash-alt"></i></button>`;
+            parentList.appendChild(subtaskDiv);
+            subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+
         addModalMainTaskBtn.addEventListener('click', () => addModalTaskEditor());
         closeQuestModalBtn.addEventListener('click', () => questModal.style.display = 'none');
         cancelQuestModalBtn.addEventListener('click', () => questModal.style.display = 'none');
         addQuestHeaderBtn.addEventListener('click', () => openQuestModal());
-        saveQuestBtn.addEventListener('click', () => {  
-            const id = questIdInput.value || generateId(); const title = questTitleInput.value.trim(); const deadline = questDeadlineInput.value; const totalValue = parseFloat(questValueInput.value) || 0;
+
+        saveQuestBtn.addEventListener('click', () => { 
+            const id = questIdInput.value || generateId(); const title = questTitleInput.value.trim();
+            const deadline = questDeadlineInput.value; const totalValue = parseFloat(questValueInput.value) || 0;
             if (!title) { showToast('Quest Title is required.', 'warning'); questTitleInput.focus(); return; }
             const tasksFromModal = [];
             document.querySelectorAll('#modalTasksContainer .task-editor-item').forEach(taskDiv => {
                 const taskDesc = taskDiv.querySelector('.modal-task-desc').value.trim();
                 if (taskDesc) {
                     const mainTask = { id: taskDiv.dataset.taskId || generateId(), description: taskDesc, isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: [] };
-                    taskDiv.querySelectorAll('.subtask-editor-item').forEach(subtaskDiv => { const subtaskDesc = subtaskDiv.querySelector('.modal-subtask-desc').value.trim(); if (subtaskDesc) mainTask.subtasks.push({ id: subtaskDiv.dataset.subtaskId || generateId(), description: subtaskDesc, isCompleted: false, completionTimestamp: null, subtaskValue: 0 }); });
-                    tasksFromModal.push(mainTask);
+                    taskDiv.querySelectorAll('.subtask-editor-item').forEach(subtaskDiv => {
+                        const subtaskDesc = subtaskDiv.querySelector('.modal-subtask-desc').value.trim();
+                        if (subtaskDesc) mainTask.subtasks.push({ id: subtaskDiv.dataset.subtaskId || generateId(), description: subtaskDesc, isCompleted: false, completionTimestamp: null, subtaskValue: 0 });
+                    }); tasksFromModal.push(mainTask);
                 }
             });
             const existingProject = appData.projects.find(p => p.id === id);
             if (existingProject) { 
-                existingProject.title = title; existingProject.deadline = deadline; existingProject.totalValue = totalValue; const oldTasksMap = new Map((existingProject.tasks || []).map(t => [t.id, t]));
-                tasksFromModal.forEach(newTask => {
-                    newTask.subtasks = newTask.subtasks || []; const oldTask = oldTasksMap.get(newTask.id);
-                    if (oldTask) { newTask.isCompleted = oldTask.isCompleted; newTask.completionTimestamp = oldTask.completionTimestamp; const oldSubtasksMap = new Map((oldTask.subtasks || []).map(st => [st.id, st])); newTask.subtasks.forEach(newSubtask => { const oldSubtask = oldSubtasksMap.get(newSubtask.id); if(oldSubtask) { newSubtask.isCompleted = oldSubtask.isCompleted; newSubtask.completionTimestamp = oldSubtask.completionTimestamp; }}); }
+                existingProject.title = title; existingProject.deadline = deadline; existingProject.totalValue = totalValue;
+                const oldTasksMap = new Map((existingProject.tasks || []).map(t => [t.id, t]));
+                tasksFromModal.forEach(newTask => { // Preserve completion state for existing tasks/subtasks
+                    const oldTask = oldTasksMap.get(newTask.id);
+                    if (oldTask) { 
+                        newTask.isCompleted = oldTask.isCompleted; newTask.completionTimestamp = oldTask.completionTimestamp;
+                        const oldSubtasksMap = new Map((oldTask.subtasks || []).map(st => [st.id, st]));
+                        (newTask.subtasks || []).forEach(newSubtask => {
+                             const oldSubtask = oldSubtasksMap.get(newSubtask.id);
+                             if(oldSubtask) { newSubtask.isCompleted = oldSubtask.isCompleted; newSubtask.completionTimestamp = oldSubtask.completionTimestamp; }
+                        });
+                    }
                 });
-                existingProject.tasks = tasksFromModal; distributeValueToTasks(existingProject); updateProjectCardDOM(existingProject.id, true); showToast(`Quest "<strong>${existingProject.title}</strong>" updated.`, 'info');
+                existingProject.tasks = tasksFromModal;
+                distributeValueToTasks(existingProject); 
+                updateProjectCardDOM(existingProject.id, true); 
+                showToast(`Quest "<strong>${existingProject.title}</strong>" updated.`, 'info');
             } else { 
                 const newProject = { id, title, deadline, totalValue, valueEarned: 0, isCompleted: false, completionTimestamp: null, priority: false, tasks: tasksFromModal, ui_isExpanded: true, ui_scrollPosition: 0, isArchived: false, creationTimestamp: Date.now() };
-                distributeValueToTasks(newProject); appData.projects.push(newProject); saveData(); renderProjects(); showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success');
-            } questModal.style.display = 'none';
+                distributeValueToTasks(newProject); 
+                appData.projects.push(newProject);
+                saveData(); renderProjects(); 
+                showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success');
+            }
+            questModal.style.display = 'none';
         });
 
-        const settingsModal = document.getElementById('settingsModal'); const closeSettingsModalBtn = document.getElementById('closeSettingsModal'); const settingsHeaderBtn = document.getElementById('settingsHeaderBtn'); const templateIdInput = document.getElementById('templateId'); const templateNameInput = document.getElementById('templateName'); const templateTasksContainer = document.getElementById('templateTasksContainer'); const addTemplateMainTaskBtn = document.getElementById('addTemplateMainTaskBtn'); const saveTemplateBtn = document.getElementById('saveTemplateBtn'); const newTemplateBtn = document.getElementById('newTemplateBtn'); const templateListDiv = document.getElementById('templateList');
-        settingsHeaderBtn.addEventListener('click', () => {  loadTemplateEditor(); renderTemplateList(); settingsModal.style.display = 'flex'; templateNameInput.focus(); });
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsModalBtn = document.getElementById('closeSettingsModal');
+        const settingsHeaderBtn = document.getElementById('settingsHeaderBtn');
+        const templateIdInput = document.getElementById('templateId');
+        const templateNameInput = document.getElementById('templateName');
+        const templateTasksContainer = document.getElementById('templateTasksContainer');
+        const addTemplateMainTaskBtn = document.getElementById('addTemplateMainTaskBtn');
+        const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+        const newTemplateBtn = document.getElementById('newTemplateBtn');
+        const templateListDiv = document.getElementById('templateList');
+
+        settingsHeaderBtn.addEventListener('click', () => { loadTemplateEditor(); renderTemplateList(); settingsModal.style.display = 'flex'; templateNameInput.focus(); });
         closeSettingsModalBtn.addEventListener('click', () => settingsModal.style.display = 'none');
-        document.getElementById('goToSettingsFromNotification').addEventListener('click', () => {  settingsModal.style.display = 'flex'; loadTemplateEditor(); renderTemplateList(); templateNameInput.focus(); });
-        function loadTemplateEditor(templateId = null) {  
+        document.getElementById('goToSettingsFromNotification').addEventListener('click', () => { settingsModal.style.display = 'flex'; loadTemplateEditor(); renderTemplateList(); templateNameInput.focus(); });
+
+        function loadTemplateEditor(templateId = null) { 
             templateTasksContainer.innerHTML = '';
             if (templateId) {
                 const template = appData.templates.find(t => t.id === templateId);
-                if (template) { template.tasks = template.tasks || []; templateIdInput.value = template.id; templateNameInput.value = template.name; template.tasks.forEach(taskData => { taskData.subtasks = taskData.subtasks || []; addTemplateTaskEditor(taskData); }); }
-            } else { templateIdInput.value = ''; templateNameInput.value = ''; addTemplateTaskEditor(); } templateNameInput.focus();
+                if (template) { templateIdInput.value = template.id; templateNameInput.value = template.name; (template.tasks || []).forEach(taskData => addTemplateTaskEditor(taskData));}
+            } else { templateIdInput.value = ''; templateNameInput.value = ''; addTemplateTaskEditor(); }
+            templateNameInput.focus();
         }
-        
+        function addTemplateTaskEditor(taskData = null) { 
+            const taskDesc = taskData ? taskData.description : '';
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; 
+            taskDiv.innerHTML = `
+                <div class="task-editor-header">
+                    <input type="text" class="template-task-desc" value="${taskDesc}" placeholder="Main Task Description">
+                    <button type="button" class="remove-template-task-btn btn-icon-only danger" title="Remove This Task"><i class="fas fa-trash-alt"></i></button>
+                    <button type="button" class="add-template-subtask-btn btn-icon-only" title="Add Subtask"><i class="fas fa-plus-circle"></i></button>
+                </div><div class="template-subtasks-list" style="padding-top: 5px;"></div>`;
+            templateTasksContainer.appendChild(taskDiv);
+            if (taskData && taskData.subtasks) (taskData.subtasks || []).forEach(subtaskData => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), subtaskData));
+            taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove();
+            taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));
+        }
+        function addTemplateSubtaskEditor(parentList, subtaskData = null) { 
+            const subtaskDesc = subtaskData ? subtaskData.description : '';
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; 
+            subtaskDiv.innerHTML = `
+                <input type="text" class="template-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description">
+                <button type="button" class="remove-template-subtask-btn btn-icon-only danger" title="Remove This Subtask"><i class="fas fa-trash-alt"></i></button>`;
+            parentList.appendChild(subtaskDiv);
+            subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+
         addTemplateMainTaskBtn.addEventListener('click', () => addTemplateTaskEditor());
         newTemplateBtn.addEventListener('click', () => loadTemplateEditor()); 
-        saveTemplateBtn.addEventListener('click', () => {  
+        saveTemplateBtn.addEventListener('click', () => { 
             const id = templateIdInput.value || generateId(); const name = templateNameInput.value.trim();
-            if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; } const tasks = [];
+            if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; }
+            const tasks = [];
             document.querySelectorAll('#templateTasksContainer .task-editor-item').forEach(taskDiv => {
                 const taskDesc = taskDiv.querySelector('.template-task-desc').value.trim();
-                if (taskDesc) { const mainTask = { description: taskDesc, subtasks: [] }; taskDiv.querySelectorAll('.subtask-editor-item').forEach(subtaskDiv => { const subtaskDesc = subtaskDiv.querySelector('.template-subtask-desc').value.trim(); if (subtaskDesc) mainTask.subtasks.push({ description: subtaskDesc }); }); tasks.push(mainTask); }
+                if (taskDesc) {
+                    const mainTask = { description: taskDesc, subtasks: [] }; 
+                    taskDiv.querySelectorAll('.subtask-editor-item').forEach(subtaskDiv => {
+                        const subtaskDesc = subtaskDiv.querySelector('.template-subtask-desc').value.trim();
+                        if (subtaskDesc) mainTask.subtasks.push({ description: subtaskDesc });
+                    }); tasks.push(mainTask);
+                }
             });
             const existingIndex = appData.templates.findIndex(t => t.id === id);
-            if (existingIndex > -1) { appData.templates[existingIndex].name = name; appData.templates[existingIndex].tasks = tasks; showToast(`Template "<strong>${name}</strong>" updated.`, 'success'); } 
+            if (existingIndex > -1) { appData.templates[existingIndex].name = name; appData.templates[existingIndex].tasks = tasks; showToast(`Template "<strong>${name}</strong>" updated.`, 'success'); }
             else { const isFirstTemplate = appData.templates.length === 0; appData.templates.push({ id, name, tasks, isDefault: isFirstTemplate }); showToast(`Template "<strong>${name}</strong>" saved.`, 'success'); }
             saveData(); renderTemplateList(); loadTemplateEditor(id); 
         });
-        function renderTemplateList() {  
-            templateListDiv.innerHTML = ''; if (appData.templates.length === 0) { templateListDiv.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No templates. Create one!</p>'; return; }
+
+        function renderTemplateList() { 
+            templateListDiv.innerHTML = '';
+            if (appData.templates.length === 0) { templateListDiv.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No templates. Create one!</p>'; return; }
             appData.templates.forEach(template => {
-                const item = document.createElement('div'); item.className = 'template-item'; if (template.isDefault) item.classList.add('default-template');
-                item.innerHTML = `<span>${template.name} ${template.isDefault ? '<strong style="color: var(--star-important-color);">(Default)</strong>' : ''}</span><div class="template-actions"><button class="btn-edit-template" data-id="${template.id}" title="Edit ${template.name}"><i class="fas fa-edit"></i> Edit</button>${!template.isDefault ? `<button class="btn-set-default" data-id="${template.id}" title="Set ${template.name} as Default"><i class="fas fa-star"></i> Default</button>` : ''}<button class="btn-delete-template" data-id="${template.id}" title="Delete ${template.name}"><i class="fas fa-trash-alt"></i></button></div>`;
+                const item = document.createElement('div'); item.className = 'template-item';
+                if (template.isDefault) item.classList.add('default-template');
+                item.innerHTML = `
+                    <span>${template.name} ${template.isDefault ? '<strong style="color: var(--star-important-color);">(Default)</strong>' : ''}</span>
+                    <div class="template-actions">
+                        <button class="edit-template-btn btn-modal-utility" data-id="${template.id}" title="Edit"><i class="fas fa-edit"></i> Edit</button>
+                        ${!template.isDefault ? `<button class="set-default-template-btn btn-modal-utility" data-id="${template.id}" title="Set Default" style="background-color:var(--star-important-color);color:var(--text-color);border-color:#f59e0b;"><i class="fas fa-star"></i> Set Default</button>` : ''}
+                        <button class="delete-template-btn btn-icon-only danger" data-id="${template.id}" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                    </div>`; 
                 templateListDiv.appendChild(item);
             });
-            templateListDiv.querySelectorAll('.btn-edit-template').forEach(btn => btn.onclick = () => loadTemplateEditor(btn.dataset.id));
-            templateListDiv.querySelectorAll('.btn-delete-template').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id));
-            templateListDiv.querySelectorAll('.btn-set-default').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));
+            templateListDiv.querySelectorAll('.edit-template-btn').forEach(btn => btn.onclick = () => loadTemplateEditor(btn.dataset.id));
+            templateListDiv.querySelectorAll('.delete-template-btn').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id));
+            templateListDiv.querySelectorAll('.set-default-template-btn').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));
         }
-        function deleteTemplate(templateId) { 
+        function deleteTemplate(templateId) {
             const templateToDelete = appData.templates.find(t => t.id === templateId); if (!templateToDelete) return;
             if (templateToDelete.isDefault && appData.templates.length <= 1) { showToast("Cannot delete the only default template.", 'warning', 4000); return; }
             if (templateToDelete.isDefault && appData.templates.length > 1) { showToast("Cannot delete active default. Change default first.", 'warning', 4000); return; }
-            showCustomConfirm( `Are you sure you want to delete template "<strong>${templateToDelete.name}</strong>"?`, "Delete Template", () => { 
+            showCustomConfirm(`Are you sure you want to delete the template "<strong>${templateToDelete.name}</strong>"?`, "Delete Template", () => { 
                 const name = templateToDelete.name; appData.templates = appData.templates.filter(t => t.id !== templateId);
                 if (appData.templates.length > 0 && !appData.templates.some(t => t.isDefault)) appData.templates[0].isDefault = true; 
                 saveData(); renderTemplateList(); loadTemplateEditor(); showToast(`Template "<strong>${name}</strong>" deleted.`, 'info');
             });
         }
-        function setDefaultTemplate(templateId) {  
+        function setDefaultTemplate(templateId) { 
             let name = ''; appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; });
             saveData(); renderTemplateList(); if (name) showToast(`Template "<strong>${name}</strong>" set as default.`, 'info');
         }
         function populateTemplateSelect(selectElement) { 
             selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null;
-            appData.templates.forEach(template => { const option = document.createElement('option'); option.value = template.id; option.textContent = template.name; if (template.isDefault) { option.selected = true; defaultId = template.id; } selectElement.appendChild(option); });
+            appData.templates.forEach(template => {
+                const option = document.createElement('option'); option.value = template.id; option.textContent = template.name;
+                if (template.isDefault) { option.selected = true; defaultId = template.id; }
+                selectElement.appendChild(option);
+            });
             if (defaultId) selectElement.value = defaultId; return defaultId;
         }
-        const clearOldDataBtn = document.getElementById('clearOldDataBtn'); const clearDataNotificationDiv = document.getElementById('clearDataNotification');
+
+        const clearOldDataBtn = document.getElementById('clearOldDataBtn');
+        const clearDataNotificationDiv = document.getElementById('clearDataNotification');
         function checkClearDataNotification() { 
-            const today = new Date(); if (today.getDate() > 7) { const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1); const hasOld = appData.projects.some(p => p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth); clearDataNotificationDiv.style.display = hasOld ? 'flex' : 'none'; } else clearDataNotificationDiv.style.display = 'none';
+            const today = new Date();
+            if (today.getDate() > 7) { 
+                const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                const hasOld = appData.projects.some(p => p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth);
+                clearDataNotificationDiv.style.display = hasOld ? 'flex' : 'none';
+            } else { clearDataNotificationDiv.style.display = 'none'; }
         }
         clearOldDataBtn.addEventListener('click', () => { 
-            showCustomConfirm( 'Permanently DELETE old project data (completed BEFORE current month)? This CANNOT BE UNDONE.', "Clear Old Data", () => { 
-                const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0); const initialCount = appData.projects.length;
+            showCustomConfirm('WARNING! Permanently DELETE old project data (completed BEFORE current month)? This action CANNOT BE UNDONE. Are you sure?', "Clear Old Project Data", () => { 
+                const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0);
+                const initialCount = appData.projects.length;
                 appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth));
-                const cleared = initialCount - appData.projects.length; saveData(); renderProjects(); showToast(`${cleared} old project(s) cleared.`, 'success', 4000);
+                const cleared = initialCount - appData.projects.length;
+                saveData(); renderProjects(); showToast(`${cleared} old project(s) cleared.`, 'success', 4000);
                 checkClearDataNotification(); settingsModal.style.display = 'none'; 
             });
         });
 
         window.addEventListener('DOMContentLoaded', () => {
             loadData(); initCustomConfirmModal(); 
-            toggleInactiveSectionsBtn = document.getElementById('toggleInactiveSectionsBtn'); inactiveSectionsToggleIcon = document.getElementById('inactiveSectionsToggleIcon'); inactiveSectionsToggleText = document.getElementById('inactiveSectionsToggleText');
-            completedSectionContainer = document.getElementById('completedSectionContainer'); archivedSectionContainer = document.getElementById('archivedSectionContainer');
-            initInactiveSectionsToggle(); updateNotices(); renderWeekCalendar(currentCalendarDate); checkClearDataNotification(); 
-            document.addEventListener('click', function(event) {
-                document.querySelectorAll('.actions-dropdown').forEach(dd => { if (!dd.contains(event.target) && !(dd.previousElementSibling && dd.previousElementSibling.contains(event.target))) dd.style.display = 'none'; });
-                if (event.target == questModal) questModal.style.display = "none"; if (event.target == settingsModal) settingsModal.style.display = "none";
+            toggleInactiveSectionsBtn = document.getElementById('toggleInactiveSectionsBtn');
+            inactiveSectionsToggleIcon = document.getElementById('inactiveSectionsToggleIcon');
+            inactiveSectionsToggleText = document.getElementById('inactiveSectionsToggleText');
+            completedSectionContainer = document.getElementById('completedSectionContainer');
+            archivedSectionContainer = document.getElementById('archivedSectionContainer');
+            initInactiveSectionsToggle(); 
+            updateNotices(); renderWeekCalendar(currentCalendarDate); checkClearDataNotification(); 
+
+            document.addEventListener('click', function(event) { // Close dropdowns on outside click
+                const openDropdowns = document.querySelectorAll('.actions-dropdown');
+                let clickedInsideDropdownRelated = false;
+                openDropdowns.forEach(dd => {
+                    if (dd.style.display === 'block' && (dd.contains(event.target) || (dd.previousElementSibling && dd.previousElementSibling.contains(event.target)))) {
+                        clickedInsideDropdownRelated = true;
+                    }
+                });
+                if (!clickedInsideDropdownRelated) openDropdowns.forEach(dd => dd.style.display = 'none');
+                if (event.target == questModal) questModal.style.display = "none";
+                if (event.target == settingsModal) settingsModal.style.display = "none";
                 if (event.target == customConfirmModal && customConfirmModal.style.display === "flex") customConfirmModal.style.display = "none";
             });
-            document.addEventListener('keydown', function(event) {
+            document.addEventListener('keydown', function(event) { // Escape key to close modals/dropdowns
                 if (event.key === "Escape" || event.key === "Esc") {
-                    if (questModal.style.display === 'flex') questModal.style.display = "none"; if (settingsModal.style.display === 'flex') settingsModal.style.display = "none";
+                    if (questModal.style.display === 'flex') questModal.style.display = "none";
+                    if (settingsModal.style.display === 'flex') settingsModal.style.display = "none";
                     if (customConfirmModal.style.display === 'flex') customConfirmModal.style.display = "none";
                     document.querySelectorAll('.actions-dropdown').forEach(dd => dd.style.display = 'none');
                 }
             });
-            const toggleCompletedListBtn = document.getElementById('toggleCompletedListBtn'); const completedQuestsListWrapper = document.getElementById('completedQuestsListWrapper'); const completedQuestsList = document.getElementById('completedQuestsList'); 
-            let isCompletedListExpanded = false; 
-            if (toggleCompletedListBtn && completedQuestsListWrapper) {
-                completedQuestsListWrapper.classList.remove('expanded'); toggleCompletedListBtn.querySelector('i').className = 'fas fa-chevron-down';
-                toggleCompletedListBtn.addEventListener('click', () => {
-                    isCompletedListExpanded = !isCompletedListExpanded; completedQuestsListWrapper.classList.toggle('expanded', isCompletedListExpanded);
-                    toggleCompletedListBtn.querySelector('i').className = isCompletedListExpanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-                    if (isCompletedListExpanded && inactiveSectionsVisible && completedQuestsList.children.length === 0 && !completedQuestsList.querySelector('.empty-list-message')) completedQuestsList.innerHTML = '<p class="empty-list-message">No quests completed this month.</p>';
-                    else if (isCompletedListExpanded && completedQuestsList.querySelector('.empty-list-message') && completedQuestsList.children.length > 1) completedQuestsList.querySelector('.empty-list-message').remove();
-                });
-            }
-            const toggleArchivedListBtn = document.getElementById('toggleArchivedListBtn'); const archivedQuestsListWrapper = document.getElementById('archivedQuestsListWrapper'); const archivedQuestsList = document.getElementById('archivedQuestsList');
-            let isArchivedListExpanded = false; 
-            if (toggleArchivedListBtn && archivedQuestsListWrapper) {
-                archivedQuestsListWrapper.classList.remove('expanded'); toggleArchivedListBtn.querySelector('i').className = 'fas fa-chevron-down';
-                toggleArchivedListBtn.addEventListener('click', () => {
-                    isArchivedListExpanded = !isArchivedListExpanded; archivedQuestsListWrapper.classList.toggle('expanded', isArchivedListExpanded);
-                    toggleArchivedListBtn.querySelector('i').className = isArchivedListExpanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-                     if (isArchivedListExpanded && inactiveSectionsVisible && archivedQuestsList.children.length === 0 && !archivedQuestsList.querySelector('.empty-list-message')) archivedQuestsList.innerHTML = '<p class="empty-list-message">No archived quests.</p>';
-                     else if (isArchivedListExpanded && archivedQuestsList.querySelector('.empty-list-message') && archivedQuestsList.children.length > 1) archivedQuestsList.querySelector('.empty-list-message').remove();
-                });
-            }
-        });
-        window.addEventListener('beforeunload', () => { 
-            appData.projects.forEach(project => { if (project.ui_isExpanded) { const projectCard = document.querySelector(`.quest-card[data-id="${project.id}"]`); if (projectCard) { const tasksContainerEl = projectCard.querySelector('.tasks-container'); if (tasksContainerEl) project.ui_scrollPosition = tasksContainerEl.scrollTop; } } }); saveData(); 
-        });
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW registered.', reg.scope)).catch(err => console.log('SW reg failed:', err)); }); }
 
-        // END OF COPIED JS
+            // Section Toggles (Completed, Archived)
+            const setupSectionToggle = (btnId, wrapperId, listId, emptyMsg) => {
+                const toggleBtn = document.getElementById(btnId);
+                const wrapper = document.getElementById(wrapperId);
+                const list = document.getElementById(listId);
+                let isExpanded = false;
+                if (toggleBtn && wrapper) {
+                    wrapper.classList.remove('expanded'); 
+                    toggleBtn.querySelector('i').className = 'fas fa-chevron-down';
+                    toggleBtn.addEventListener('click', () => {
+                        isExpanded = !isExpanded;
+                        wrapper.classList.toggle('expanded', isExpanded);
+                        toggleBtn.querySelector('i').className = isExpanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                        if (isExpanded && inactiveSectionsVisible && list.children.length === 0 && !list.querySelector('.empty-list-message')) {
+                            list.innerHTML = `<p class="empty-list-message">${emptyMsg}</p>`;
+                        } else if (!isExpanded && list.querySelector('.empty-list-message')) {
+                            // Don't remove if just collapsing, renderProjects will handle if section is hidden
+                        } else if (isExpanded && list.querySelector('.empty-list-message') && list.children.length > 1) {
+                            list.querySelector('.empty-list-message').remove(); // If items got added
+                        }
+                    });
+                }
+            };
+            setupSectionToggle('toggleCompletedListBtn', 'completedQuestsListWrapper', 'completedQuestsList', 'No quests completed this month yet.');
+            setupSectionToggle('toggleArchivedListBtn', 'archivedQuestsListWrapper', 'archivedQuestsList', 'No archived quests.');
+        });
+
+        window.addEventListener('beforeunload', () => { 
+            appData.projects.forEach(project => {
+                if (project.ui_isExpanded) {
+                    const tasksContainerEl = document.querySelector(`.quest-card[data-id="${project.id}"] .tasks-container`);
+                    if (tasksContainerEl) project.ui_scrollPosition = tasksContainerEl.scrollTop;
+                }
+            }); saveData(); 
+        });
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered.', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
     </script>
 </body>
 </html>
