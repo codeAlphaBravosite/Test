@@ -1100,80 +1100,54 @@
             
             return card;
         }
-      // === BEFORE ===
-/*
-function createTaskElement(task, projectId, isProjectInactive) { 
-    let valueDisplay = ''; if (task.taskValue > 0 && (task.subtasks || []).length === 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
-    return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+
+           function createTaskElement(task, projectId, isProjectInactive) { 
+           let valueDisplay = '';
+           // After the changes, task.taskValue is the total for this task branch.
+           // We now show the chip if this task branch has any value assigned to it.
+           if (task.taskValue > 0) {
+           valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
+          }
+               
+            return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
             <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
             <span class="task-description">${task.description}</span>${valueDisplay}</div>
             ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, isProjectInactive)).join('')}`;
-}
-*/
-
-// === AFTER (The New Code) ===
-function createTaskElement(task, projectId, isProjectInactive) { 
-    let valueDisplay = '';
-    let valuePerUnit = 0;
-
-    // Determine the value per unit for this task group
-    if (task.subtasks && task.subtasks.length > 0) {
-        // If there are subtasks, the value is stored in the first subtask
-        valuePerUnit = task.subtasks[0]?.subtaskValue || 0;
-    } else {
-        // Otherwise, the value is on the main task itself
-        valuePerUnit = task.taskValue || 0;
-    }
-
-    // Create the chip if the value per unit is greater than 0
-    if (valuePerUnit > 0) {
-        valueDisplay = `<span class="task-value-chip">$${(parseFloat(valuePerUnit) || 0).toFixed(0)}</span>`;
-    }
-
-    // Return the HTML, now with the valueDisplay logic always on the main task
-    return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
-            <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
-            <span class="task-description">${task.description}</span>${valueDisplay}</div>
-            ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, isProjectInactive)).join('')}`;
-}
-      
-        // === BEFORE ===
-/*
-function createSubtaskElement(subtask, mainTaskId, isProjectInactive) {
-    let valueDisplay = ''; if (subtask.subtaskValue > 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)}</span>`;
-    return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
-            <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
-            <span class="task-description">${subtask.description}</span>${valueDisplay}</div>`;
-}
-*/
-
-// === AFTER (The New Code) ===
-function createSubtaskElement(subtask, mainTaskId, isProjectInactive) {
-    // This function no longer needs to display a value chip.
-    return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
+          }
+        
+           function createSubtaskElement(subtask, mainTaskId, isProjectInactive) {
+           // The value chip logic has been removed from the subtask display.
+           return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
             <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
             <span class="task-description">${subtask.description}</span></div>`;
-}
+          }
 
-        function distributeValueToTasks(project) {
-            const totalProjectValue = parseFloat(project.totalValue) || 0; 
-            let valueUnits = 0;
-            (project.tasks || []).forEach(task => { valueUnits += (task.subtasks || []).length > 0 ? (task.subtasks || []).length : 1; });
-            const valuePerUnit = totalProjectValue > 0 && valueUnits > 0 ? totalProjectValue / valueUnits : 0;
-            let calculatedEarnedValue = 0;
-            (project.tasks || []).forEach(task => {
-                task.taskValue = 0;
-                if ((task.subtasks || []).length > 0) {
-                    (task.subtasks || []).forEach(sub => { 
-                        sub.subtaskValue = valuePerUnit; 
-                        if (sub.isCompleted) calculatedEarnedValue += sub.subtaskValue; 
-                    });
-                } else { 
-                    task.taskValue = valuePerUnit; 
-                    if (task.isCompleted) calculatedEarnedValue += task.taskValue; 
-                }
+          function distributeValueToTasks(project) {
+         project.tasks = project.tasks || [];
+         const mainTasks = project.tasks;
+         const mainTaskCount = mainTasks.length;
+         const totalProjectValue = parseFloat(project.totalValue) || 0;
+
+         if (mainTaskCount === 0 || totalProjectValue === 0) {
+        (project.tasks || []).forEach(task => {
+            task.taskValue = 0;
+            (task.subtasks || []).forEach(sub => sub.subtaskValue = 0);
+        });
+        return;
+        }
+
+    const valuePerMainTask = totalProjectValue / mainTaskCount;
+    (project.tasks || []).forEach(task => {
+        task.taskValue = valuePerMainTask; // This is the total value for this task and its children
+        task.subtasks = task.subtasks || [];
+        if (task.subtasks.length > 0) {
+            const valuePerSubtask = valuePerMainTask / task.subtasks.length;
+            task.subtasks.forEach(sub => {
+                sub.subtaskValue = valuePerSubtask;
             });
         }
+    });
+}
 
         function toggleProjectComplete(projectId, isBeingMarkedCompleted) {
             const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return;
