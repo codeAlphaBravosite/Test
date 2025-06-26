@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreateMode - Reskinned</title>
+    
+    <link rel="icon" href="./icon-192x192.png" type="image/png">
+    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./icon-192x192.png">
+    <link rel="manifest" href="./manifest.webmanifest">
+    
+    <style>
+        /* --- GLOBAL STYLES & VARIABLES (Pixel Progress / Goalio Inspired) --- */
+        :root {
+            --bg-main: #F5F0E6; /* Light beige page background */
+            --bg-card: #FAF6EF; /* Slightly lighter card background */
+            --bg-header: #EFEAE0; /* Slightly darker for header distinction */
+            --text-primary: #3D352E; /* Dark brown/grey text */
+            --text-secondary: #7A6A5C;
+            --text-on-accent: #FFFFFF;
+            --border-color: #D3C7B8; /* Muted border color */
+            --border-color-strong: #BFB3A3;
+            --accent-primary: #D9534F; /* Muted red/orange for primary actions */
+            --accent-primary-dark: #C94A46;
+            --accent-secondary: #5BC0DE; /* Muted blue/teal for secondary info */
+            --accent-priority: #F0AD4E; /* Muted yellow/orange for priority */
+            --accent-success: #5CB85C; /* Muted green */
+            
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --border-radius: 4px; /* Sharper radius for pixel feel */
+            --input-bg: #FFFDFB;
+            --disabled-opacity: 0.6;
+
+            /* Additional from GLPLv6 for compatibility if needed, or can be merged */
+            --warning-color: var(--accent-primary); /* Map to existing theme */
+            --info-color: var(--accent-secondary);
+            --star-important-color: var(--accent-priority);
+            --success-color: var(--accent-success);
+            --shadow: 0 2px 5px rgba(0,0,0,0.08); /* Softer shadow */
+            
+            --quest-done-bg: #E8E4DB; /* Muted version of done */
+            --quest-done-text: var(--text-secondary);
+            --quest-overdue-border: var(--accent-primary);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; } 
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 15px;
+        }
+        
+        /* SVG Icon System */
+        .icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            vertical-align: -0.2em; /* Adjusted for better alignment */
+            fill: currentColor;
+        }
+
+        /* --- APP HEADER --- */
+        .app-header {
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color-strong);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .app-header-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            flex-grow: 1;
+        }
+        .app-header-actions button {
+            background: none; border: none; color: var(--text-secondary);
+            padding: 8px; cursor: pointer; transition: color 0.2s;
+        }
+        .app-header-actions button:hover { color: var(--text-primary); }
+        .app-header-actions button .icon { width: 1.5em; height: 1.5em; }
+        .app-header-actions .left-action { margin-right: auto; }
+        .app-header-actions .right-action { margin-left: auto; }
+
+        .app-container-wrapper { /* Renamed from container-wrapper */
+            padding: 20px 15px;
+            max-width: 900px; /* Was 1000px, GLPLv6 used 900px */
+            margin: 0 auto;
+        }
+        
+        h2, h3, h4 { /* Combined styling */
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        h2 { 
+            font-size: 1.3em; 
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            margin-top: 25px;
+            text-align: center; /* From createmode.html */
+        }
+        .app-container-wrapper > .quest-list-section:first-of-type > h2,
+        .app-container-wrapper > .dashboard:first-of-type + .quest-list-section > h2 { /* Targeting first quest list after dashboard */
+            margin-top: 0;
+        }
+        h3 { font-size: 1.1em; }
+        h4 { font-size: 1em; }
+
+
+        button, .button { /* General button styling from createmode.html */
+            cursor: pointer;
+            padding: 9px 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color-strong);
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+        }
+        button:hover, .button:hover { border-color: var(--text-primary); background-color: var(--bg-main); }
+        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--accent-secondary); outline-offset: 1px;
+        }
+
+        .btn-primary { background-color: var(--accent-primary); color: var(--text-on-accent); border-color: var(--accent-primary); }
+        .btn-primary:hover { background-color: var(--accent-primary-dark); border-color: var(--accent-primary-dark); }
+        
+        .btn-danger { background-color: var(--accent-primary); color: var(--text-on-accent); border-color: var(--accent-primary); }
+        .btn-danger:hover { background-color: var(--accent-primary-dark); border-color: var(--accent-primary-dark); }
+
+        .btn-icon-text { /* For buttons with icon and text like "Add Main Task" */
+             background-color: transparent; border: 1px solid var(--border-color);
+             padding: 6px 10px; color: var(--text-primary);
+        }
+         .btn-icon-text:hover { background-color: var(--bg-main); border-color: var(--text-secondary); }
+         .btn-icon-text.new-template-style { /* Specific for "New Template" button */
+            background-color: var(--input-bg); border: 1px solid var(--border-color);
+         }
+         .btn-icon-text.new-template-style:hover { background-color: var(--bg-main); border-color: var(--text-secondary); }
+
+        .btn-icon-only { /* For small icon-only buttons inside cards/modals */
+            padding: 6px; border: 1px solid transparent; background-color: transparent;
+            line-height: 1; color: var(--text-secondary);
+        }
+        .btn-icon-only .icon { width: 1.1em; height: 1.1em; vertical-align: middle;}
+        .btn-icon-only:hover { background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-primary); }
+        .btn-icon-only.danger { color: var(--accent-primary); }
+        .btn-icon-only.danger:hover { background-color: #FDECEA; color: var(--accent-primary-dark); }
+
+
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
+            width: 100%; padding: 10px; margin-bottom: 12px;
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            font-family: var(--font-family); font-size: 1em;
+            background-color: var(--input-bg); color: var(--text-primary);
+        }
+        input[type="checkbox"] {
+            width: auto; margin-right: 8px; transform: scale(1.1);
+            accent-color: var(--accent-primary); cursor: pointer;
+        }
+        textarea { min-height: 70px; resize: vertical; }
+        input:disabled, textarea:disabled, select:disabled, input[type="checkbox"]:disabled {
+             opacity: var(--disabled-opacity); cursor: not-allowed;
+        }
+
+
+        /* --- DASHBOARD (Top Info Area from GLPLv6) --- */
+        .dashboard { /* Renamed from .top-info-area */
+            background-color: var(--bg-card); padding: 15px;
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            margin-bottom: 25px; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted minmax */
+            gap: 15px;
+        }
+        .dashboard-metric { /* Applied to GLPLv6's .dashboard-metric-item and .info-item */
+            background-color: var(--input-bg); padding: 12px;
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 85px;
+        }
+        .dashboard-metric .metric-title {
+            font-size: 0.9em; color: var(--text-secondary);
+            margin-bottom: 6px; font-weight: 500;
+        }
+        .dashboard-metric .metric-value {
+            font-size: 1.5em; font-weight: 600; /* Was 1.6em */
+            color: var(--text-primary); line-height: 1.2;
+        }
+
+        /* Calendar Styling (adapting GLPLv6 calendar to new theme) */
+        .week-calendar-container {
+            background-color: var(--input-bg); padding: 12px;
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+        }
+        .week-calendar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem; padding: 0 0.1rem;
+        }
+        .week-calendar-header button { /* Steal from app-header-actions button */
+            background: none; border: none; color: var(--text-secondary);
+            padding: 8px; cursor: pointer; transition: color 0.2s;
+            font-size: 0.9rem; width: 2rem; height: 2rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .week-calendar-header button:hover { background-color: var(--bg-main); color: var(--text-primary); }
+        .week-calendar-month-year { font-size: 1.1em; font-weight: 600; color: var(--text-primary); }
+        .week-calendar-grid, .week-calendar-day-name-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .week-calendar-day-name-row { margin-bottom: 0.5rem; }
+        .week-calendar-day, .week-calendar-day-name {
+            text-align: center; padding: 0.5rem 0.2rem; font-size: 0.85rem;
+            border-radius: var(--border-radius); 
+        }
+        .week-calendar-day-name { font-weight: 500; color: var(--text-secondary); }
+        .week-calendar-day {
+            cursor: default; border: 1px solid transparent; 
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            min-height: 2.2rem; display: flex; align-items: center; justify-content: center;
+        }
+        .week-calendar-day.other-month-display { color: #CBD5E1; font-weight: 300; } 
+        .week-calendar-day.current-day {
+            background-color: var(--text-primary); color: var(--bg-card); font-weight: bold;
+            border-color: var(--text-primary);
+        }
+        .week-calendar-day:not(.current-day):hover { background-color: var(--bg-main); border-color: var(--border-color); }
+
+        #clearDataNotification {
+            grid-column: 1 / -1; background-color: #FFF3CD; color: #664D03; 
+            padding: 12px; border: 1px solid #FFECB5; border-radius: var(--border-radius);
+            font-size: 0.9em; display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px;
+        }
+        #clearDataNotification .icon { width: 1.3em; height: 1.3em; color: #B08D28; }
+        #clearDataNotification button {
+            font-size: 0.9em; background-color: var(--accent-priority);
+            color: var(--text-primary); border-color: var(--accent-priority);
+        }
+        #clearDataNotification button:hover { background-color: #EAA040; border-color: #EAA040; }
+
+
+        /* --- QUEST LIST & CARDS (Structure from createmode.html, logic from GLPLv6) --- */
+        .quest-list-section {
+            /* GLPLv6 has this structure, styling from createmode.html might not directly apply or need its own variant */
+            margin-bottom: 25px; /* Spacing between Active, Completed, Archived sections */
+        }
+         .quest-list-section#activeQuestsSection { /* Space before the "Show Completed" button */
+             margin-bottom: 25px;
+        }
+
+        .quests-list { display: flex; flex-direction: column; gap: 18px; /* Was 1rem */ }
+
+        .quest-card {
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--border-radius); padding: 15px; box-shadow: var(--shadow);
+        }
+        .quest-card.completed-quest {
+            background-color: var(--quest-done-bg); opacity: 0.75; /* Was var(--disabled-opacity) */
+            border-style: dashed; border-color: var(--border-color-strong);
+        }
+        .quest-card.completed-quest .quest-title-text,
+        .quest-card.completed-quest .quest-deadline .quest-deadline-text-display, /* Target specific span */
+        .quest-card.completed-quest .quest-deadline .quest-countdown-text {
+            text-decoration: line-through; color: var(--quest-done-text);
+        }
+        .quest-card.archived-quest {
+             border-left: 3px solid var(--text-secondary); opacity: 0.8;
+        }
+        .quest-card.is-overdue:not(.completed-quest):not(.archived-quest) { /* Ensure overdue doesn't apply if archived */
+             border-left: 3px solid var(--quest-overdue-border);
+        }
+
+        .quest-card-main-info { /* Top row: checkbox, title, actions */
+            display: flex; align-items: flex-start; /* Align checkbox with title */
+            gap: 10px; margin-bottom: 12px;
+        }
+        .quest-card-main-info .quest-complete-checkbox { margin-top: 3px; /* Align with title */ }
+        .quest-title-text {
+            flex-grow: 1; font-size: 1.2em; font-weight: 600;
+            cursor: pointer; line-height: 1.3; color: var(--text-primary);
+        }
+        .quest-title-text:hover { color: var(--accent-primary); }
+        
+        .quest-card-actions { /* Container for icon buttons on the right of title */
+            display: flex; align-items: center; gap: 5px; margin-left: auto; flex-shrink: 0;
+        }
+        .quest-card-actions .priority-button.prioritized .icon { color: var(--accent-priority); }
+
+        .quest-more-actions-container { position: relative; }
+        .actions-dropdown {
+            display: none; position: absolute; right: 0; top: 100%; 
+            background-color: var(--bg-card); border: 1px solid var(--border-color-strong);
+            border-radius: var(--border-radius); box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10; min-width: 170px; padding: 5px 0;
+        }
+        .actions-dropdown button { /* Style for buttons inside the dropdown */
+            display: flex; align-items: center; gap: 8px; width: 100%;
+            padding: 8px 12px; text-align: left; background: none; border: none;
+            color: var(--text-primary); font-size: 0.9em; border-radius: 0;
+            font-weight: normal; /* Override general button bold */
+        }
+        .actions-dropdown button:hover { background-color: var(--bg-main); border-color: transparent; }
+        .actions-dropdown button .icon { width: 1em; height: 1em; }
+        .actions-dropdown button.danger { color: var(--accent-primary); }
+        .actions-dropdown button.danger:hover { background-color: #FDECEA; color: var(--accent-primary-dark); }
+        .actions-dropdown button:disabled { opacity: 0.5; color: var(--text-secondary); cursor: not-allowed; }
+
+
+        .quest-card-details { /* Second row: value, deadline info */
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 15px; font-size: 0.9em; color: var(--text-secondary);
+            margin-bottom: 12px; padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .quest-value-display, .quest-deadline-display { /* Naming for the spans */
+            padding: 3px 0px; /* Removed horizontal padding, use gap on parent */
+            border-radius: var(--border-radius); white-space: nowrap;
+            display: flex; align-items: center; gap: 0.3em;
+        }
+        .quest-value-display { font-weight: 600; color: var(--text-primary); }
+        .quest-value-display .icon { color: var(--accent-priority); font-size: 1.1em; }
+
+        .quest-deadline-display { color: var(--text-secondary); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .quest-deadline-display .icon { font-size: 0.9em;}
+        .quest-deadline-text-display { font-weight: 500;} /* For the actual date text */
+        .quest-countdown-text { font-size: 1em; /* Relative to parent */ }
+        .quest-countdown-text.overdue { color: var(--accent-primary); font-weight: 600; }
+        .quest-countdown-text.today { color: var(--accent-secondary); font-weight: 600; }
+        
+        .quest-progress-wrapper { 
+            display: flex; align-items: center; gap: 10px; margin-top: 8px; 
+        }
+        .quest-progress-bar-container {
+            flex-grow: 1; height: 10px; background-color: var(--border-color);
+            border-radius: var(--border-radius); overflow: hidden;
+        }
+        .quest-progress-fill {
+            height: 100%; background-color: var(--accent-secondary);
+            border-radius: var(--border-radius); transition: width 0.3s ease;
+        }
+        .quest-progress-value-text { 
+            font-size: 0.9em; color: var(--text-secondary);
+            font-weight: 500; white-space: nowrap; flex-shrink: 0; 
+        }
+
+        .tasks-container {
+            padding-left: 5px; max-height: 0; overflow-y: auto;
+            transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, margin-top 0.3s ease-out;
+            margin-top: 0; padding-top: 0;
+            scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+        }
+        .tasks-container::-webkit-scrollbar { width: 5px; }
+        .tasks-container::-webkit-scrollbar-thumb { background-color: #d1d5db; border-radius: 3px; }
+        .tasks-container.expanded {
+            max-height: 350px; margin-top: 15px;
+            padding-top: 10px; border-top: 1px dashed var(--border-color); 
+        }
+        .task-item, .subtask-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 0; border-bottom: 1px solid #F0EBE4; 
+        }
+        .task-item:last-child, .subtask-item:last-child { border-bottom: none; }
+        .subtask-item { margin-left: 25px; }
+        .task-description { flex-grow: 1; font-size: 0.95em; color: var(--text-primary); }
+        .task-item .task-description { font-size: 1em; font-weight: 500; }
+        .task-value-chip { /* Only for main tasks without subtasks */
+            font-size: 0.85em; font-weight: 500; color: #3C763D;
+            background-color: #E3F2E3; padding: 2px 6px;
+            border-radius: 8px; white-space: nowrap; margin-left: auto; /* Push to right */
+        }
+        .task-item.completed .task-description,
+        .subtask-item.completed .task-description {
+            text-decoration: line-through; color: var(--text-secondary);
+            opacity: var(--disabled-opacity);
+        }
+
+        /* --- COLLAPSIBLE SECTION CONTROLS (Completed, Archived) --- */
+        .inactive-sections-toggle-container { /* Master Toggle Button */
+            text-align: center; margin-top: 30px; margin-bottom: 25px; /* Increased top margin */
+            opacity: 0.7; transition: opacity 0.3s ease-in-out;
+        }
+        .inactive-sections-toggle-container:hover { opacity: 1; }
+        .inactive-sections-toggle-container .button { /* Style for the master button */
+            background-color: var(--bg-card); /* Match general button look */
+        }
+
+        /* Headers for Completed/Archived Sections (h2 + toggle button) */
+        .quest-list-section .quest-list-section-header { /* Generalize GLPLv6's style */
+            font-size: 1.3em; /* Match h2 */ color: var(--text-primary);
+            display: flex; align-items: center; justify-content: center; /* Centered title */
+            gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; 
+            border-bottom: 1px solid var(--border-color); /* Match h2 */
+            margin-top: 25px; /* Consistent with h2 */
+        }
+        .quest-list-section .quest-list-section-header .toggle-section-button { 
+            background: transparent; border: none; color: var(--text-secondary);
+            padding: 4px; border-radius: 50%; cursor: pointer;
+            font-size: 0.9rem; width: 2rem; height: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s ease-in-out; margin-left: auto; /* Pushes button to the right */
+        }
+        .quest-list-section .quest-list-section-header .toggle-section-button:hover { color: var(--text-primary); }
+
+
+        .collapsible-list-wrapper {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease-out, margin-top 0.3s ease-out;
+        }
+        .collapsible-list-wrapper.expanded {
+            max-height: 1500px; margin-top: 15px; overflow-y: auto; 
+        }
+
+        .empty-list-message { 
+           text-align: center; color: var(--text-secondary);
+           font-style: italic; font-size: 0.95em;
+           background-color: var(--bg-main); border: 2px dotted var(--border-color);
+           border-radius: var(--border-radius); margin-top: 10px; margin-bottom: 18px;
+           min-height: 150px; /* Reduced from 400px, adjust as needed */
+           display: flex; flex-direction: column; 
+           justify-content: center; align-items: center;
+           padding: 10px 20px;
+        }
+        
+        /* --- MODALS --- */
+        .modal {
+            display: none; position: fixed; z-index: 1050; /* Above header */
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(40,30,20,0.6);
+            backdrop-filter: blur(3px); /* Added blur */
+            animation: fadeInModalBg 0.3s ease;
+        }
+        @keyframes fadeInModalBg { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background-color: var(--bg-card); margin: 8% auto;
+            padding: 20px 25px; border: 1px solid var(--border-color-strong);
+            border-radius: var(--border-radius); width: 90%;
+            max-width: 600px; animation: slideInModal 0.3s ease-out;
+            box-shadow: var(--shadow);
+        }
+        @keyframes slideInModal { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header h2 { margin-bottom: 0; font-size: 1.4em; text-align: left; border-bottom: none; margin-top:0; } /* Override h2 defaults */
+        .close-modal-button { /* Icon button */
+            background: none; border: none; padding: 5px;
+            color: var(--text-secondary); cursor: pointer;
+        }
+        .close-modal-button:hover { color: var(--text-primary); }
+        .close-modal-button .icon { width: 1.2em; height: 1.2em; }
+
+        .modal-body .form-group { margin-bottom: 15px; }
+        .modal-body label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9em; }
+        .modal-body h3, .modal-body h4 { margin: 1.5rem 0 0.75rem 0; color: var(--text-primary); text-align: left; border-bottom: none; }
+        .modal-body h3 { font-size: 1.2em; }
+        .modal-body h4 { font-size: 1.1em; }
+
+
+        .task-editor-item { /* For tasks in modal */
+            border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px;
+            border-radius: var(--border-radius); background-color: var(--bg-main);
+        }
+        .task-editor-header { display: flex; gap: 8px; align-items: center; }
+        .task-editor-header input[type="text"] { flex-grow: 1; margin-bottom: 0; }
+        .task-editor-header .btn-icon-only { flex-shrink: 0; }
+
+        .subtask-editor-item {
+            margin-left: 20px; margin-top: 8px; display: flex; gap: 8px; align-items: center;
+        }
+        .subtask-editor-item input[type="text"] { flex-grow: 1; margin-bottom: 0; }
+        
+        .modal-footer {
+            display: flex; justify-content: flex-end; gap: 10px; /* Use flex for consistent spacing */
+            margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border-color);
+        }
+        /* Modal footer buttons already styled by general .button, .btn-primary, .btn-danger */
+
+
+        /* --- SETTINGS MODAL --- */
+        #settingsModal .modal-content { max-width: 750px; }
+        .settings-section {
+            margin-bottom: 25px; padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        #templateList .template-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border: 1px solid var(--border-color);
+            border-radius: var(--border-radius); margin-bottom: 8px;
+            background-color: var(--input-bg);
+        }
+        #templateList .template-item.default-template { 
+            border-left: 3px solid var(--accent-priority); font-weight: 500; 
+            background-color: #FEFBF4; /* Slightly different for default */
+        }
+        #templateList .template-item span { flex-grow: 1; }
+        #templateList .template-item .template-actions { display: flex; gap: 5px; }
+        #templateList .template-item .template-actions button { /* These are .btn-icon-text or .btn-icon-only */
+            font-size: 0.85em; padding: 5px 8px; /* Adjust if needed */
+        }
+        /* Settings modal save/new/clear buttons are styled by .btn-primary, .btn-icon-text, .btn-danger */
+
+
+        /* --- TOAST NOTIFICATIONS --- */
+        #toastContainer {
+            position: fixed; bottom: 20px; right: 20px; z-index: 2000; 
+            display: flex; flex-direction: column-reverse; gap: 10px; max-width: 350px;
+        }
+        .toast-message {
+            padding: 12px 18px; border-radius: var(--border-radius);
+            color: var(--text-on-accent); font-size: 0.95em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15); opacity: 0; 
+            word-wrap: break-word; animation-name: toastFadeIn, toastFadeOut;
+            animation-duration: 0.3s, 0.3s; animation-fill-mode: forwards, forwards;
+            animation-timing-function: ease-out, ease-in;
+            animation-delay: 0s, var(--toast-visible-duration, 3000ms); 
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toast-message .icon { width: 1.4em; height: 1.4em; flex-shrink: 0; }
+        .toast-message strong { font-weight: 600; }
+        .toast-message.success { background-color: var(--accent-success); }
+        .toast-message.info { background-color: var(--accent-secondary); }
+        .toast-message.warning { background-color: var(--accent-priority); color: var(--text-primary); }
+        .toast-message.warning .icon { color: var(--text-primary); }
+        .toast-message.error { background-color: var(--accent-primary); }
+
+        @keyframes toastFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastFadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
+        
+        /* Animation for exiting quest card */
+        .quest-card.exiting { animation: fadeOutCollapseQuest 0.35s ease-out forwards; }
+        @keyframes fadeOutCollapseQuest { 
+            0% { opacity: 1; transform: translateX(0) scale(1); max-height: 400px; padding: 15px; margin-bottom: 18px; border-width: 1px; }
+            to { opacity: 0; transform: translateX(-30px) scale(0.95); max-height: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; overflow: hidden; }
+        }
+        .quest-card.entering { opacity: 0; transform: translateY(20px) scale(0.95); }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            body { font-size: 14px; }
+            .app-header-title { font-size: 1.2em; }
+            .app-header-actions button .icon { width: 1.3em; height: 1.3em; }
+            .app-container-wrapper { padding: 15px 10px; } /* Slightly less padding */
+            
+            .dashboard { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 10px; }
+            .dashboard-metric .metric-value { font-size: 1.4em; }
+
+            .quest-card-details { flex-wrap: wrap; justify-content: flex-start; } /* Allow wrap and start alignment */
+            .quest-title-text { font-size: 1.1em; }
+            
+            .modal-content { margin: 5% auto; width: 95%; padding: 15px 20px; }
+            .modal-header h2 { font-size: 1.3em; }
+
+            #templateList .template-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+            #templateList .template-item .template-actions { width: 100%; justify-content: flex-end; }
+
+            #toastContainer { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
+        }
+
+        @media (max-width: 480px) {
+            .app-header { padding: 10px; }
+            .app-container-wrapper { padding: 15px 5px; } /* Further reduce padding for page container */
+
+            .dashboard { grid-template-columns: 1fr; } /* Single column for dashboard items */
+            
+            .quest-card { margin-left: 0; margin-right: 0; /* Make card use more width */ }
+            .quests-list { gap: 12px; /* Reduce gap between cards */ }
+
+            .quest-card-main-info { flex-wrap: wrap; } /* Allow title and actions to wrap if needed */
+            .quest-card-main-info .quest-title-text { width: calc(100% - 40px); /* Account for checkbox */}
+            .quest-card-actions { width: 100%; justify-content: flex-end; margin-top: 8px; }
+
+            .quest-card-details { font-size: 0.85em; flex-direction: column; align-items: flex-start; gap: 5px; }
+            .quest-value-display, .quest-deadline-display { width: 100%; }
+
+
+            .task-item, .subtask-item { gap: 6px; }
+            .subtask-item { margin-left: 15px; }
+            .task-editor-header { flex-wrap: wrap; }
+            .task-editor-header input[type="text"] { min-width: calc(100% - 80px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG Icon Definitions (from createmode.html, with additions from GLPLv6 if needed) -->
+    <svg style="display: none;">
+        <symbol id="icon-settings" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.566.379-1.566 2.6 0 2.978.995.24 1.436 1.39 1.01 2.253-.474 1.002.935 2.193 2.058 2.193.992 0 1.94-.486 2.483-1.305a1.532 1.532 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106-.54-.886-.061-2.042.947-2.287 1.566-.379 1.566-2.6 0-2.978-.995-.24-1.436-1.39-1.01-2.253.474-1.002-.935-2.193-2.058-2.193-.992 0-1.94.486-2.483-1.305A1.532 1.532 0 0111.49 3.17zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-plus-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-trash" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-pencil" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-star" viewBox="0 0 20 20" fill="currentColor"> <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></symbol>
+        <symbol id="icon-star-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></symbol>
+        <symbol id="icon-chevron-down" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-chevron-up" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-save" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 00-1.414-1.414L10 11.586l-1.293-1.293zM10 2a8 8 0 100 16A8 8 0 0010 2zm1 14.93V15a1 1 0 00-2 0v1.93A6.992 6.992 0 013.07 11H5a1 1 0 000-2H3.07A6.992 6.992 0 0111 3.07V5a1 1 0 002 0V3.07A6.992 6.992 0 0116.93 9H15a1 1 0 000 2h1.93A6.992 6.992 0 0111 16.93z"/></symbol>
+        <symbol id="icon-close" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-check-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-info-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-warning-triangle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.216 3.031-1.742 3.031H4.42c-1.526 0-2.492-1.697-1.742-3.031l5.58-9.92zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-error-circle" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 101.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-new-template" viewBox="0 0 20 20" fill="currentColor"> <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 2h12v2H4V5zm0 4h12v2H4V9zm0 4h6v2H4v-2z"/> <path d="M13 14h3v-2h-3v2zm0-4h3V8h-3v2zM9 1a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H10a1 1 0 01-1-1V1z"/></symbol>
+        <symbol id="icon-ellipsis-vertical" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></symbol>
+        <symbol id="icon-archive" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 2h12v2H4V5zm0 4h12v2H4V9zm7 4a1 1 0 100 2h4a1 1 0 100-2h-4z" /></symbol>
+        <symbol id="icon-folder-open" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/><path d="M17.585 5.586a2 2 0 00-2.828 0L12 8.314V6a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V8.414a2 2 0 00-.415-1.414zM5 14a1 1 0 11-2 0 1 1 0 012 0zm2-1a1 1 0 100-2H5v2h2z"/></symbol>
+        <symbol id="icon-calendar" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></symbol>
+        <symbol id="icon-hourglass" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1.5 1.5 0 00-1.5 1.5V6h3V3.5A1.5 1.5 0 0010 2zm0 12a1.5 1.5 0 001.5-1.5V10h-3v2.5a1.5 1.5 0 001.5 1.5zM3.827 5.039A2.5 2.5 0 016.5 4h7a2.5 2.5 0 012.673 1.039L18 7.21V9a1 1 0 01-1 1h-2.585l-1.293 1.293a1 1 0 01-1.414 0L10.414 10H9.586l-1.293 1.293a1 1 0 01-1.414 0L5.585 10H3a1 1 0 01-1-1V7.21l1.827-2.17zM10 18a1.5 1.5 0 001.5-1.5V14H8.5v2.5A1.5 1.5 0 0010 18z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-coins" viewBox="0 0 20 20" fill="currentColor"><path d="M10 1a1 1 0 00-1 1v1.343A6.994 6.994 0 003.343 9H2a1 1 0 100 2h1.343A6.994 6.994 0 009 16.657V18a1 1 0 102 0v-1.343A6.994 6.994 0 0016.657 11H18a1 1 0 100-2h-1.343A6.994 6.994 0 0011 3.343V2a1 1 0 00-1-1zm0 2.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM10 12a2 2 0 110-4 2 2 0 010 4z" /></symbol>
+        <symbol id="icon-clipboard-list" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-list-alt" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-database" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a3 3 0 013-3h8a3 3 0 013 3v10a3 3 0 01-3 3H6a3 3 0 01-3-3V5zm3-1a1 1 0 00-1 1v2.382l-.447.223A1.5 1.5 0 003.5 8.5v3a1.5 1.5 0 001.053 1.448L5 13.118V15a1 1 0 102 0v-1.882l.447-.223A1.5 1.5 0 008.5 11.5v-3a1.5 1.5 0 00-1.053-1.448L7 6.882V5a1 1 0 00-1-1zm5 0a1 1 0 00-1 1v2.382l-.447.223A1.5 1.5 0 008.5 8.5v3a1.5 1.5 0 001.053 1.448L10 13.118V15a1 1 0 102 0v-1.882l.447-.223A1.5 1.5 0 0013.5 11.5v-3a1.5 1.5 0 00-1.053-1.448L12 6.882V5a1 1 0 00-1-1z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-tasks" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2 4.75A2.75 2.75 0 014.75 2h10.5A2.75 2.75 0 0118 4.75v8.5A2.75 2.75 0 0115.25 16H4.75A2.75 2.75 0 012 13.25v-8.5zm1.5 0a1.25 1.25 0 011.25-1.25h10.5a1.25 1.25 0 011.25 1.25v8.5a1.25 1.25 0 01-1.25 1.25H4.75a1.25 1.25 0 01-1.25-1.25v-8.5zM6 6a1 1 0 000 2h8a1 1 0 100-2H6zm0 4a1 1 0 000 2h4a1 1 0 100-2H6z" clip-rule="evenodd" /></symbol>
+    </svg>
+
+    <header class="app-header">
+        <div class="app-header-actions left-action">
+            <button id="addQuestHeaderBtn" title="Start New Quest" aria-label="Start New Quest">
+                <svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg>
+            </button>
+        </div>
+        <h1 class="app-header-title">CreateMode</h1>
+        <div class="app-header-actions right-action">
+            <button id="settingsHeaderBtn" title="Settings" aria-label="Settings">
+                <svg class="icon"><use xlink:href="#icon-settings"></use></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="app-container-wrapper">
+        <div class="dashboard"> {/* Was .top-info-area */}
+            {/* GLPLv6's top-info-grid content, styled as dashboard-metrics */}
+            <div class="dashboard-metric"><div class="metric-title">Earnings Today</div><p class="metric-value" id="valueToday">$0</p></div>
+            <div class="dashboard-metric"><div class="metric-title">Earnings This Month</div><p class="metric-value" id="valueMonth">$0</p></div>
+            <div class="dashboard-metric"><div class="metric-title">Upcoming Value</div><p class="metric-value" id="upcomingValue">$0</p></div>
+            
+            <div class="week-calendar-container" id="weekCalendarContainer"></div>
+            
+            <div class="dashboard-metric"><div class="metric-title">Weeks Left (Month)</div><p class="metric-value" id="weeksLeftMonth">-</p></div>
+            <div class="dashboard-metric"><div class="metric-title">Months Left (Year)</div><p class="metric-value" id="monthsLeftYear">-</p></div>
+            
+            <div id="clearDataNotification" style="display: none;">
+                <span><svg class="icon"><use xlink:href="#icon-info-circle"></use></svg> Keep things lean! Old project data can be cleared in Settings.</span>
+                <button id="goToSettingsFromNotification" aria-label="Go to Settings to clear data">Go to Settings</button>
+            </div>
+        </div>
+
+        <div class="quest-list-section" id="activeQuestsSection">
+            <h2><svg class="icon" style="width:1.1em; height:1.1em; margin-right: 5px; vertical-align: -0.1em;"><use xlink:href="#icon-tasks"></use></svg> Active Quests</h2>
+            <div id="activeQuestsList" class="quests-list"></div>
+        </div>
+
+        <div class="inactive-sections-toggle-container">
+            <button id="toggleInactiveSectionsBtn" class="button" aria-label="Toggle visibility of completed and archived sections">
+                <svg class="icon" id="inactiveSectionsToggleIconUse"><use xlink:href="#icon-chevron-down"></use></svg>
+                <span id="inactiveSectionsToggleText">Show Completed & Archived</span>
+            </button>
+        </div>
+        
+        <div class="quest-list-section" id="completedSectionContainer" style="display:none;">
+            <h2 class="quest-list-section-header">
+                <span><svg class="icon" style="width:1.1em; height:1.1em; margin-right: 5px; vertical-align: -0.1em; color: var(--accent-success);"><use xlink:href="#icon-check-circle"></use></svg>Completed (This Month)</span>
+                <button id="toggleCompletedListBtn" class="btn-icon-only toggle-section-button" title="Toggle Completed Quests View">
+                     <svg class="icon"><use xlink:href="#icon-chevron-down"></use></svg>
+                </button>
+            </h2>
+            <div id="completedQuestsListWrapper" class="collapsible-list-wrapper"><div id="completedQuestsList" class="quests-list"></div></div>
+        </div>
+        
+        <div class="quest-list-section" id="archivedSectionContainer" style="display:none;">
+            <h2 class="quest-list-section-header">
+                <span><svg class="icon" style="width:1.1em; height:1.1em; margin-right: 5px; vertical-align: -0.1em; color: var(--text-secondary);"><use xlink:href="#icon-archive"></use></svg>Archived</span>
+                <button id="toggleArchivedListBtn" class="btn-icon-only toggle-section-button" title="Toggle Archived Quests View">
+                     <svg class="icon"><use xlink:href="#icon-chevron-down"></use></svg>
+                </button>
+            </h2>
+            <div id="archivedQuestsListWrapper" class="collapsible-list-wrapper"><div id="archivedQuestsList" class="quests-list"></div></div>
+        </div>
+    </div>
+
+    <!-- Modals (Quest, Settings, Confirm) -->
+    <div id="questModal" class="modal" aria-modal="true" aria-labelledby="questModalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="questModalTitle">Start New Quest</h2>
+                <button class="close-modal-button" id="closeQuestModal" title="Close Quest Modal">
+                     <svg class="icon"><use xlink:href="#icon-close"></use></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="questId">
+                <div class="form-group"><label for="questTitle">Quest Title:</label><input type="text" id="questTitle" placeholder="E.g., My Awesome Cat Video"></div>
+                <div class="form-group"><label for="questDeadline">Deadline:</label><input type="date" id="questDeadline"></div>
+                <div class="form-group"><label for="questValueInput">Total Value for this Quest ($):</label><input type="number" id="questValueInput" placeholder="E.g., 100" min="0"></div>
+                <div class="form-group"><label for="questTemplateSelect">Use Template:</label><select id="questTemplateSelect"></select></div>
+                <h3><svg class="icon" style="vertical-align: -0.1em;"><use xlink:href="#icon-tasks"></use></svg> Tasks for this Quest:</h3>
+                <div id="modalTasksContainer"></div>
+                <button id="addModalMainTaskBtn" class="btn-icon-text" style="margin-top:10px;">
+                    <svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg> Add Main Task
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button" id="cancelQuestModalBtn">Cancel</button>
+                <button id="saveQuestBtn" class="btn-primary">
+                    <svg class="icon"><use xlink:href="#icon-save"></use></svg> Save Quest
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal" aria-modal="true" aria-labelledby="settingsModalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="settingsModalTitle"><svg class="icon" style="vertical-align: -0.1em;"><use xlink:href="#icon-settings"></use></svg>Settings</h2>
+                <button class="close-modal-button" id="closeSettingsModal" title="Close Settings Modal">
+                    <svg class="icon"><use xlink:href="#icon-close"></use></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3><svg class="icon" style="vertical-align: -0.1em;"><use xlink:href="#icon-clipboard-list"></use></svg>Quest Templates</h3>
+                    <div id="templateEditor">
+                        <input type="hidden" id="templateId">
+                        <div class="form-group"><label for="templateName">Template Name:</label><input type="text" id="templateName" placeholder="E.g., Standard Video, Quick Vlog"></div>
+                        <h4><svg class="icon" style="vertical-align: -0.1em;"><use xlink:href="#icon-tasks"></use></svg>Tasks for this Template:</h4>
+                        <div id="templateTasksContainer"></div>
+                        <button id="addTemplateMainTaskBtn" class="btn-icon-text" style="margin-top:10px;">
+                            <svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg> Add Main Task
+                        </button>
+                        <div style="margin-top: 20px; display:flex; gap: 10px;">
+                            <button id="saveTemplateBtn" class="btn-primary">
+                                <svg class="icon"><use xlink:href="#icon-save"></use></svg> Save Template
+                            </button>
+                            <button id="newTemplateBtn" class="btn-icon-text new-template-style" style="margin-left: auto;">
+                                <svg class="icon"><use xlink:href="#icon-new-template"></use></svg> New Template
+                            </button>
+                        </div>
+                    </div>
+                    <h4 style="margin-top: 1.5rem;"><svg class="icon" style="vertical-align: -0.1em;"><use xlink:href="#icon-list-alt"></use></svg>Existing Templates:</h4>
+                    <div id="templateList"></div>
+                </div>
+                <div class="settings-section">
+                    <h3><svg class="icon" style="vertical-align: -0.1em;"><use xlink:href="#icon-database"></use></svg>Data Management</h3>
+                    <p>Permanently delete all project data (titles, tasks, value) for quests completed <strong>before the current month</strong>. This action cannot be undone.</p>
+                    <button id="clearOldDataBtn" class="btn-danger" style="margin-top:15px;">
+                        <svg class="icon"><use xlink:href="#icon-trash"></use></svg> Clear Old Project Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="customConfirmModal" class="modal" aria-modal="true" aria-labelledby="customConfirmModalTitle">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2 id="customConfirmModalTitle"><svg class="icon" style="color: var(--warning-color); width: 1.2em; height: 1.2em; vertical-align: -0.15em; margin-right: 5px;"><use xlink:href="#icon-warning-triangle"></use></svg>Confirm Action</h2>
+            </div>
+            <div class="modal-body"><p id="customConfirmModalMessage" style="line-height: 1.6; font-size: 0.95rem;">Are you sure?</p></div>
+            <div class="modal-footer">
+                <button id="customConfirmModalCancelBtn" class="button">Cancel</button>
+                <button id="customConfirmModalConfirmBtn" class="btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        // --- App State & Constants (from GLPLv6, adapted) ---
+        let appData = { projects: [], templates: [] };
+        const APP_DATA_KEY = 'creatorQuestLogData_v6_reskinned_goalio'; 
+        let inactiveSectionsVisible = false;
+        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v4_reskinned_goalio';
+        let currentCalendarDate = new Date(); 
+
+        // --- DOM Element References ---
+        const weekCalendarContainer = document.getElementById('weekCalendarContainer');
+        const weeksLeftMonthEl = document.getElementById('weeksLeftMonth');
+        const monthsLeftYearEl = document.getElementById('monthsLeftYear');
+        const valueTodayEl = document.getElementById('valueToday');
+        const valueMonthEl = document.getElementById('valueMonth');
+        const upcomingValueEl = document.getElementById('upcomingValue');
+        const clearDataNotificationDiv = document.getElementById('clearDataNotification');
+        const goToSettingsFromNotificationBtn = document.getElementById('goToSettingsFromNotification');
+        const activeQuestsListEl = document.getElementById('activeQuestsList');
+        const completedQuestsListEl = document.getElementById('completedQuestsList');
+        const archivedQuestsListEl = document.getElementById('archivedQuestsList');
+        const activeQuestsSectionEl = document.getElementById('activeQuestsSection');
+        const toggleInactiveSectionsBtn = document.getElementById('toggleInactiveSectionsBtn');
+        const inactiveSectionsToggleIconUse = document.getElementById('inactiveSectionsToggleIconUse'); // Target the <use> element
+        const inactiveSectionsToggleText = document.getElementById('inactiveSectionsToggleText');
+        const completedSectionContainer = document.getElementById('completedSectionContainer');
+        const archivedSectionContainer = document.getElementById('archivedSectionContainer');
+        const toggleCompletedListBtn = document.getElementById('toggleCompletedListBtn');
+        const completedQuestsListWrapper = document.getElementById('completedQuestsListWrapper');
+        const toggleArchivedListBtn = document.getElementById('toggleArchivedListBtn');
+        const archivedQuestsListWrapper = document.getElementById('archivedQuestsListWrapper');
+        const questModal = document.getElementById('questModal');
+        const closeQuestModalBtn = document.getElementById('closeQuestModal');
+        const cancelQuestModalBtn = document.getElementById('cancelQuestModalBtn');
+        const addQuestHeaderBtn = document.getElementById('addQuestHeaderBtn');
+        const saveQuestBtn = document.getElementById('saveQuestBtn');
+        const questModalTitleEl = document.getElementById('questModalTitle');
+        const questIdInput = document.getElementById('questId');
+        const questTitleInput = document.getElementById('questTitle');
+        const questDeadlineInput = document.getElementById('questDeadline');
+        const questValueInput = document.getElementById('questValueInput');
+        const questTemplateSelect = document.getElementById('questTemplateSelect');
+        const modalTasksContainer = document.getElementById('modalTasksContainer');
+        const addModalMainTaskBtn = document.getElementById('addModalMainTaskBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsModalBtn = document.getElementById('closeSettingsModal');
+        const settingsHeaderBtn = document.getElementById('settingsHeaderBtn');
+        const templateIdInput = document.getElementById('templateId');
+        const templateNameInput = document.getElementById('templateName');
+        const templateTasksContainer = document.getElementById('templateTasksContainer');
+        const addTemplateMainTaskBtn = document.getElementById('addTemplateMainTaskBtn');
+        const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+        const newTemplateBtn = document.getElementById('newTemplateBtn');
+        const templateListDiv = document.getElementById('templateList');
+        const clearOldDataBtn = document.getElementById('clearOldDataBtn');
+        const customConfirmModal = document.getElementById('customConfirmModal');
+        const customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle');
+        const customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage');
+        let customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn');
+        let customConfirmModalCancelBtn = document.getElementById('customConfirmModalCancelBtn');
+        let currentConfirmCallback = null;
+        let currentCancelCallback = null;
+        const toastContainer = document.getElementById('toastContainer');
+
+        // --- Utility Functions ---
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
+        function getTodayString() { 
+            const today = new Date();
+            const offset = today.getTimezoneOffset();
+            const adjustedToday = new Date(today.getTime() - (offset*60*1000));
+            return adjustedToday.toISOString().split('T')[0];
+        }
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info', durationVisible = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`; 
+            let iconName = 'info-circle'; // Default icon
+            if (type === 'success') iconName = 'check-circle'; 
+            else if (type === 'warning') iconName = 'warning-triangle'; 
+            else if (type === 'error') iconName = 'error-circle';
+            toast.innerHTML = `<svg class="icon"><use xlink:href="#icon-${iconName}"></use></svg> <span class="toast-text-content">${message}</span>`; 
+            toast.style.setProperty('--toast-visible-duration', `${durationVisible}ms`);
+            toastContainer.appendChild(toast); 
+            setTimeout(() => { if (toast.parentNode) { toast.remove(); } }, durationVisible + 700);
+        }
+
+        // --- Custom Confirm Modal Logic ---
+        function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { 
+            customConfirmModalMessageEl.innerHTML = message; 
+            // Update title, keeping SVG if present, or adding one if not
+            const titleIconSvg = `<svg class="icon" style="color: var(--warning-color); width: 1.2em; height: 1.2em; vertical-align: -0.15em; margin-right: 5px;"><use xlink:href="#icon-warning-triangle"></use></svg>`;
+            customConfirmModalTitleEl.innerHTML = `${titleIconSvg}${title}`;
+            
+            currentConfirmCallback = onConfirm; currentCancelCallback = onCancel;
+            const newConfirmBtn = customConfirmModalConfirmBtn.cloneNode(true); 
+            customConfirmModalConfirmBtn.parentNode.replaceChild(newConfirmBtn, customConfirmModalConfirmBtn);
+            customConfirmModalConfirmBtn = newConfirmBtn; 
+            const newCancelBtn = customConfirmModalCancelBtn.cloneNode(true);
+            customConfirmModalCancelBtn.parentNode.replaceChild(newCancelBtn, customConfirmModalCancelBtn);
+            customConfirmModalCancelBtn = newCancelBtn;
+            customConfirmModalConfirmBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentConfirmCallback) currentConfirmCallback(); };
+            customConfirmModalCancelBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentCancelCallback) currentCancelCallback(); };
+            customConfirmModal.style.display = 'block'; 
+            customConfirmModalCancelBtn.focus();
+        }
+        
+        // --- Calendar & Notices ---
+        function calculateQuestDaysLeft(deadlineString) { // From GLPLv6
+            if (!deadlineString) return { deadlineFormatted: 'No Deadline', countdownText: '', days: Infinity, isOverdue: false, isToday: false };
+            const deadlineDate = new Date(deadlineString + 'T00:00:00Z');
+            const deadlineFormatted = deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+            const now = new Date();
+            const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+            const diffTime = deadlineDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let countdownText = "", isOverdue = false, isToday = false;
+            if (diffDays < 0) { countdownText = `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} overdue`; isOverdue = true; } 
+            else if (diffDays === 0) { countdownText = "Due Today"; isToday = true; } 
+            else { countdownText = `${diffDays} day${diffDays !== 1 ? 's' : ''} left`; }
+            return { deadlineFormatted, countdownText, days: diffDays, isOverdue, isToday };
+        }
+        
+        function renderWeekCalendar(dateToDisplay) { // From GLPLv6
+            weekCalendarContainer.innerHTML = ''; 
+            const year = dateToDisplay.getFullYear(), month = dateToDisplay.getMonth(), day = dateToDisplay.getDate();
+            const header = document.createElement('div'); header.className = 'week-calendar-header';
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '<svg class="icon"><use xlink:href="#icon-chevron-down" style="transform: rotate(90deg);"></use></svg>'; // Rotate for left
+            prevButton.title = "Previous Week";
+            prevButton.onclick = () => { currentCalendarDate.setDate(currentCalendarDate.getDate() - 7); renderWeekCalendar(currentCalendarDate); };
+            const monthYearText = document.createElement('span'); monthYearText.className = 'week-calendar-month-year';
+            const firstDayOfWeek = new Date(dateToDisplay); firstDayOfWeek.setDate(day - dateToDisplay.getDay()); 
+            const lastDayOfWeek = new Date(firstDayOfWeek); lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+            if (firstDayOfWeek.getMonth() === lastDayOfWeek.getMonth()) monthYearText.textContent = `${firstDayOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${year}`;
+            else monthYearText.textContent = `${firstDayOfWeek.toLocaleDateString('en-US', { month: 'short' })} - ${lastDayOfWeek.toLocaleDateString('en-US', { month: 'short' })} ${year}`;
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '<svg class="icon"><use xlink:href="#icon-chevron-up" style="transform: rotate(90deg);"></use></svg>'; // Rotate for right
+            nextButton.title = "Next Week";
+            nextButton.onclick = () => { currentCalendarDate.setDate(currentCalendarDate.getDate() + 7); renderWeekCalendar(currentCalendarDate); };
+            header.append(prevButton, monthYearText, nextButton); weekCalendarContainer.appendChild(header);
+            const dayNameRow = document.createElement('div'); dayNameRow.className = 'week-calendar-day-name-row';
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(name => {
+                const dayNameCell = document.createElement('div'); dayNameCell.className = 'week-calendar-day-name';
+                dayNameCell.textContent = name; dayNameRow.appendChild(dayNameCell);
+            });
+            weekCalendarContainer.appendChild(dayNameRow);
+            const grid = document.createElement('div'); grid.className = 'week-calendar-grid';
+            const today = new Date();
+            const currentWeekStart = new Date(dateToDisplay); currentWeekStart.setDate(dateToDisplay.getDate() - dateToDisplay.getDay());
+            for (let i = 0; i < 7; i++) {
+                const dayCellDate = new Date(currentWeekStart); dayCellDate.setDate(currentWeekStart.getDate() + i);
+                const dayCell = document.createElement('div'); dayCell.className = 'week-calendar-day';
+                dayCell.textContent = dayCellDate.getDate();
+                if (dayCellDate.getFullYear() === today.getFullYear() && dayCellDate.getMonth() === today.getMonth() && dayCellDate.getDate() === today.getDate()) dayCell.classList.add('current-day');
+                if (dayCellDate.getMonth() !== dateToDisplay.getMonth()) dayCell.classList.add('other-month-display');
+                grid.appendChild(dayCell);
+            }
+            weekCalendarContainer.appendChild(grid);
+        }
+
+        function updateNotices() { // From GLPLv6
+            const now = new Date(); const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const daysLeftInMonth = lastDayOfMonth.getDate() - now.getDate(); let weeksLeftText = "";
+            if (daysLeftInMonth < 0) weeksLeftText = "Month ended";
+            else if (daysLeftInMonth === 0) weeksLeftText = "Today is last day!";
+            else {
+                const fullWeeks = Math.floor(daysLeftInMonth / 7); const remainingDays = daysLeftInMonth % 7;
+                if (fullWeeks > 0) weeksLeftText += `${fullWeeks} week${fullWeeks !== 1 ? 's' : ''}`;
+                if (remainingDays > 0) weeksLeftText += `${fullWeeks > 0 ? ', ' : ''}${remainingDays} day${remainingDays !== 1 ? 's' : ''}`;
+                if (weeksLeftText === "") weeksLeftText = (daysLeftInMonth < 7) ? `${daysLeftInMonth} day${daysLeftInMonth !== 1 ? 's' : ''}` : "Final week";
+            }
+            weeksLeftMonthEl.textContent = weeksLeftText || "0 days";
+            monthsLeftYearEl.textContent = `${11 - now.getMonth()} month${(11 - now.getMonth()) !== 1 ? 's' : ''}`;
+        }
+
+        // --- Data Handling (Load, Save, Default State - from GLPLv6) ---
+        function initializeDefaultAppState() { // From GLPLv6
+            appData = { projects: [], templates: [{
+                    id: 'default-' + Date.now(), name: 'Default Video Workflow', isDefault: true,
+                    tasks: [
+                        { id: 'dt1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dt2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
+                        { id: 'dt3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
+                        { id: 'dt4-' + generateId(), description: 'Editing', subtasks: [{id: 'dts1-' + generateId(), description: 'Rough Cut'}, {id: 'dts2-' + generateId(), description: 'Final Polish'}] },
+                        { id: 'dt5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] }, { id: 'dt6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
+                    ].map(task => ({...task, isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: task.subtasks.map(st => ({...st, isCompleted:false, completionTimestamp: null, subtaskValue: 0}))}))
+                }] 
+            };
+             appData.projects.forEach(p => distributeValueToTasks(p));
+        }
+        function loadData() { /* From GLPLv6 - unchanged, robust version */ 
+            const storedData = localStorage.getItem(APP_DATA_KEY);
+            if (storedData) {
+                try {
+                    appData = JSON.parse(storedData); 
+                    appData.projects = appData.projects || []; 
+                    appData.templates = appData.templates || [];
+                    
+                    appData.projects.forEach(p => { 
+                        p.ui_isExpanded = p.ui_isExpanded ?? false; 
+                        p.ui_scrollPosition = p.ui_scrollPosition ?? 0; 
+                        p.totalValue = parseFloat(p.totalValue) || 0;
+                        p.valueEarned = parseFloat(p.valueEarned) || 0;
+                        p.isArchived = p.isArchived ?? false; 
+                        p.creationTimestamp = p.creationTimestamp || Date.now();
+                        p.completionTimestamp = p.completionTimestamp ? new Date(p.completionTimestamp).getTime() : null;
+                        if(isNaN(p.completionTimestamp)) p.completionTimestamp = null;
+                        p.tasks = p.tasks || [];
+                        p.tasks.forEach(t => {
+                             t.subtasks = t.subtasks || []; 
+                             t.taskValue = parseFloat(t.taskValue) || 0; 
+                             t.isCompleted = t.isCompleted ?? false;
+                             t.completionTimestamp = t.completionTimestamp ? new Date(t.completionTimestamp).getTime() : null;
+                             if(isNaN(t.completionTimestamp)) t.completionTimestamp = null;
+                             t.subtasks.forEach(st => { 
+                                st.subtaskValue = parseFloat(st.subtaskValue) || 0; 
+                                st.isCompleted = st.isCompleted ?? false;
+                                st.completionTimestamp = st.completionTimestamp ? new Date(st.completionTimestamp).getTime() : null;
+                                if(isNaN(st.completionTimestamp)) st.completionTimestamp = null;
+                            });
+                        });
+                        distributeValueToTasks(p); 
+                        let currentEarned = 0;
+                        p.tasks.forEach(task => {
+                            if (task.subtasks.length > 0) {
+                                task.subtasks.forEach(sub => { if (sub.isCompleted) currentEarned += sub.subtaskValue; });
+                            } else { if (task.isCompleted) currentEarned += task.taskValue; }
+                        });
+                        p.valueEarned = Math.min(currentEarned, p.totalValue);
+                    });
+                    if (appData.templates.length === 0 || !appData.templates.some(t => t.isDefault)) {
+                       const defaultTemplate = { id: 'default-fallback-' + Date.now(), name: 'Default Video Workflow', isDefault: true, tasks: [
+                                { id: 'dtf1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dtf2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
+                                { id: 'dtf3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
+                                { id: 'dtf4-' + generateId(), description: 'Editing', subtasks: [{id: 'dtfs1-' + generateId(), description: 'Rough Cut'}, {id: 'dtfs2-' + generateId(), description: 'Final Polish'}] },
+                                { id: 'dtf5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] }, { id: 'dtf6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
+                            ].map(task => ({...task, subtasks: task.subtasks.map(st => ({...st}))}))
+                        };
+                        if (appData.templates.length === 0) appData.templates.push(defaultTemplate); 
+                        else if (appData.templates.length > 0) appData.templates[0].isDefault = true;
+                    }
+                } catch (error) {
+                    console.error("Error parsing data from localStorage:", error); showToast("Data load error. Resetting to defaults.", 'error', 6000);
+                    localStorage.removeItem(APP_DATA_KEY); initializeDefaultAppState();
+                }
+            } else { initializeDefaultAppState(); }
+        }
+        function saveData() { /* From GLPLv6 */
+            try { localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); } 
+            catch (error) { console.error("Error saving data:", error); showToast("Save error.", 'error', 7000); } 
+        }
+
+        // --- Dashboard Update (from GLPLv6) ---
+        function updateDashboard() { /* From GLPLv6 - unchanged */
+            let valueToday = 0, valueMonth = 0, upcomingValueTotal = 0;
+            const todayD = new Date(); todayD.setHours(0, 0, 0, 0); const todayTime = todayD.getTime();
+            const firstDayOfMonth = new Date(todayD.getFullYear(), todayD.getMonth(), 1).getTime();
+            appData.projects.forEach(project => {
+                if (project.isArchived) return; 
+                const totalVal = parseFloat(project.totalValue) || 0;
+                let earnedValProject = 0;
+                (project.tasks || []).forEach(task => {
+                    const checkCompletion = (item, value) => {
+                        if (item.isCompleted && item.completionTimestamp) {
+                            const completionDate = new Date(item.completionTimestamp); completionDate.setHours(0,0,0,0);
+                            const itemVal = parseFloat(value) || 0;
+                            earnedValProject += itemVal;
+                            if (completionDate.getTime() === todayTime) valueToday += itemVal;
+                            if (completionDate.getTime() >= firstDayOfMonth) valueMonth += itemVal;
+                        }
+                    };
+                    if ((task.subtasks || []).length > 0) task.subtasks.forEach(sub => checkCompletion(sub, sub.subtaskValue));
+                    else checkCompletion(task, task.taskValue);
+                });
+                project.valueEarned = Math.min(earnedValProject, totalVal);
+                if (!project.isCompleted) { upcomingValueTotal += Math.max(0, totalVal - project.valueEarned); }
+            });
+            valueTodayEl.textContent = `$${valueToday.toFixed(0)}`;
+            valueMonthEl.textContent = `$${valueMonth.toFixed(0)}`;
+            upcomingValueEl.textContent = `$${upcomingValueTotal.toFixed(0)}`;
+            checkClearDataNotification();
+        }
+
+        // --- Project Rendering & Card Creation (ADAPTED) ---
+        function renderProjects() { /* Adapted from GLPLv6 */
+            const lists = { active: activeQuestsListEl, completed: completedQuestsListEl, archived: archivedQuestsListEl };
+            const firstPassPositions = new Map();
+            Object.values(lists).forEach(listEl => {
+                if (listEl) { 
+                    Array.from(listEl.children).forEach(card => { if (card.dataset.id && !card.classList.contains('exiting')) firstPassPositions.set(card.dataset.id, card.getBoundingClientRect()); });
+                    listEl.innerHTML = '';
+                }
+            });
+            const firstDayOfCurrentMonth = new Date(); firstDayOfCurrentMonth.setDate(1); firstDayOfCurrentMonth.setHours(0, 0, 0, 0);
+            const sorted = { active: [], completed: [], archived: [] };
+            appData.projects.forEach(p => {
+                if (p.isArchived) sorted.archived.push(p);
+                else if (p.isCompleted) { if (!p.completionTimestamp || new Date(p.completionTimestamp) >= firstDayOfCurrentMonth) sorted.completed.push(p); }
+                else sorted.active.push(p);
+            });
+            sorted.active.sort((a, b) => (a.priority !== b.priority) ? (a.priority ? -1 : 1) : (calculateQuestDaysLeft(a.deadline).days - calculateQuestDaysLeft(b.deadline).days) || ((b.creationTimestamp || 0) - (a.creationTimestamp || 0)));
+            sorted.completed.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0));
+            sorted.archived.sort((a,b) => ((b.completionTimestamp || b.creationTimestamp || 0)) - (a.completionTimestamp || a.creationTimestamp || 0));
+            
+            Object.keys(sorted).forEach(key => {
+                const listEl = lists[key];
+                if (listEl) {
+                    if (sorted[key].length === 0 && (key === 'active' || (inactiveSectionsVisible && document.getElementById(`${key}QuestsListWrapper`)?.classList.contains('expanded')))) {
+                        const messages = { active: "No active quests. Time to start a new one!", completed: "No quests completed this month yet.", archived: "No archived quests." };
+                        listEl.innerHTML = `<p class="empty-list-message">${messages[key]}</p>`;
+                    } else { sorted[key].forEach(project => listEl.appendChild(createProjectCard(project))); }
+                }
+            });
+            // FLIP Animation logic (from GLPLv6)
+            Object.values(lists).forEach(listEl => {
+                if (listEl) {
+                    Array.from(listEl.children).forEach(card => {
+                        const projectId = card.dataset.id; if (!projectId) return;
+                        const oldRect = firstPassPositions.get(projectId);
+                        if (!oldRect) { 
+                            card.classList.add('entering');
+                            requestAnimationFrame(() => { card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out'; card.classList.remove('entering'); card.addEventListener('transitionend', () => card.style.transition = '', { once: true }); });
+                        } else { 
+                            const newRect = card.getBoundingClientRect(); const deltaX = oldRect.left - newRect.left, deltaY = oldRect.top - newRect.top;
+                            if (deltaX !== 0 || deltaY !== 0) {
+                                card.style.transform = `translate(${deltaX}px, ${deltaY}px)`; card.style.transition = 'none'; 
+                                requestAnimationFrame(() => { card.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)'; card.style.transform = 'translate(0, 0)'; card.addEventListener('transitionend', () => { card.style.transform = ''; card.style.transition = ''; }, { once: true }); });
+                            }
+                        }
+                    });
+                }
+            });
+            updateDashboard();
+            appData.projects.forEach(p => { 
+                if (p.ui_isExpanded) { 
+                    const cardEl = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container.expanded`); 
+                    if (cardEl) setTimeout(() => { cardEl.scrollTop = p.ui_scrollPosition || 0; }, 50);
+                } 
+            });
+        }
+        
+        function createProjectCard(project) { // SIGNIFICANTLY MODIFIED for new structure & SVG icons
+            const card = document.createElement('div');
+            card.className = 'quest-card'; card.dataset.id = project.id;
+            if (project.isCompleted) card.classList.add('completed-quest');
+            if (project.isArchived) card.classList.add('archived-quest');
+            
+            const totalVal = parseFloat(project.totalValue) || 0;
+            let earnedVal = 0;
+             (project.tasks || []).forEach(task => {
+                if ((task.subtasks || []).length > 0) { (task.subtasks || []).forEach(sub => { if (sub.isCompleted) earnedVal += (parseFloat(sub.subtaskValue) || 0); }); }
+                else { if (task.isCompleted) earnedVal += (parseFloat(task.taskValue) || 0); }
+            });
+            earnedVal = Math.min(earnedVal, totalVal); project.valueEarned = earnedVal;
+            let progressPercent = totalVal > 0 ? (earnedVal / totalVal) * 100 : ((project.isCompleted) ? 100 : 0);
+            
+            const deadlineInfo = calculateQuestDaysLeft(project.deadline);
+            if (deadlineInfo.isOverdue && !project.isCompleted && !project.isArchived) card.classList.add('is-overdue');
+            
+            const chevronIconName = project.ui_isExpanded ? 'icon-chevron-up' : 'icon-chevron-down';
+            const starIconName = project.priority ? 'icon-star' : 'icon-star-outline'; // Using outline for non-priority
+
+            card.innerHTML = `
+                <div class="quest-card-main-info">
+                    <input type="checkbox" class="quest-complete-checkbox" ${project.isCompleted ? 'checked' : ''} title="Mark Quest ${project.isCompleted ? 'Active' : 'Complete'}" ${project.isArchived ? 'disabled' : ''}>
+                    <p class="quest-title-text" title="Edit Quest: ${project.title}">${project.title}</p>
+                    <div class="quest-card-actions">
+                        <button class="toggle-tasks-button btn-icon-only" title="Toggle Tasks View">
+                            <svg class="icon"><use xlink:href="#${chevronIconName}"></use></svg>
+                        </button>
+                        <button class="priority-button btn-icon-only ${project.priority ? 'prioritized' : ''}" title="${project.priority ? 'Remove Priority' : 'Set Priority'}" ${project.isArchived || project.isCompleted ? 'disabled' : ''}>
+                            <svg class="icon"><use xlink:href="#${starIconName}"></use></svg>
+                        </button>
+                        <div class="quest-more-actions-container">
+                            <button class="more-actions-button btn-icon-only" title="More Actions">
+                                <svg class="icon"><use xlink:href="#icon-ellipsis-vertical"></use></svg>
+                            </button>
+                            <div class="actions-dropdown">
+                                <button class="action-edit-quest" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-pencil"></use></svg> Edit</button>
+                                ${project.isArchived ? `<button class="action-unarchive-quest" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-folder-open"></use></svg> Unarchive</button>` : `<button class="action-archive-quest" data-id="${project.id}" ${project.isCompleted ? '' : ''}><svg class="icon"><use xlink:href="#icon-archive"></use></svg> Archive</button>`}
+                                <button class="action-delete-quest danger" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-trash"></use></svg> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="quest-card-details">
+                    <span class="quest-value-display"><svg class="icon"><use xlink:href="#icon-coins"></use></svg> $${earnedVal.toFixed(0)} / $${totalVal.toFixed(0)}</span>
+                    <span class="quest-deadline-display">
+                        <svg class="icon"><use xlink:href="#icon-calendar"></use></svg> <span class="quest-deadline-text-display">${deadlineInfo.deadlineFormatted}</span>
+                        ${(deadlineInfo.countdownText && !project.isCompleted && !project.isArchived) ? `&bull; <svg class="icon"><use xlink:href="#icon-hourglass"></use></svg> <span class="quest-countdown-text ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">${deadlineInfo.countdownText}</span>` : ''}
+                    </span>
+                </div>
+                <div class="quest-progress-wrapper">
+                    <div class="quest-progress-bar-container" title="Progress: ${progressPercent.toFixed(0)}%">
+                        <div class="quest-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div>
+                    </div>
+                    <span class="quest-progress-value-text">${progressPercent.toFixed(0)}%</span>
+                </div>
+                <div class="tasks-container ${project.ui_isExpanded ? 'expanded' : ''}">
+                    ${(project.tasks || []).length > 0 ? (project.tasks || []).map(task => createTaskElement(task, project.id, project.isArchived || project.isCompleted)).join('') : '<p style="font-size:0.85em; color: var(--text-secondary); text-align:center; padding:0.5rem 0;">No tasks defined.</p>'}
+                </div>`;
+
+            // Event Listeners (from GLPLv6, selectors should be mostly compatible)
+            const tasksContainerEl = card.querySelector('.tasks-container');
+            card.querySelector('.toggle-tasks-button').addEventListener('click', e => { 
+                e.stopPropagation(); 
+                const p = appData.projects.find(proj => proj.id === project.id); 
+                if (p) { 
+                    if (tasksContainerEl.classList.contains('expanded')) p.ui_scrollPosition = tasksContainerEl.scrollTop;
+                    p.ui_isExpanded = !p.ui_isExpanded; 
+                    saveData(); renderProjects();
+                } 
+            });
+            card.querySelector('.quest-complete-checkbox').addEventListener('change', e => toggleProjectComplete(project.id, e.target.checked));
+            card.querySelector('.priority-button').addEventListener('click', e => { e.stopPropagation(); if (!e.currentTarget.disabled) toggleProjectPriority(project.id); });
+            card.querySelector('.quest-title-text').addEventListener('click', () => openQuestModal(project.id));
+            card.querySelectorAll('.task-checkbox').forEach(cb => cb.addEventListener('change', e => toggleTaskComplete(project.id, e.target.dataset.taskId, e.target.checked)));
+            card.querySelectorAll('.subtask-checkbox').forEach(cb => cb.addEventListener('change', e => toggleSubtaskComplete(project.id, e.target.dataset.mainTaskId, e.target.dataset.subtaskId, e.target.checked)));
+            const moreActionsBtn = card.querySelector('.more-actions-button');
+            const dropdown = card.querySelector('.actions-dropdown');
+            moreActionsBtn.addEventListener('click', e => { 
+                e.stopPropagation(); 
+                document.querySelectorAll('.actions-dropdown').forEach(dd => { if (dd !== dropdown) dd.style.display = 'none'; });
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'; 
+            });
+            card.querySelector('.action-edit-quest').addEventListener('click', () => { openQuestModal(project.id); dropdown.style.display = 'none'; });
+            const archiveBtn = card.querySelector('.action-archive-quest');
+            if(archiveBtn) archiveBtn.addEventListener('click', e => { if (!e.currentTarget.disabled) { archiveProject(project.id); dropdown.style.display = 'none'; } });
+            card.querySelector('.action-unarchive-quest')?.addEventListener('click', () => { unarchiveProject(project.id); dropdown.style.display = 'none'; });
+            card.querySelector('.action-delete-quest').addEventListener('click', () => { deleteProjectWithAnimation(project.id); dropdown.style.display = 'none'; });
+            
+            return card;
+        }
+
+        function createTaskElement(task, projectId, isProjectInactive) { // BUG FIX: Value chip only for main task
+            let valueDisplay = ''; 
+            if (task.taskValue > 0 && (task.subtasks || []).length === 0) { // Only show value if it's a main task without subtasks
+                valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
+            }
+            return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                    <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
+                    <span class="task-description">${task.description}</span>${valueDisplay}</div>
+                    ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, isProjectInactive)).join('')}`;
+        }
+        function createSubtaskElement(subtask, mainTaskId, isProjectInactive) { // BUG FIX: No value chip here
+            return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
+                    <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
+                    <span class="task-description">${subtask.description}</span></div>`;
+        }
+
+        function distributeValueToTasks(project) { /* From GLPLv6 */
+            const totalProjectValue = parseFloat(project.totalValue) || 0; 
+            let valueUnits = 0;
+            (project.tasks || []).forEach(task => { valueUnits += (task.subtasks || []).length > 0 ? (task.subtasks || []).length : 1; });
+            const valuePerUnit = totalProjectValue > 0 && valueUnits > 0 ? totalProjectValue / valueUnits : 0;
+            (project.tasks || []).forEach(task => {
+                task.taskValue = 0;
+                if ((task.subtasks || []).length > 0) { (task.subtasks || []).forEach(sub => { sub.subtaskValue = valuePerUnit; }); }
+                else { task.taskValue = valuePerUnit; }
+            });
+        }
+
+        // --- Project Actions (Toggle Complete, Priority, Archive, Delete - from GLPLv6) ---
+        function toggleProjectComplete(projectId, isBeingMarkedCompleted) { /* From GLPLv6 */
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return;
+            const oldCompletedState = project.isCompleted; 
+            project.isCompleted = isBeingMarkedCompleted;
+            if (isBeingMarkedCompleted) {
+                project.completionTimestamp = project.completionTimestamp || Date.now();
+                (project.tasks || []).forEach(t => { 
+                    t.isCompleted = true; t.completionTimestamp = t.completionTimestamp || Date.now(); 
+                    (t.subtasks || []).forEach(s => { s.isCompleted = true; s.completionTimestamp = s.completionTimestamp || Date.now(); }); 
+                });
+                if (!oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" completed!`, 'success', 4000);
+            } else { 
+                project.completionTimestamp = null;
+                if (oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+            }
+            let currentEarned = 0;
+            (project.tasks || []).forEach(task => {
+                if ((task.subtasks || []).length > 0) { (task.subtasks || []).forEach(sub => { if (sub.isCompleted) currentEarned += (parseFloat(sub.subtaskValue) || 0); }); }
+                else { if (task.isCompleted) currentEarned += (parseFloat(task.taskValue) || 0); }
+            });
+            project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
+            saveData(); renderProjects();
+        }
+        function toggleTaskComplete(projectId, taskId, isCompleted) { /* From GLPLv6 */
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived || project.isCompleted) return;
+            const task = (project.tasks || []).find(t => t.id === taskId); if (!task) return;
+            const wasTaskCompleted = task.isCompleted;
+            task.isCompleted = isCompleted;
+            if (isCompleted) task.completionTimestamp = task.completionTimestamp || Date.now(); else task.completionTimestamp = null;
+            (task.subtasks || []).forEach(sub => { 
+                sub.isCompleted = isCompleted; 
+                if (isCompleted) sub.completionTimestamp = sub.completionTimestamp || Date.now(); else sub.completionTimestamp = null; 
+            });
+            const allTasksDone = project.tasks.every(t => t.isCompleted && ((t.subtasks || []).length === 0 || (t.subtasks || []).every(st => st.isCompleted)));
+            if(allTasksDone && !project.isCompleted) { project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now(); showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success'); }
+            else if (!allTasksDone && project.isCompleted) { project.isCompleted = false; project.completionTimestamp = null; showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');}
+            let currentEarned = 0;
+            (project.tasks || []).forEach(t_calc => {
+                if ((t_calc.subtasks || []).length > 0) { (t_calc.subtasks || []).forEach(s_calc => { if (s_calc.isCompleted) currentEarned += (parseFloat(s_calc.subtaskValue) || 0); }); }
+                else { if (t_calc.isCompleted) currentEarned += (parseFloat(t_calc.taskValue) || 0); }
+            });
+            project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
+            saveData(); renderProjects();
+            if (isCompleted && !wasTaskCompleted) showToast(`Task "${task.description}" marked complete.`, 'info', 2000);
+            else if (!isCompleted && wasTaskCompleted) showToast(`Task "${task.description}" marked incomplete.`, 'info', 2000);
+        }
+        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted) { /* From GLPLv6 */
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived || project.isCompleted) return;
+            const mainTask = (project.tasks || []).find(t => t.id === mainTaskId); if (!mainTask) return;
+            const subtask = (mainTask.subtasks || []).find(s => s.id === subtaskId); if (!subtask) return;
+            const wasSubtaskCompleted = subtask.isCompleted;
+            subtask.isCompleted = isCompleted;
+            if (isCompleted) subtask.completionTimestamp = subtask.completionTimestamp || Date.now(); else subtask.completionTimestamp = null;
+            const allSubtasksOfMainTaskDone = (mainTask.subtasks || []).every(s => s.isCompleted);
+            if (allSubtasksOfMainTaskDone && !mainTask.isCompleted) { mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now(); }
+            else if (!allSubtasksOfMainTaskDone && mainTask.isCompleted) { mainTask.isCompleted = false; mainTask.completionTimestamp = null; }
+            const allTasksDone = project.tasks.every(t => t.isCompleted && ((t.subtasks || []).length === 0 || (t.subtasks || []).every(st => st.isCompleted)));
+            if(allTasksDone && !project.isCompleted) { project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now(); showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success'); }
+            else if (!allTasksDone && project.isCompleted) { project.isCompleted = false; project.completionTimestamp = null; showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info'); }
+            let currentEarned = 0;
+            (project.tasks || []).forEach(t_calc => {
+                if ((t_calc.subtasks || []).length > 0) { (t_calc.subtasks || []).forEach(s_calc => { if (s_calc.isCompleted) currentEarned += (parseFloat(s_calc.subtaskValue) || 0); }); }
+                else { if (t_calc.isCompleted) currentEarned += (parseFloat(t_calc.taskValue) || 0); }
+            });
+            project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
+            saveData(); renderProjects();
+            if (isCompleted && !wasSubtaskCompleted) showToast(`Subtask "${subtask.description}" marked complete.`, 'info', 2000);
+            else if (!isCompleted && wasSubtaskCompleted) showToast(`Subtask "${subtask.description}" marked incomplete.`, 'info', 2000);
+        }
+        function toggleProjectPriority(projectId) { /* From GLPLv6 */
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p || p.isArchived || p.isCompleted) return; 
+            p.priority = !p.priority; saveData(); renderProjects(); 
+            showToast(`Quest "<strong>${p.title}</strong>" ${p.priority ? 'prioritized' : 'unprioritized'}.`, 'info'); 
+        }
+        function animateThenRemoveQuest(projectId) { /* From GLPLv6 */
+            const cardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
+            if (cardElement) { cardElement.classList.add('exiting'); cardElement.addEventListener('animationend', () => { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }, { once: true }); } 
+            else { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }
+        }
+        function deleteProjectWithAnimation(projectId) { /* From GLPLv6 */
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
+            showCustomConfirm(`Are you sure you want to PERMANENTLY DELETE the quest "<strong>${p.title}</strong>"?`, "Delete Quest", () => { animateThenRemoveQuest(projectId); showToast(`Quest "<strong>${p.title}</strong>" deleted.`, 'info'); });
+        }
+        function archiveProject(projectId) { /* From GLPLv6 */
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
+            p.isArchived = true; p.priority = false; saveData(); renderProjects(); showToast(`Quest "<strong>${p.title}</strong>" archived.`, 'info');
+        }
+        function unarchiveProject(projectId) { /* From GLPLv6 */
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
+            p.isArchived = false; saveData(); renderProjects(); showToast(`Quest "<strong>${p.title}</strong>" unarchived.`, 'info');
+        }
+
+        // --- Modal Logic (Quest & Settings - ADAPTED from GLPLv6) ---
+        function openQuestModal(projectId = null) { /* Adapted */
+            populateTemplateSelect(questTemplateSelect); modalTasksContainer.innerHTML = ''; 
+            if (projectId) {
+                const p = appData.projects.find(proj => proj.id === projectId);
+                if (!p) { console.error("Project not found for editing:", projectId); return; }
+                questModalTitleEl.innerHTML = `<svg class="icon" style="vertical-align:-0.1em;"><use xlink:href="#icon-pencil"></use></svg> Edit Quest`;
+                questIdInput.value = p.id; questTitleInput.value = p.title; 
+                questDeadlineInput.value = p.deadline || ''; 
+                questValueInput.value = p.totalValue;
+                (p.tasks || []).forEach(t => addModalTaskEditor(t));
+            } else {
+                questModalTitleEl.innerHTML = `<svg class="icon" style="vertical-align:-0.1em;"><use xlink:href="#icon-plus-circle"></use></svg> Start New Quest`;
+                questIdInput.value = ''; questTitleInput.value = ''; questDeadlineInput.value = getTodayString(); questValueInput.value = '100'; 
+                const t = appData.templates.find(temp => temp.id === questTemplateSelect.value);
+                if (t) { (t.tasks || []).forEach(task => addModalTaskEditor({ ...task, id: generateId(), isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: (task.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) })); }
+                else { addModalTaskEditor(); }
+            }
+            questModal.style.display = 'block'; questTitleInput.focus();
+        }
+        questTemplateSelect.addEventListener('change', () => { /* From GLPLv6 */
+            if (!questIdInput.value) { 
+                modalTasksContainer.innerHTML = ''; 
+                const t = appData.templates.find(temp => temp.id === questTemplateSelect.value); 
+                if (t) { (t.tasks || []).forEach(task => addModalTaskEditor({ ...task, id: generateId(), isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: (task.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) })); }
+                else { addModalTaskEditor(); }
+            } 
+        });
+        function addModalTaskEditor(taskData = null) { /* Adapted for SVG */
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; 
+            taskDiv.dataset.taskId = taskData?.id || generateId(); 
+            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="modal-task-desc" value="${taskData?.description || ''}" placeholder="Main Task Description"><button type="button" class="remove-modal-task-btn btn-icon-only danger" title="Remove Task"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button><button type="button" class="add-modal-subtask-btn btn-icon-only" title="Add Subtask"><svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg></button></div><div class="modal-subtasks-list" style="padding-top: 5px;"></div>`;
+            modalTasksContainer.appendChild(taskDiv); 
+            (taskData?.subtasks || []).forEach(s => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), s));
+            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove(); 
+            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));
+        }
+        function addModalSubtaskEditor(parentList, subtaskData = null) { /* Adapted for SVG */
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; 
+            subtaskDiv.dataset.subtaskId = subtaskData?.id || generateId(); 
+            subtaskDiv.innerHTML = `<input type="text" class="modal-subtask-desc" value="${subtaskData?.description || ''}" placeholder="Subtask Description"><button type="button" class="remove-modal-subtask-btn btn-icon-only danger" title="Remove Subtask"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button>`;
+            parentList.appendChild(subtaskDiv); 
+            subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+        addModalMainTaskBtn.addEventListener('click', () => addModalTaskEditor());
+        [closeQuestModalBtn, cancelQuestModalBtn].forEach(btn => btn.addEventListener('click', () => questModal.style.display = 'none'));
+        addQuestHeaderBtn.addEventListener('click', () => openQuestModal());
+        saveQuestBtn.addEventListener('click', () => { /* From GLPLv6 */
+            const id = questIdInput.value || generateId(); const title = questTitleInput.value.trim();
+            if (!title) { showToast('Quest Title is required.', 'warning'); questTitleInput.focus(); return; }
+            const deadline = questDeadlineInput.value; const totalValue = parseFloat(questValueInput.value) || 0;
+            const tasksFromModal = Array.from(document.querySelectorAll('#modalTasksContainer .task-editor-item')).map(taskDiv => {
+                const taskDesc = taskDiv.querySelector('.modal-task-desc').value.trim(); if (!taskDesc) return null;
+                return { id: taskDiv.dataset.taskId, description: taskDesc, isCompleted: false, completionTimestamp: null, taskValue: 0, 
+                    subtasks: Array.from(taskDiv.querySelectorAll('.subtask-editor-item')).map(subDiv => { 
+                        const subDesc = subDiv.querySelector('.modal-subtask-desc').value.trim(); 
+                        return subDesc ? { id: subDiv.dataset.subtaskId, description: subDesc, isCompleted: false, completionTimestamp: null, subtaskValue: 0 } : null; 
+                    }).filter(Boolean) 
+                };
+            }).filter(Boolean);
+            const existing = appData.projects.find(p => p.id === id);
+            if (existing) { 
+                existing.title = title; existing.deadline = deadline; existing.totalValue = totalValue;
+                const oldTasksMap = new Map((existing.tasks || []).map(t => [t.id, t]));
+                existing.tasks = tasksFromModal.map(newTask => {
+                    const oldTask = oldTasksMap.get(newTask.id); let mergedTask = { ...newTask };
+                    if (oldTask) {
+                        mergedTask.isCompleted = oldTask.isCompleted; mergedTask.completionTimestamp = oldTask.completionTimestamp;
+                        const oldSubtasksMap = new Map((oldTask.subtasks || []).map(st => [st.id, st]));
+                        mergedTask.subtasks = newTask.subtasks.map(newSub => {
+                            const oldSub = oldSubtasksMap.get(newSub.id);
+                            return oldSub ? {...newSub, isCompleted: oldSub.isCompleted, completionTimestamp: oldSub.completionTimestamp } : newSub;
+                        });
+                    } return mergedTask;
+                });
+                distributeValueToTasks(existing); 
+                let currentEarned = 0;
+                (existing.tasks || []).forEach(task => {
+                    if ((task.subtasks || []).length > 0) { (task.subtasks || []).forEach(sub => { if (sub.isCompleted) currentEarned += sub.subtaskValue; });}
+                    else { if (task.isCompleted) currentEarned += task.taskValue; }
+                });
+                existing.valueEarned = Math.min(currentEarned, existing.totalValue);
+                showToast(`Quest "<strong>${existing.title}</strong>" updated.`, 'info');
+            } else { 
+                const newProject = { id, title, deadline, totalValue, tasks: tasksFromModal, valueEarned: 0, isCompleted: false, completionTimestamp: null, priority: false, ui_isExpanded: true, ui_scrollPosition: 0, isArchived: false, creationTimestamp: Date.now() }; 
+                appData.projects.push(newProject); distributeValueToTasks(newProject);
+                showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success'); 
+            }
+            saveData(); renderProjects(); questModal.style.display = 'none';
+        });
+
+        // Settings Modal JS (Adapted from GLPLv6)
+        settingsHeaderBtn.addEventListener('click', () => { loadTemplateEditor(); renderTemplateList(); settingsModal.style.display = 'block'; templateNameInput.focus(); });
+        closeSettingsModalBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+        goToSettingsFromNotificationBtn.addEventListener('click', () => { settingsModal.style.display = 'block'; loadTemplateEditor(); renderTemplateList(); templateNameInput.focus(); });
+        function loadTemplateEditor(templateId = null) { /* Adapted */
+            templateTasksContainer.innerHTML = ''; 
+            const t = templateId ? appData.templates.find(temp => temp.id === templateId) : null;
+            templateIdInput.value = t?.id || ''; templateNameInput.value = t?.name || ''; 
+            (t?.tasks || [null]).forEach(task => addTemplateTaskEditor(task));
+            templateNameInput.focus();
+        }
+        function addTemplateTaskEditor(taskData = null) { /* Adapted for SVG */
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; 
+            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="template-task-desc" value="${taskData?.description || ''}" placeholder="Main Task Description"><button type="button" class="remove-template-task-btn btn-icon-only danger"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button><button type="button" class="add-template-subtask-btn btn-icon-only"><svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg></button></div><div class="template-subtasks-list" style="padding-top: 5px;"></div>`;
+            templateTasksContainer.appendChild(taskDiv); 
+            (taskData?.subtasks || []).forEach(s => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), s));
+            taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove(); 
+            taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));
+        }
+        function addTemplateSubtaskEditor(parentList, subtaskData = null) { /* Adapted for SVG */
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; 
+            subtaskDiv.innerHTML = `<input type="text" class="template-subtask-desc" value="${subtaskData?.description || ''}" placeholder="Subtask Description"><button type="button" class="remove-template-subtask-btn btn-icon-only danger"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button>`;
+            parentList.appendChild(subtaskDiv); 
+            subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+        addTemplateMainTaskBtn.addEventListener('click', () => addTemplateTaskEditor()); 
+        newTemplateBtn.addEventListener('click', () => loadTemplateEditor()); 
+        saveTemplateBtn.addEventListener('click', () => { /* From GLPLv6 */
+            const id = templateIdInput.value || generateId(); const name = templateNameInput.value.trim(); 
+            if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; }
+            const tasks = Array.from(document.querySelectorAll('#templateTasksContainer .task-editor-item')).map(div => { 
+                const desc = div.querySelector('.template-task-desc').value.trim(); 
+                return desc ? { description: desc, subtasks: Array.from(div.querySelectorAll('.template-subtask-desc')).map(sub => sub.value.trim()).filter(Boolean).map(d => ({description: d})) } : null 
+            }).filter(Boolean);
+            const existingIndex = appData.templates.findIndex(t => t.id === id);
+            if (existingIndex > -1) { Object.assign(appData.templates[existingIndex], {name, tasks}); showToast(`Template "<strong>${name}</strong>" updated.`, 'success'); }
+            else { appData.templates.push({ id, name, tasks, isDefault: appData.templates.length === 0 }); showToast(`Template "<strong>${name}</strong>" saved.`, 'success'); }
+            saveData(); renderTemplateList(); loadTemplateEditor(id); 
+        });
+        function renderTemplateList() { /* Adapted for SVG */
+            templateListDiv.innerHTML = appData.templates.length === 0 ? '<p style="color: var(--text-secondary); font-style: italic;">No templates. Create one!</p>' : '';
+            appData.templates.forEach(t => {
+                const item = document.createElement('div'); item.className = `template-item ${t.isDefault ? 'default-template' : ''}`;
+                item.innerHTML = `<span>${t.name} ${t.isDefault ? '<strong style="color: var(--accent-priority);">(Default)</strong>' : ''}</span>
+                    <div class="template-actions">
+                        <button class="edit-template-btn btn-icon-text" data-id="${t.id}"><svg class="icon"><use xlink:href="#icon-pencil"></use></svg> Edit</button>
+                        ${!t.isDefault ? `<button class="set-default-template-btn btn-icon-text" data-id="${t.id}" style="background-color:var(--accent-priority);color:var(--text-primary);border-color:var(--accent-priority);"><svg class="icon"><use xlink:href="#icon-star"></use></svg> Default</button>` : ''}
+                        <button class="delete-template-btn btn-icon-only danger" data-id="${t.id}"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button>
+                    </div>`;
+                templateListDiv.appendChild(item);
+            });
+            templateListDiv.querySelectorAll('.edit-template-btn').forEach(btn => btn.onclick = () => loadTemplateEditor(btn.dataset.id));
+            templateListDiv.querySelectorAll('.delete-template-btn').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id));
+            templateListDiv.querySelectorAll('.set-default-template-btn').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));
+        }
+        function deleteTemplate(templateId) { /* From GLPLv6 */
+            const t = appData.templates.find(temp => temp.id === templateId); if (!t) return;
+            if (t.isDefault) { showToast("Cannot delete the active default template. Set a new default first.", 'warning', 4000); return; }
+            showCustomConfirm(`Are you sure you want to delete template "<strong>${t.name}</strong>"?`, "Delete Template", () => { appData.templates = appData.templates.filter(temp => temp.id !== templateId); saveData(); renderTemplateList(); loadTemplateEditor(); showToast(`Template "<strong>${t.name}</strong>" deleted.`, 'info'); });
+        }
+        function setDefaultTemplate(templateId) { /* From GLPLv6 */
+            let name = ''; appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; }); 
+            saveData(); renderTemplateList(); if (name) showToast(`Template "<strong>${name}</strong>" set as default.`, 'info'); 
+        }
+        function populateTemplateSelect(selectElement) { /* From GLPLv6 */
+            selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null;
+            appData.templates.forEach(t => { const opt = document.createElement('option'); opt.value = t.id; opt.textContent = t.name; if (t.isDefault) { opt.selected = true; defaultId = t.id; } selectElement.appendChild(opt); });
+            if (defaultId) selectElement.value = defaultId; return defaultId;
+        }
+
+        // Data Management (Clear Old Data - from GLPLv6)
+        function checkClearDataNotification() { /* From GLPLv6 */
+            const today = new Date();
+            if (today.getDate() > 7) { 
+                const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1); 
+                const hasOld = appData.projects.some(p => p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth); 
+                clearDataNotificationDiv.style.display = hasOld ? 'flex' : 'none'; 
+            } else { clearDataNotificationDiv.style.display = 'none'; }
+        }
+        clearOldDataBtn.addEventListener('click', () => { /* From GLPLv6 */
+            showCustomConfirm('Permanently DELETE old project data (completed BEFORE current month)? This action CANNOT BE UNDONE.', "Clear Old Project Data", () => { 
+                const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0);
+                const initialCount = appData.projects.length;
+                appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth));
+                saveData(); renderProjects(); showToast(`${initialCount - appData.projects.length} old project(s) cleared.`, 'success', 4000);
+                checkClearDataNotification(); settingsModal.style.display = 'none'; 
+            });
+        });
+        
+        // --- Inactive Sections Toggle Logic (from GLPLv6, adapted for SVG) ---
+        function applyInactiveSectionsVisibilityState() { 
+            if (!completedSectionContainer || !archivedSectionContainer || !inactiveSectionsToggleIconUse || !inactiveSectionsToggleText) return;
+            if (inactiveSectionsVisible) {
+                completedSectionContainer.style.display = 'block'; archivedSectionContainer.style.display = 'block';
+                inactiveSectionsToggleIconUse.setAttribute('xlink:href', '#icon-chevron-up');
+                inactiveSectionsToggleText.textContent = 'Hide Completed & Archived';
+            } else {
+                completedSectionContainer.style.display = 'none'; archivedSectionContainer.style.display = 'none';
+                inactiveSectionsToggleIconUse.setAttribute('xlink:href', '#icon-chevron-down');
+                inactiveSectionsToggleText.textContent = 'Show Completed & Archived';
+            }
+            renderProjects(); // Re-render needed for empty messages
+        }
+        function initInactiveSectionsToggle() { 
+            const storedVisibility = localStorage.getItem(INACTIVE_SECTIONS_VISIBILITY_KEY);
+            if (storedVisibility !== null) inactiveSectionsVisible = JSON.parse(storedVisibility);
+            applyInactiveSectionsVisibilityState(); 
+            if(toggleInactiveSectionsBtn) {
+                toggleInactiveSectionsBtn.addEventListener('click', () => { 
+                    inactiveSectionsVisible = !inactiveSectionsVisible; 
+                    localStorage.setItem(INACTIVE_SECTIONS_VISIBILITY_KEY, JSON.stringify(inactiveSectionsVisible)); 
+                    applyInactiveSectionsVisibilityState(); 
+                });
+            }
+        }
+        
+        // --- Event Listeners & Initialization (from GLPLv6, adapted) ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData(); 
+            initInactiveSectionsToggle(); // This will call renderProjects
+            updateNotices(); renderWeekCalendar(currentCalendarDate); 
+            checkClearDataNotification(); 
+            if(activeQuestsSectionEl) activeQuestsSectionEl.scrollIntoView({ behavior: 'auto', block: 'start' }); // auto for less jarring on load
+
+            document.addEventListener('click', e => { // Close dropdowns and modals on outside click
+                document.querySelectorAll('.actions-dropdown').forEach(dd => { if (!dd.contains(e.target) && !(dd.previousElementSibling && dd.previousElementSibling.contains(e.target))) dd.style.display = 'none'; });
+                if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+            });
+            document.addEventListener('keydown', e => { // Escape key closes dropdowns and modals
+                if (e.key === "Escape") { 
+                    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+                    document.querySelectorAll('.actions-dropdown').forEach(dd => dd.style.display = 'none'); 
+                } 
+            });
+
+            // Individual section toggles (Completed, Archived)
+            const setupSectionToggle = (btn, wrapper, listEl, emptyMsgKey) => {
+                if (btn && wrapper && listEl) {
+                    let isExpanded = false; 
+                    wrapper.classList.remove('expanded'); 
+                    const iconUse = btn.querySelector('use');
+                    if (iconUse) iconUse.setAttribute('xlink:href', '#icon-chevron-down');
+                    
+                    btn.addEventListener('click', () => {
+                        isExpanded = !isExpanded; 
+                        wrapper.classList.toggle('expanded', isExpanded);
+                        if (iconUse) iconUse.setAttribute('xlink:href', isExpanded ? '#icon-chevron-up' : '#icon-chevron-down');
+                        if (isExpanded && inactiveSectionsVisible && listEl.children.length === 0 && !listEl.querySelector('.empty-list-message')) {
+                            const messages = { completed: "No quests completed this month yet.", archived: "No archived quests." };
+                            listEl.innerHTML = `<p class="empty-list-message">${messages[emptyMsgKey]}</p>`;
+                        } else if (!isExpanded && listEl.querySelector('.empty-list-message')) {
+                            listEl.querySelector('.empty-list-message').remove();
+                        } else if (isExpanded && listEl.querySelector('.empty-list-message') && listEl.children.length > 1) { // If items were added
+                            listEl.querySelector('.empty-list-message').remove();
+                        }
+                    });
+                }
+            };
+            setupSectionToggle(toggleCompletedListBtn, completedQuestsListWrapper, completedQuestsListEl, 'completed');
+            setupSectionToggle(toggleArchivedListBtn, archivedQuestsListWrapper, archivedQuestsListEl, 'archived');
+        });
+
+        window.addEventListener('beforeunload', () => { /* From GLPLv6 */
+            appData.projects.forEach(p => { 
+                if (p.ui_isExpanded) { 
+                    const el = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container`); 
+                    if (el) p.ui_scrollPosition = el.scrollTop; 
+                } 
+            });
+            saveData(); 
+        });
+        
+        if ('serviceWorker' in navigator) { /* From GLPLv6 */
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => console.log('Service Worker registered.', reg.scope)).catch(err => console.log('Service Worker registration failed:', err)); });
+        }
+    </script>
+</body>
+</html>
