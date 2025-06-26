@@ -3,843 +3,1438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreateMode (Inspired by GLP)</title>
+    <title>CreateMode - Final (Reskinned)</title>
     
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" href="./icon-192x192.png" type="image/png">
     <link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
     <link rel="apple-touch-icon" href="./icon-192x192.png">
     <link rel="manifest" href="./manifest.webmanifest">
     
     <style>
-        /* --- GLOBAL STYLES & GLP THEME VARIABLES --- */
         :root {
-            --primary-color: #2c3e50; 
-            --primary-hover: #34495e; 
-            --accent-color: #e74c3c; 
-            --accent-hover: #c0392b; 
-            --info-color: #3498db;   
-            --info-hover: #2980b9;   
-            --success-color: #2ecc71; 
-            --success-hover: #27ae60; 
-            --warning-color: #f39c12; 
-            --warning-hover: #e67e22; 
-            
-            --bg-color: #ecf0f1; 
+            --primary-color: #0f172a; 
+            --primary-hover: #1e293b; 
+            --warning-color: #ef4444; 
+            --warning-hover: #d03838; /* Added for consistency */
+            --info-color: #3b82f6; 
+            --star-important-color: #facc15; 
+            --success-color: #22c55e; 
+            --bg-color: #f8fafc;
+            --text-color: #0f172a; 
+            --text-light: #64748b; 
             --card-bg: #ffffff;
-            --text-color: #34495e; 
-            --text-light: #7f8c8d; 
-            --text-on-accent: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --border-color: #e2e8f0; 
+            --input-bg: #ffffff;
             
-            --border-color: #bdc3c7; 
-            --border-color-light: #dde1e2; 
-            
-            --shadow: 0 2px 4px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.08);
-            --border-radius: 6px; 
-            --border-radius-lg: 8px;
-
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --quest-done-bg: #eef2ff; 
+            --quest-done-text: var(--primary-color);
+            --quest-overdue-border: var(--warning-color); 
+            --disabled-opacity: 0.6;
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; } 
 
         body {
-            font-family: var(--font-family);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
-            padding: 0; 
-            font-size: 15px; 
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-size: 15px;
         }
         
-        .icon {
-            display: inline-block; width: 1.1em; height: 1.1em;
-            vertical-align: -0.15em; fill: currentColor;
-        }
-
         .app-header {
-            background-color: var(--primary-color);
-            color: var(--text-on-accent);
-            padding: 10px 20px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .app-header-title {
-            font-size: 1.5em; font-weight: 600;
-            text-align: center; flex-grow: 1;
-        }
-        .app-header-actions button {
-            background: transparent; border: none; color: var(--text-on-accent);
-            padding: 8px; cursor: pointer; transition: opacity 0.2s;
-            opacity: 0.8;
-            display: inline-flex; align-items: center; justify-content: center;
-        }
-        .app-header-actions button:hover { opacity: 1; }
-        .app-header-actions button .icon { width: 1.5em; height: 1.5em; }
-
-        .app-container-wrapper { 
-            padding: 20px; max-width: 1100px; margin: 0 auto;
-        }
-        
-        h2 { 
-            font-size: 1.4em; font-weight: 600; color: var(--primary-color);
-            margin-bottom: 15px; padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color-light);
-            display: flex; align-items: center; gap: 8px;
-        }
-         h2 .icon { width: 1.3em; height: 1.3em;}
-        .app-container-wrapper > .quest-list-section:first-of-type > h2 { margin-top: 0; }
-        
-        h3 { font-size: 1.2em; font-weight: 600; color: var(--primary-color); margin-bottom: 12px;}
-
-        button, .button {
-            cursor: pointer; padding: 10px 18px; 
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            font-weight: 500; font-size: 0.95em; 
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-            display: inline-flex; align-items: center; gap: 8px;
-            background-color: var(--card-bg); color: var(--text-color);
-        }
-        button:hover, .button:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-            outline: 2px solid var(--info-color); outline-offset: 2px;
-            border-color: var(--info-color) !important; 
-        }
-
-        .btn-primary { background-color: var(--primary-color); color: var(--text-on-accent); border-color: var(--primary-color); }
-        .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
-        
-        .btn-accent { background-color: var(--accent-color); color: var(--text-on-accent); border-color: var(--accent-color); }
-        .btn-accent:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); }
-
-        .btn-danger { background-color: var(--warning-color); color: var(--text-on-accent); border-color: var(--warning-color); }
-        .btn-danger:hover { background-color: var(--warning-hover); border-color: var(--warning-hover); }
-
-        .btn-icon-only { 
-            padding: 8px; border: 1px solid transparent; background-color: transparent;
-            line-height: 1; border-radius: 50%; width: 36px; height: 36px;
-            display: inline-flex; align-items: center; justify-content: center;
-            color: var(--text-light);
-        }
-        .btn-icon-only .icon { width: 1.2em; height: 1.2em; }
-        .btn-icon-only:hover { background-color: #0000000d; color: var(--primary-color); }
-        .btn-icon-only.danger:hover { background-color: #e74c3c26; color: var(--accent-hover); }
-
-
-        input[type="text"], input[type="date"], input[type="number"], select, textarea {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            border: 1px solid var(--border-color); border-radius: var(--border-radius);
-            font-family: var(--font-family); font-size: 1em;
-            background-color: #fdfdff; color: var(--text-color);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
-             border-color: var(--primary-color);
-             box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
-        }
-        input[type="checkbox"] {
-            width: 18px; height: 18px; margin-right: 10px;
-            accent-color: var(--primary-color); vertical-align: middle;
-        }
-        textarea { min-height: 80px; resize: vertical; }
-
-        .glp-top-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .glp-dashboard-panel, .glp-calendar-panel, .glp-timeleft-panel {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--border-radius-lg);
+            position: sticky;
+            top: 0;
+            z-index: 1000; 
             box-shadow: var(--shadow);
         }
-        .glp-dashboard-panel h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.1em; color: var(--primary-color); }
-        .glp-dashboard-metrics {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;
+        .app-header-title {
+            font-size: 1.5em; 
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            flex-grow: 1;
         }
-        .glp-metric-item { text-align: left; }
-        .glp-metric-item .metric-title { font-size: 0.85em; color: var(--text-light); margin-bottom: 4px; font-weight:500;}
-        .glp-metric-item .metric-value { font-size: 1.6em; font-weight: 600; color: var(--primary-color); }
+        .app-header-actions button {
+            background: transparent; border: none; color: var(--primary-color);
+            padding: 0.5rem; border-radius: 50%; cursor: pointer;
+            font-size: 1.1rem; width: 2.5rem; height: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .app-header-actions button:hover { background-color: #f1f5f9; }
+        .app-header-actions .left-action { margin-right: auto; }
+        .app-header-actions .right-action { margin-left: auto; }
 
-        .glp-calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;}
-        .glp-calendar-header .month-year { font-size: 1.1em; font-weight: 600; color: var(--primary-color); }
-        .glp-calendar-nav button { padding: 6px; width:30px; height:30px;}
-        .glp-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .glp-calendar-dayname, .glp-calendar-day { text-align: center; font-size: 0.85em; padding: 8px 4px; border-radius: 4px;}
-        .glp-calendar-dayname { color: var(--text-light); font-weight: 500; }
-        .glp-calendar-day { cursor: default; transition: background-color 0.2s; }
-        .glp-calendar-day:not(.today):hover { background-color: #0000000a; }
-        .glp-calendar-day.today { background-color: var(--primary-color); color: var(--text-on-accent); font-weight: bold; }
+        .container-wrapper { 
+            max-width: 900px;
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
         
-        .glp-timeleft-panel h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.1em; color: var(--primary-color); }
-        .glp-timeleft-item { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border-color-light); }
-        .glp-timeleft-item:last-child { border-bottom: none; }
-        .glp-timeleft-item .time-label { font-size: 0.9em; color: var(--text-light); }
-        .glp-timeleft-item .time-value { font-size: 1.1em; font-weight: 600; color: var(--primary-color); }
+        .top-info-area {
+            border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color); 
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+        }
+        .top-info-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem; 
+        }
+
+        .dashboard-metrics-container { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .info-item, .dashboard-metric-item { 
+            padding: 0.75rem 1rem; 
+            border-radius: 0.5rem; 
+            border: 1.5px solid var(--border-color);
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 85px; 
+        }
+        .info-item h4, .dashboard-metric-item .metric-title { 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            margin-bottom: 0.35rem; 
+            color: var(--text-light);
+        }
+        .info-item p, .dashboard-metric-item .metric-value { 
+            color: var(--text-color); 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            line-height: 1.2;
+        }
 
         #clearDataNotification {
-            grid-column: 1 / -1; background-color: #fff3cd; color: #664d03;
-            padding: 12px; border: 1px solid #ffecb5; border-radius: var(--border-radius);
-            font-size: 0.9em; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 20px;
+            grid-column: 1 / -1; 
+            background-color: #fffbeb; color: #b45309; 
+            padding: 0.75rem 1rem; border: 1.5px solid #fef3c7;
+            border-radius: 0.5rem; font-size: 0.9em;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px;
         }
-        #clearDataNotification .icon { width: 1.3em; height: 1.3em; color: #b08d28; }
-        #clearDataNotification button { font-size: 0.9em; background-color: var(--warning-color); color: var(--text-primary); border-color: var(--warning-color); }
-        #clearDataNotification button:hover { background-color: var(--warning-hover); border-color: var(--warning-hover); }
-
-        .quest-list-section h2 { 
-            text-align: left; border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.75rem; margin-bottom: 1.5rem;
-            display: flex; align-items: center; gap: 0.5rem;
+        #clearDataNotification i { color: #d97706; margin-right: 0.5rem; }
+        #clearDataNotification button {
+            font-size: 0.85em; background-color: var(--star-important-color);
+            color: var(--text-color); border: 1px solid #f59e0b;
+            padding: 0.4rem 0.8rem; border-radius: 0.3rem; cursor: pointer;
         }
-        .quest-list-section h2 .icon { width: 1.4rem; height: 1.4rem; }
+        #clearDataNotification button:hover { background-color: #f59e0b; }
 
+        .week-calendar-container {
+            padding: 0.75rem; border: 1.5px solid var(--border-color); 
+            border-radius: 0.5rem; background-color: var(--card-bg);
+        }
+        .week-calendar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem; padding: 0 0.1rem;
+        }
+        .week-calendar-header button {
+            background: transparent; border: none; color: var(--primary-color);
+            padding: 0.4rem; border-radius: 50%; cursor: pointer;
+            font-size: 0.9rem; width: 2rem; height: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .week-calendar-header button:hover { background-color: #f1f5f9; }
+        .week-calendar-month-year { font-size: 1.1rem; font-weight: 600; color: var(--primary-color); }
+        
+        .week-calendar-grid, .week-calendar-day-name-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .week-calendar-day-name-row { margin-bottom: 0.5rem; }
+
+        .week-calendar-day, .week-calendar-day-name {
+            text-align: center; padding: 0.5rem 0.2rem; font-size: 0.85rem;
+            border-radius: 0.375rem; 
+        }
+        .week-calendar-day-name { font-weight: 500; color: var(--text-light); }
+        .week-calendar-day {
+            cursor: default; border: 1px solid transparent; 
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            min-height: 2.2rem; display: flex; align-items: center; justify-content: center;
+        }
+        .week-calendar-day.other-month-display { color: #cbd5e1; font-weight: 300; } 
+        .week-calendar-day.current-day {
+            background-color: var(--primary-color); color: white; font-weight: bold;
+            border-color: var(--primary-hover);
+        }
+        .week-calendar-day:not(.current-day):hover { background-color: #f8fafc; border-color: var(--border-color); }
+
+        .quest-list-section {
+            background: var(--card-bg); border-radius: 1rem; padding: 1.25rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+        }
+        .quest-list-section#activeQuestsSection {
+             margin-bottom: 1.5rem;
+        }
+        .quest-list-section:not(#activeQuestsSection) {
+             margin-bottom: 1.5rem;
+        }
+
+        .quest-list-section-header { 
+            font-size: 1.25rem; color: var(--primary-color);
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; 
+            border-bottom: 2px solid var(--primary-color); 
+        }
+        .quest-list-section-header .toggle-section-button { 
+            background: transparent; border: none; color: var(--text-light);
+            padding: 0.4rem; border-radius: 50%; cursor: pointer;
+            font-size: 0.9rem; width: 2rem; height: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s ease-in-out; margin-left: auto; 
+        }
+        .quest-list-section-header .toggle-section-button:hover { color: var(--primary-color); }
+
+        .quests-list { display: flex; flex-direction: column; gap: 1rem; }
         .quest-card {
-            background-color: var(--card-bg); border: 1px solid var(--border-color-light);
-            border-radius: var(--border-radius-lg); margin-bottom: 20px;
-            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            border: 1px solid var(--border-color); border-radius: 0.75rem;
+            padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
+            display: flex; flex-direction: column; background-color: var(--card-bg); 
+            position: relative;
         }
-        .quest-card-header {
-            padding: 15px 20px; display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid var(--border-color-light);
+        
+        .quest-card.completed-quest { background-color: var(--quest-done-bg); transition: background-color 0.3s ease-in-out; opacity: 0.85; }
+        .quest-card.completed-quest .quest-title-text, .quest-card.completed-quest .quest-deadline-text {
+            color: var(--quest-done-text); text-decoration: line-through; opacity: 0.7;
         }
-        .quest-card-checkbox { transform: scale(1.2); margin-right: 5px; }
-        .quest-card-title-section { flex-grow: 1; }
-        .quest-card-title { font-size: 1.2em; font-weight: 600; color: var(--primary-color); cursor: pointer; margin-bottom: 3px;}
-        .quest-card-title:hover { color: var(--accent-color); }
-        .quest-card-due { font-size: 0.85em; color: var(--text-light); display: flex; align-items: center; gap: 5px;}
-        .quest-card-due .icon { font-size: 0.9em; }
-        .quest-card-due.overdue .countdown-text { color: var(--warning-color); font-weight: 600;}
+        .quest-card.archived-quest { border-left: 4px solid var(--text-light); opacity: 0.7; }
+        .quest-card.is-overdue:not(.completed-quest) { border-left: 4px solid var(--quest-overdue-border); }
+        
+        .quest-card-header { display: flex; align-items: flex-start; margin-bottom: 0.75rem; gap: 0.5rem; }
+        .quest-card-header .quest-complete-checkbox {
+            margin-top: 0.3rem; transform: scale(1.2); accent-color: var(--primary-color); cursor: pointer;
+        }
+        .quest-card-header .quest-complete-checkbox:disabled { cursor: not-allowed; opacity: var(--disabled-opacity); }
+        .quest-title-text {
+            font-size: 1.15rem; font-weight: 600; color: var(--text-color); 
+            margin-right: 0.5rem; flex-grow: 1; cursor: pointer;
+        }
+        .quest-title-text:hover { color: var(--primary-hover); }
 
-        .quest-card-value-display {
-            font-size: 0.9em; font-weight: 500; color: var(--success-color);
-            padding: 4px 8px; background-color: #2ecc711a; border-radius: 4px;
-            white-space: nowrap;
+        .quest-card-action-buttons { display: flex; gap: 0.25rem; margin-left: auto; align-items: center; }
+        .quest-card-action-buttons .btn-icon-only { 
+            background: transparent; border: 1px solid transparent; color: var(--text-light); 
+            padding: 0.3rem; border-radius: 50%; cursor: pointer; font-size: 0.9rem; 
+            transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+            width: 1.8rem; height: 1.8rem; display: inline-flex; align-items: center; justify-content: center;
         }
-        .quest-card-actions-header { display: flex; align-items: center; gap: 5px; }
-        .priority-button-card.prioritized { color: var(--warning-color); }
-
-        .quest-card-progress-container { 
-            height: 5px; background-color: var(--border-color-light); width: 100%; 
-            position: absolute; bottom: 0; left:0; 
+        .quest-card-action-buttons .btn-icon-only:hover:not(:disabled) { background-color: #e5e7eb; color: var(--text-color); }
+        .quest-card-action-buttons .btn-icon-only:disabled {
+            cursor: not-allowed; opacity: var(--disabled-opacity);
         }
-        .quest-card-progress-fill {
-            height: 100%; background-color: var(--info-color);
-            transition: width 0.3s ease; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+
+        .quest-card-action-buttons .priority-button.prioritized i { color: var(--star-important-color); }
+
+        .quest-more-actions-container { position: relative; }
+        .actions-dropdown {
+            display: none; position: absolute; right: 0; top: 100%; 
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 0.5rem; box-shadow: var(--shadow);
+            z-index: 10; min-width: 180px; padding: 0.5rem 0;
         }
-         .quest-card.completed-quest .quest-card-progress-fill { background-color: var(--success-color); }
+        .actions-dropdown button {
+            display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.6rem 1rem;
+            text-align: left; background: none; border: none;
+            color: var(--text-color); font-size: 0.9em; border-radius: 0;
+            transition: background-color 0.2s; cursor: pointer;
+        }
+        .actions-dropdown button:hover:not(:disabled) { background-color: #f1f5f9; }
+        .actions-dropdown button i { width: 1em; margin-right: 0.25rem; color: var(--text-light); }
+        .actions-dropdown button.danger { color: var(--warning-color); }
+        .actions-dropdown button.danger i { color: var(--warning-color); }
+        .actions-dropdown button.danger:hover:not(:disabled) { background-color: #fee2e2; } 
+        .actions-dropdown button:disabled { opacity: 0.5; color: var(--text-light); cursor: not-allowed; }
+        
+        .quest-card-meta {
+            font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.85rem; 
+            display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; 
+            border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;
+        }
+        .quest-deadline-details { display: flex; align-items: center; gap: 0.5rem; }
+        .quest-deadline-details .fa-calendar-alt { font-size: 0.8rem; }
+        .quest-deadline-text { font-weight: 500; }
+        
+        .quest-countdown { font-weight: 500; display: flex; align-items: center; gap: 0.2rem; }
+        .quest-countdown .fa-hourglass-half { font-size: 0.8rem; }
+        .quest-countdown-text { font-size: 0.8rem; }
+        .quest-countdown.overdue .quest-countdown-text { color: var(--warning-color); font-weight: 600; }
+        .quest-countdown.today .quest-countdown-text { color: var(--info-color); font-weight: 600; }
 
+        .quest-value-display { font-weight: 500; font-size: 0.8rem; }
+        .quest-value-display .fa-coins { font-size: 0.8rem; color: var(--star-important-color); }
 
-        .quest-card-body { padding: 15px 20px; }
-        .tasks-toggle-and-menu { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
-        .toggle-tasks-button-card { font-size: 0.9em; color: var(--text-light); }
-        .toggle-tasks-button-card:hover { color: var(--primary-color); }
+        .quest-progress-wrapper { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0 0.85rem 0; }
+        .quest-progress-bar-container {
+            flex-grow: 1; height: 8px; background-color: var(--border-color);
+            border-radius: 4px; overflow: hidden;
+        }
+        .quest-progress-fill {
+            height: 100%; background-color: var(--info-color); 
+            border-radius: 4px; transition: width 0.3s ease;
+        }
+        .quest-progress-value-text { font-size: 0.8rem; color: var(--text-light); font-weight: 500; white-space: nowrap; flex-shrink: 0; }
 
         .tasks-container {
-            max-height: 0; overflow: hidden;
-            transition: max-height 0.35s ease-out, opacity 0.35s ease-out, margin-top 0.35s ease-out;
-            opacity: 0; margin-top: 0;
+            padding-left: 0; max-height: 0; overflow-y: auto;
+            transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, margin-top 0.3s ease-out;
+            margin-top: 0; padding-top: 0;
+            scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
         }
-        .tasks-container.expanded { max-height: 400px; opacity: 1; margin-top: 15px; }
-        
-        .task-item, .subtask-item {
-            display: flex; align-items: center; gap: 8px; padding: 8px 5px;
-            border-bottom: 1px solid var(--border-color-light); font-size: 0.95em;
+        .tasks-container::-webkit-scrollbar { width: 5px; }
+        .tasks-container::-webkit-scrollbar-thumb { background-color: #d1d5db; border-radius: 3px; }
+
+        .tasks-container.expanded {
+            max-height: 350px; margin-top: 1rem;
+            padding-top: 0.75rem; border-top: 1px solid var(--border-color); 
         }
+        .task-item, .subtask-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.25rem; border-bottom: 1px solid #f1f5f9; }
         .task-item:last-child, .subtask-item:last-child { border-bottom: none; }
-        .subtask-item { margin-left: 28px; font-size: 0.9em; }
-        .task-description { flex-grow: 1; }
-        .task-item .task-description { font-weight: 500; }
-        .task-value-chip-list {
-            font-size: 0.8em; font-weight: 500; color: var(--success-color);
-            background-color: #2ecc711a; padding: 2px 6px; border-radius: 10px;
+        .subtask-item { margin-left: 2rem; } 
+        
+        .task-item .task-checkbox, .subtask-item .subtask-checkbox { transform: scale(1.1); accent-color: var(--primary-color); cursor: pointer; }
+        .task-item .task-checkbox:disabled, .subtask-item .subtask-checkbox:disabled { cursor: not-allowed; opacity: var(--disabled-opacity); }
+        .task-description { flex-grow: 1; font-size: 0.9rem; }
+        .task-item .task-description { font-weight: 500; } 
+        
+        .task-value-chip {
+            font-size: 0.75rem; font-weight: 600; color: var(--success-color);
+            background-color: #dcfce7; padding: 0.15rem 0.4rem; border-radius: 10px;
+            white-space: nowrap; margin-left: auto; margin-right: 0.25rem;
         }
         .task-item.completed .task-description, .subtask-item.completed .task-description {
             text-decoration: line-through; color: var(--text-light); opacity: 0.7;
         }
-        .quest-card.completed-quest .quest-card-title, 
-        .quest-card.completed-quest .quest-card-due { text-decoration: line-through; opacity: 0.7;}
-        .quest-card.archived-quest { opacity: 0.6; border-left: 4px solid var(--text-light); }
 
+        .collapsible-list-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .collapsible-list-wrapper.expanded { max-height: 1500px; margin-top: 1rem; overflow-y: auto; }
 
-        .quest-more-actions-container-card { position: relative; }
-        .actions-dropdown-card {
-            display: none; position: absolute; right: 0; top: calc(100% + 8px); 
-            background-color: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: var(--border-radius); box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            z-index: 10; min-width: 180px; padding: 6px 0; 
+        .inactive-sections-toggle-container { text-align: center; margin: 2rem 0 1.5rem 0; }
+        #toggleInactiveSectionsBtn {
+            background: var(--primary-color); color: white; border: none;
+            padding: 0.6rem 1.2rem; border-radius: 0.5rem;
+            cursor: pointer; font-weight: 500; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
         }
-        .actions-dropdown-card button {
-            display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 15px; 
-            text-align: left; background: none; border: none; color: var(--text-color); 
-            font-size: 0.9em; border-radius: 0;
-        }
-        .actions-dropdown-card button:hover { background-color: #0000000d; }
-        .actions-dropdown-card button .icon { width: 1em; height: 1em; opacity:0.7;}
-        .actions-dropdown-card button.danger { color: var(--accent-color); }
-        .actions-dropdown-card button.danger:hover { background-color: #e74c3c26; }
+        #toggleInactiveSectionsBtn:hover { background: var(--primary-hover); }
+        #toggleInactiveSectionsBtn i { font-size: 0.8em; } 
 
-        .inactive-sections-toggle-container { text-align: center; margin: 30px 0; }
-        #toggleInactiveSectionsBtn { background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-light); padding: 10px 20px; }
-        #toggleInactiveSectionsBtn:hover { background-color: #fdfdff; border-color: var(--primary-color); color: var(--primary-color); }
-        
-        .quest-list-section h2 .toggle-section-button {
-            margin-left: auto; background: transparent; border: none; color: var(--text-light);
-            padding: 5px;
-        }
-        .quest-list-section h2 .toggle-section-button:hover { color: var(--primary-color); }
-
-        .collapsible-list-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
-        .collapsible-list-wrapper.expanded { max-height: 2000px; }
-        
-        .empty-list-message {
-           text-align: center; color: var(--text-light); font-style: italic; font-size: 1em; 
-           background-color: transparent; border: 2px dashed var(--border-color); 
-           border-radius: var(--border-radius-lg); margin-bottom: 20px; min-height: 150px; 
-           display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; 
+        .empty-list-message { 
+           text-align: center; padding: 2rem; color: var(--text-light); 
+           font-style: italic; font-size: 0.95em;
+           border: 2px dashed var(--border-color);
+           border-radius: 0.75rem; margin-top: 1rem;
+           background-color: #fdfdfe; 
         }
         
         .modal {
-            display: none; position: fixed; z-index: 1001; 
-            left: 0; top: 0; width: 100%; height: 100%; overflow: auto; 
-            background: rgba(44, 62, 80, 0.85); 
-            backdrop-filter: blur(5px);
-            justify-content: center; align-items: center; padding: 20px;
-            animation: fadeInModalBgGLP 0.3s ease;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
+            z-index: 1050; padding: 1rem; overflow-y: auto; 
         }
-        @keyframes fadeInModalBgGLP { from { opacity: 0; } to { opacity: 1; } }
         .modal-content {
-            background-color: var(--card-bg); margin: 3% auto; 
-            padding: 25px 30px; border: none; 
-            border-radius: var(--border-radius-lg); width: 90%; max-width: 650px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            animation: slideInModalGLP 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: var(--card-bg); padding: 1.5rem; border-radius: 1rem; width: 100%;
+            max-width: 550px; box-shadow: var(--shadow); 
+            margin: 2rem auto; 
         }
-        @keyframes slideInModalGLP { from { transform: translateY(-30px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        .modal-header {
+        .modal-header { 
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 15px; 
-            border-bottom: 1px solid var(--border-color-light);
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
         }
-        .modal-header h2 { margin-bottom: 0; font-size: 1.5em; color:var(--primary-color); }
-        .close-modal-button { 
-            background: none; border: none; padding: 5px; color: var(--text-light);
-            cursor: pointer; border-radius: 50%; width: 36px; height: 36px;
-            display: inline-flex; align-items: center; justify-content: center;
+        .modal-header h2 { font-size: 1.25rem; color: var(--primary-color); margin: 0;}
+        .close-modal-button {
+            background: transparent; border: none; color: var(--text-light);
+            padding: 0.4rem; border-radius: 50%; cursor: pointer;
+            font-size: 1.1rem; width: 2.2rem; height: 2.2rem; 
+            display: flex; align-items: center; justify-content: center;
             transition: background-color 0.2s, color 0.2s;
         }
-        .close-modal-button:hover { color: var(--primary-color); background-color: #0000000d; }
-        .close-modal-button .icon { width: 1.4em; height: 1.4em; }
+        .close-modal-button:hover { background-color: #e5e7eb; color: var(--text-color); }
 
-        .modal-body .form-group { margin-bottom: 18px; }
-        .modal-body label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.9em; color: var(--text-color); }
+        .modal-body .form-group { margin-bottom: 1rem; }
+        .modal-body label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 500; }
+        .modal-body input[type="text"], .modal-body input[type="date"], 
+        .modal-body input[type="number"], .modal-body select, .modal-body textarea {
+            width: 100%; padding: 0.75rem; margin: 0.25rem 0 0 0; 
+            border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.9rem;
+            background-color: var(--input-bg);
+        }
+        .modal-body textarea { min-height: 70px; resize: vertical; }
+        .modal-body input:focus, .modal-body textarea:focus, .modal-body select:focus {
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        }
+        .modal-body h3, .modal-body h4 { margin: 1.5rem 0 0.75rem 0; color: var(--primary-color); }
+        .modal-body h3 { font-size: 1.1rem; }
+        .modal-body h4 { font-size: 1rem; }
+
         .task-editor-item {
-            border: 1px solid var(--border-color-light); padding: 12px; margin-bottom: 10px; 
-            border-radius: var(--border-radius); background-color: #f8f9fa; 
+            border: 1px solid var(--border-color); padding: 0.75rem; margin-bottom: 0.75rem;
+            border-radius: 0.5rem; background-color: #f9fafb; 
         }
-        .task-editor-header { display: flex; gap: 8px; align-items: center; }
+        .task-editor-header { display: flex; gap: 0.5rem; align-items: center; }
         .task-editor-header input[type="text"] { flex-grow: 1; margin-bottom: 0; }
-        .subtask-editor-item {
-            margin-left: 25px; margin-top: 10px; display: flex; gap: 8px; align-items: center;
+        .task-editor-header .btn-icon-only, .subtask-editor-item .btn-icon-only {
+            background: transparent; border: 1px solid transparent; color: var(--text-light); 
+            padding: 0.4rem; border-radius: 0.3rem; cursor: pointer; font-size: 0.9rem;
+            transition: background-color 0.2s, color 0.2s;
+            width: 2rem; height: 2rem; display: inline-flex; align-items: center; justify-content: center;
         }
-        .subtask-editor-item input[type="text"] { flex-grow: 1; margin-bottom: 0; }
-        .modal-footer {
-            text-align: right; margin-top: 25px; 
-            padding-top: 20px; border-top: 1px solid var(--border-color-light);
-            display: flex; justify-content: flex-end; gap: 12px; 
-        }
+        .task-editor-header .btn-icon-only:hover, .subtask-editor-item .btn-icon-only:hover { background-color: #e5e7eb; }
+        .task-editor-header .btn-icon-only.danger:hover, .subtask-editor-item .btn-icon-only.danger:hover { color: var(--warning-color); background-color: #fee2e2; }
 
-        #settingsModal .modal-content { max-width: 750px; }
-        .settings-section { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color-light); }
+        .subtask-editor-item { margin-left: 1.25rem; margin-top: 0.5rem; display: flex; gap: 0.5rem; align-items: center; }
+        .subtask-editor-item input[type="text"] { flex-grow: 1; margin-bottom: 0; }
+        
+        .modal-footer { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+        .modal-footer button { 
+            padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
+            cursor: pointer; font-weight: 500; font-size: 0.875rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .modal-footer .btn-primary { background: var(--primary-color); color: white; }
+        .modal-footer .btn-primary:hover { background: var(--primary-hover); }
+        .modal-footer .btn-secondary, .modal-footer .button { background: #e2e8f0; color: var(--text-light); }
+        .modal-footer .btn-secondary:hover, .modal-footer .button:hover { background: #cbd5e1; color: var(--text-color); }
+        .modal-footer .btn-danger { background-color: var(--warning-color); color: white; }
+        .modal-footer .btn-danger:hover { background-color: var(--warning-hover); }
+
+        #settingsModal .modal-content { max-width: 700px; }
+        .settings-section { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px dashed var(--border-color); }
         .settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
         #templateList .template-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; border: 1px solid var(--border-color-light);
-            border-radius: var(--border-radius); margin-bottom: 8px; background-color: #f8f9fa;
+            padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+            border-radius: 0.5rem; margin-bottom: 0.5rem; background-color: var(--input-bg);
         }
-        #templateList .template-item.default-template { border-left: 4px solid var(--warning-color); font-weight: 500; }
+        #templateList .template-item.default-template { border-left: 3px solid var(--star-important-color); font-weight: 500; background-color: #fffbeb; }
         #templateList .template-item span { flex-grow: 1; }
-        #templateList .template-item .template-actions { display: flex; gap: 5px; }
-        #templateList .template-item .template-actions button { font-size: 0.85em; padding: 6px 10px;}
+        #templateList .template-item .template-actions { display: flex; gap: 0.3rem; }
+        #templateList .template-item .template-actions button { font-size: 0.8em; padding: 0.4rem 0.6rem; border-radius: 0.3rem; }
+        
+        .btn-modal-utility { 
+            background: #f1f5f9; color: var(--primary-color); border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; font-size: 0.875rem;
+            display: inline-flex; align-items: center; gap: 0.5rem; transition: background-color 0.2s;
+        }
+        .btn-modal-utility:hover { background-color: #e2e8f0; }
+
+        #settingsModal #saveTemplateBtn {
+            background: var(--primary-color); color: white;
+        }
+        #settingsModal #saveTemplateBtn:hover { background: var(--primary-hover); }
+        #settingsModal #clearOldDataBtn {
+            background-color: var(--warning-color); color: white;
+        }
+        #settingsModal #clearOldDataBtn:hover { background-color: var(--warning-hover); }
 
         #toastContainer {
-            position: fixed; bottom: 25px; right: 25px; z-index: 2000; 
-            display: flex; flex-direction: column-reverse; gap: 12px; max-width: 380px; 
+            position: fixed; bottom: 20px; right: 20px; z-index: 2000; 
+            display: flex; flex-direction: column-reverse; gap: 10px; max-width: 350px;
         }
         .toast-message {
-            padding: 15px 20px; border-radius: var(--border-radius); 
-            color: var(--text-on-accent); font-size: 0.95em; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.05); 
-            opacity: 0; word-wrap: break-word;
-            animation-name: toastFadeInGLP, toastFadeOutGLP; animation-duration: 0.35s, 0.35s; 
-            animation-fill-mode: forwards, forwards; animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1), ease-in;
+            padding: 1rem 1.25rem; border-radius: 0.5rem; color: white; font-size: 0.95em;
+            box-shadow: var(--shadow); opacity: 0; word-wrap: break-word;
+            animation-name: toastFadeIn, toastFadeOut; animation-duration: 0.3s, 0.3s; 
+            animation-fill-mode: forwards, forwards; animation-timing-function: ease-out, ease-in;
             animation-delay: 0s, var(--toast-visible-duration, 3000ms); 
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 0.75rem;
         }
-        .toast-icon { width: 1.3em; height: 1.3em; flex-shrink: 0; }
+        .toast-message i { font-size: 1.2em; } 
         .toast-message.success { background-color: var(--success-color); }
         .toast-message.info { background-color: var(--info-color); }
-        .toast-message.warning { background-color: var(--warning-color); color: var(--primary-color); }
-        .toast-message.warning .toast-icon { color: var(--primary-color); }
-        .toast-message.error { background-color: var(--accent-color); }
-        @keyframes toastFadeInGLP { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastFadeOutGLP { from { opacity: 1; transform: translateX(0); }  to { opacity: 0; transform: translateX(20px); }  }
+        .toast-message.warning { background-color: var(--star-important-color); color: var(--text-color); }
+        .toast-message.error { background-color: var(--warning-color); }
+
+        @keyframes toastFadeIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastFadeOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        
+        .quest-card.exiting { animation: fadeOutCollapseQuest 0.35s ease-out forwards; }
+        @keyframes fadeOutCollapseQuest { 
+            0% { opacity: 1; transform: translateX(0) scale(1); max-height: 400px; padding-top: 1.25rem; padding-bottom: 1.25rem; margin-bottom: 1rem; border-width: 1px; }
+            to { opacity: 0; transform: translateX(-50px) scale(0.9); max-height: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; overflow: hidden; }
+        }
+        .quest-card.entering { opacity: 0; transform: translateY(20px) scale(0.95); }
 
         @media (max-width: 768px) {
             body { font-size: 14px; }
-            .app-header { padding: 8px 15px; }
             .app-header-title { font-size: 1.3em; }
-            .app-container-wrapper { padding: 15px; }
-            .glp-top-section { grid-template-columns: 1fr; }
-            .glp-dashboard-metrics { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
-            .glp-metric-item .metric-value { font-size: 1.4em; }
-            .quest-card-header { flex-direction: column; align-items: flex-start; gap: 10px;}
-            .quest-card-actions-header { width: 100%; justify-content: flex-end;}
-            .modal-content { padding: 20px; margin: 10% auto; }
+            .container-wrapper { padding: 0 0.75rem; }
+            .info-item p, .dashboard-metric-item .metric-value { font-size: 1.1rem; }
+            .quest-title-text { font-size: 1.05em; }
+            .quest-card-meta { font-size: 0.75rem; }
+            .modal-content { margin: 5% auto; width: 95%; padding: 1.25rem; }
+            .modal-header h2 { font-size: 1.15rem; }
+            #toastContainer { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
+        }
+
+        @media (max-width: 480px) {
+            .app-header { padding: 0.5rem 0.75rem; }
+            .app-header-actions button { width: 2.2rem; height: 2.2rem; font-size: 1rem;}
+            .quest-card-header { flex-wrap: wrap; }
+            .quest-card-action-buttons { width: 100%; justify-content: flex-end; margin-top: 0.5rem; }
+            .quest-card-meta { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .subtask-item { margin-left: 1.25rem; }
         }
     </style>
 </head>
 <body>
-    <!-- SVG Icon Definitions -->
-    <svg style="display: none;">
-        <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.23C14.34,2.01,14.13,1.86,13.89,1.86 h-3.78c-0.24,0-0.45,0.15-0.5,0.37L9.26,4.59C8.67,4.83,8.14,5.14,7.64,5.52L5.25,4.56C5.03,4.49,4.78,4.56,4.66,4.78L2.74,8.1 c-0.11,0.2-0.06,0.47,0.12,0.61L4.89,10.3c-0.05,0.3-0.07,0.62-0.07,0.94s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.36 c0.05,0.22,0.26,0.37,0.5,0.37h3.78c0.24,0,0.45-0.15,0.5-0.37l0.36-2.36c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.07,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></symbol>
-        <symbol id="icon-plus-circle" viewBox="0 0 24 24"><path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M17,13h-4v4h-2v-4H7v-2h4V7h2v4h4V13z"/></symbol>
-        <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
-        <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
-        <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></symbol>
-        <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></symbol>
-        <symbol id="icon-chevron-up" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></symbol>
-        <symbol id="icon-chevron-left-calendar" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></symbol>
-        <symbol id="icon-chevron-right-calendar" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></symbol>
-        <symbol id="icon-save" viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></symbol>
-        <symbol id="icon-close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></symbol>
-        <symbol id="icon-check-circle" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></symbol>
-        <symbol id="icon-info-circle" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></symbol>
-        <symbol id="icon-warning-triangle" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
-        <symbol id="icon-error-circle" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></symbol>
-        <symbol id="icon-new-template" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z M13 11h-2v2H9v-2H7v-2h2V7h2v2h2v2z"/></symbol>
-        <symbol id="icon-ellipsis-vertical" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></symbol>
-        <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/></symbol>
-        <symbol id="icon-folder-open" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></symbol>
-        <symbol id="icon-calendar-days" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></symbol>
-        <symbol id="icon-hourglass" viewBox="0 0 24 24"><path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z"/></symbol>
-        <symbol id="icon-flame" viewBox="0 0 24 24"><path d="M13.04 1.23C10.63 1.88 8.77 3.98 8.28 6.57C7.94 8.19 8.44 9.82 9.53 10.94C10.99 12.47 13.3 13.47 15.27 14.83C15.86 15.24 16 16.14 16 16.69C16 17.05 16 22 16 22H8C8 22 8 17.05 8 16.69C8 16.14 8.14 15.24 8.73 14.83C10.7 13.47 13.01 12.47 14.47 10.94C15.56 9.82 16.06 8.19 15.72 6.57C15.23 3.98 13.37 1.88 10.96 1.23L11 1L13 1L13.04 1.23Z"/></symbol>
-        <symbol id="icon-check-badge" viewBox="0 0 24 24"><path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.17-3.17 1.06-1.06 2.11 2.11 4.95-4.95 1.06 1.06-6 6z"/></symbol>
-        <symbol id="icon-archive-box" viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM10.5 10.5h3V9h-3v1.5zm0 3h3V12h-3v1.5zM6 18v-2.05c0-.52.21-1.01.57-1.37l2.65-2.65L12 14.66l2.78-2.78 2.65 2.65c.36.36.57.85.57 1.37V18H6z"/></symbol>
-    </svg>
-
     <header class="app-header">
-        <div class="app-header-actions">
-            <button id="addQuestHeaderBtn" title="Start New Quest" aria-label="Start New Quest">
-                <svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg>
-            </button>
-        </div>
+        <div class="app-header-actions left-action"><button id="addQuestHeaderBtn" title="Start New Quest" aria-label="Start New Quest"><i class="fas fa-plus-circle"></i></button></div>
         <h1 class="app-header-title">CreateMode</h1>
-        <div class="app-header-actions">
-            <button id="settingsHeaderBtn" title="Settings" aria-label="Settings">
-                <svg class="icon"><use xlink:href="#icon-settings"></use></svg>
-            </button>
-        </div>
+        <div class="app-header-actions right-action"><button id="settingsHeaderBtn" title="Settings" aria-label="Settings"><i class="fas fa-cog"></i></button></div>
     </header>
-
-    <div class="app-container-wrapper">
-        <div class="glp-top-section">
-            <div class="glp-dashboard-panel">
-                <h3><svg class="icon" style="width:1.2em;height:1.2em;vertical-align:-0.2em;"><use xlink:href="#icon-flame"></use></svg> Performance Metrics</h3>
-                <div class="glp-dashboard-metrics">
-                    <div class="glp-metric-item"><div class="metric-title">Earnings Today</div><p class="metric-value" id="valueToday">$0</p></div>
-                    <div class="glp-metric-item"><div class="metric-title">Earnings This Month</div><p class="metric-value" id="valueMonth">$0</p></div>
-                    <div class="glp-metric-item"><div class="metric-title">Upcoming Value</div><p class="metric-value" id="upcomingValue">$0</p></div>
+    <div class="container-wrapper">
+        <div class="top-info-area">
+            <div class="top-info-grid">
+                <div class="dashboard-metrics-container" id="dashboardMetricsHost">
+                    <div class="dashboard-metric-item"><div class="metric-title">Earnings Today</div><p class="metric-value" id="valueToday">$0</p></div>
+                    <div class="dashboard-metric-item"><div class="metric-title">Earnings This Month</div><p class="metric-value" id="valueMonth">$0</p></div>
+                    <div class="dashboard-metric-item"><div class="metric-title">Upcoming Value</div><p class="metric-value" id="upcomingValue">$0</p></div>
                 </div>
+                <div class="week-calendar-container" id="weekCalendarContainer"></div>
+                <div class="info-item"><h4>Weeks Left (Month)</h4><p id="weeksLeftMonth">-</p></div>
+                <div class="info-item"><h4>Months Left (Year)</h4><p id="monthsLeftYear">-</p></div>
             </div>
-            <div class="glp-calendar-panel" id="weeklyCalendarContainerGLP">
-                <!-- GLP Weekly calendar will be rendered here by JS -->
-            </div>
-            <div class="glp-timeleft-panel">
-                <h3><svg class="icon" style="width:1.2em;height:1.2em;vertical-align:-0.2em;"><use xlink:href="#icon-hourglass"></use></svg> Time Horizons</h3>
-                <div class="glp-timeleft-item"><span class="time-label">Weeks Left (Month)</span><span class="time-value" id="weeksLeftMonthGLP">-</span></div>
-                <div class="glp-timeleft-item"><span class="time-label">Months Left (Year)</span><span class="time-value" id="monthsLeftYearGLP">-</span></div>
-            </div>
+            <div id="clearDataNotification" style="display: none; margin-top: 1rem;"><span><i class="fas fa-info-circle"></i> Keep things lean! Old project data from previous months can be cleared in Settings.</span><button id="goToSettingsFromNotification" aria-label="Go to Settings to clear data">Go to Settings</button></div>
         </div>
-
-        <div id="clearDataNotification" style="display: none;">
-             <span><svg class="icon"><use xlink:href="#icon-info-circle"></use></svg> Keep things lean! Old project data from previous months can be cleared in Settings.</span>
-             <button id="goToSettingsFromNotification" class="button" aria-label="Go to Settings to clear data">Go to Settings</button>
+        <div class="quest-list-section" id="activeQuestsSection">
+            <h2 class="quest-list-section-header"><i class="fas fa-rocket" style="margin-right: 0.5rem;"></i> Active Quests</h2>
+            <div id="activeQuestsList" class="quests-list"></div>
         </div>
-
-        <div class="quest-list-section">
-            <h2><svg class="icon"><use xlink:href="#icon-flame"></use></svg> Active Quests</h2>
-            <div id="activeQuestsList"></div>
-        </div>
-
-        <div class="inactive-sections-toggle-container">
-            <button id="toggleInactiveSectionsBtn" class="button" aria-label="Toggle visibility of completed and archived sections">
-                <svg class="icon" id="inactiveSectionsToggleIcon"><use xlink:href="#icon-chevron-down"></use></svg>
-                <span id="inactiveSectionsToggleText">Show Completed & Archived</span>
-            </button>
-        </div>
-
-        <div class="quest-list-section" id="completedSectionContainer" style="display: none;">
-             <h2><svg class="icon"><use xlink:href="#icon-check-badge"></use></svg>
-                <span class="completed-section-title-text">Completed (This Month)</span>
-                <button id="toggleCompletedListBtn" class="btn-icon-only toggle-section-button" title="Toggle Completed Quests View"> <svg class="icon"><use xlink:href="#icon-chevron-down"></use></svg> </button>
+        <div class="inactive-sections-toggle-container"><button id="toggleInactiveSectionsBtn" aria-label="Toggle visibility of completed and archived sections"><i class="fas fa-chevron-down" id="inactiveSectionsToggleIcon"></i><span id="inactiveSectionsToggleText">Show Completed & Archived</span></button></div>
+        
+        <div class="quest-list-section" id="completedSectionContainer" style="display:none;">
+            <h2 class="quest-list-section-header">
+                <span class="completed-section-title-text"><i class="fas fa-check-circle" style="margin-right: 0.5rem; color: var(--success-color);"></i>Completed (This Month)</span>
+                <button id="toggleCompletedListBtn" class="toggle-section-button" title="Toggle Completed Quests View"><i class="fas fa-chevron-down"></i></button>
             </h2>
-            <div id="completedQuestsListWrapper" class="collapsible-list-wrapper"><div id="completedQuestsList"></div></div>
+            <div id="completedQuestsListWrapper" class="collapsible-list-wrapper"><div id="completedQuestsList" class="quests-list"></div></div>
         </div>
-
-        <div class="quest-list-section" id="archivedSectionContainer" style="display: none;">
-            <h2><svg class="icon"><use xlink:href="#icon-archive-box"></use></svg>
-                <span class="archived-section-title-text">Archived</span>
-                <button id="toggleArchivedListBtn" class="btn-icon-only toggle-section-button" title="Toggle Archived Quests View"> <svg class="icon"><use xlink:href="#icon-chevron-down"></use></svg> </button>
+        
+        <div class="quest-list-section" id="archivedSectionContainer" style="display:none;">
+            <h2 class="quest-list-section-header">
+                <span class="archived-section-title-text"><i class="fas fa-archive" style="margin-right: 0.5rem; color: var(--text-light);"></i>Archived</span>
+                <button id="toggleArchivedListBtn" class="toggle-section-button" title="Toggle Archived Quests View"><i class="fas fa-chevron-down"></i></button>
             </h2>
-            <div id="archivedQuestsListWrapper" class="collapsible-list-wrapper"><div id="archivedQuestsList"></div></div>
+            <div id="archivedQuestsListWrapper" class="collapsible-list-wrapper"><div id="archivedQuestsList" class="quests-list"></div></div>
         </div>
     </div>
 
     <!-- Modals (Quest, Settings, Confirm) -->
     <div id="questModal" class="modal" aria-modal="true" aria-labelledby="questModalTitle">
         <div class="modal-content">
-            <div class="modal-header"><h2 id="questModalTitle">Start New Quest</h2><button class="close-modal-button" id="closeQuestModal" title="Close"><svg class="icon"><use xlink:href="#icon-close"></use></svg></button></div>
+            <div class="modal-header"><h2 id="questModalTitle">Start New Quest</h2><button class="close-modal-button" id="closeQuestModal" title="Close Quest Modal"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <input type="hidden" id="questId">
-                <div class="form-group"><label for="questTitle">Quest Title (Video Title):</label><input type="text" id="questTitle" placeholder="E.g., My Awesome Cat Video"></div>
+                <div class="form-group"><label for="questTitle">Quest Title:</label><input type="text" id="questTitle" placeholder="E.g., My Awesome Cat Video"></div>
                 <div class="form-group"><label for="questDeadline">Deadline:</label><input type="date" id="questDeadline"></div>
                 <div class="form-group"><label for="questValueInput">Total Value for this Quest ($):</label><input type="number" id="questValueInput" placeholder="E.g., 100" min="0"></div>
                 <div class="form-group"><label for="questTemplateSelect">Use Template:</label><select id="questTemplateSelect"></select></div>
-                <h3><svg class="icon" style="width:1.1em;height:1.1em;vertical-align:-0.15em;"><use xlink:href="#icon-check-circle"></use></svg> Tasks for this Quest:</h3>
-                <div id="modalTasksContainer"></div>
-                <button id="addModalMainTaskBtn" class="button" style="margin-top:10px;"><svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg> Add Main Task</button>
+                <h3><i class="fas fa-tasks" style="margin-right: 0.5rem;"></i>Tasks for this Quest:</h3>
+                <div id="modalTasksContainer"></div><button id="addModalMainTaskBtn" class="btn-modal-utility" style="margin-top:10px;"><i class="fas fa-plus-circle"></i> Add Main Task</button>
             </div>
-            <div class="modal-footer">
-                <button id="cancelQuestModalBtn" class="button">Cancel</button>
-                <button id="saveQuestBtn" class="btn-primary"><svg class="icon"><use xlink:href="#icon-save"></use></svg> Save Quest</button>
-            </div>
+            <div class="modal-footer"><button type="button" class="button" id="cancelQuestModalBtn">Cancel</button><button id="saveQuestBtn" class="btn-primary"><i class="fas fa-save"></i> Save Quest</button></div>
         </div>
     </div>
 
     <div id="settingsModal" class="modal" aria-modal="true" aria-labelledby="settingsModalTitle">
         <div class="modal-content">
-            <div class="modal-header"><h2 id="settingsModalTitle">Settings</h2><button class="close-modal-button" id="closeSettingsModal" title="Close"><svg class="icon"><use xlink:href="#icon-close"></use></svg></button></div>
+            <div class="modal-header"><h2 id="settingsModalTitle"><i class="fas fa-cog" style="margin-right: 0.5rem;"></i>Settings</h2><button class="close-modal-button" id="closeSettingsModal" title="Close Settings Modal"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <div class="settings-section">
-                    <h3><svg class="icon"><use xlink:href="#icon-new-template"></use></svg> Quest Templates</h3>
+                    <h3><i class="fas fa-clipboard-list" style="margin-right: 0.5rem;"></i>Quest Templates</h3>
                     <div id="templateEditor">
                         <input type="hidden" id="templateId">
                         <div class="form-group"><label for="templateName">Template Name:</label><input type="text" id="templateName" placeholder="E.g., Standard Video, Quick Vlog"></div>
-                        <h4>Tasks for this Template:</h4><div id="templateTasksContainer"></div>
-                        <button id="addTemplateMainTaskBtn" class="button" style="margin-top:10px;"><svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg> Add Main Task</button>
-                        <div style="margin-top: 20px; display:flex; gap: 10px; justify-content:space-between;">
-                            <button id="saveTemplateBtn" class="btn-primary"><svg class="icon"><use xlink:href="#icon-save"></use></svg> Save Template</button>
-                            <button id="newTemplateBtn" class="button"><svg class="icon"><use xlink:href="#icon-new-template"></use></svg> New Template Form</button>
+                        <h4><i class="fas fa-tasks" style="margin-right: 0.5rem;"></i>Tasks for this Template:</h4>
+                        <div id="templateTasksContainer"></div><button id="addTemplateMainTaskBtn" class="btn-modal-utility" style="margin-top:10px;"><i class="fas fa-plus-circle"></i> Add Main Task</button>
+                        <div style="margin-top: 20px; display:flex; gap: 10px;">
+                            <button id="saveTemplateBtn" class="btn-primary"><i class="fas fa-save"></i> Save Template</button>
+                            <button id="newTemplateBtn" class="btn-modal-utility" style="margin-left: auto;"><i class="fas fa-file-alt"></i> New Template</button>
                         </div>
                     </div>
-                    <h3 style="margin-top: 30px;">Existing Templates:</h3><div id="templateList"></div>
+                    <h4 style="margin-top: 1.5rem;"><i class="fas fa-list-alt" style="margin-right: 0.5rem;"></i>Existing Templates:</h4>
+                    <div id="templateList"></div>
                 </div>
                 <div class="settings-section">
-                    <h3><svg class="icon"><use xlink:href="#icon-trash"></use></svg> Data Management</h3>
+                    <h3><i class="fas fa-database" style="margin-right: 0.5rem;"></i>Data Management</h3>
                     <p>Permanently delete all project data (titles, tasks, value) for quests completed <strong>before the current month</strong>. This action cannot be undone.</p>
-                    <button id="clearOldDataBtn" class="btn-danger" style="margin-top:15px;"><svg class="icon"><use xlink:href="#icon-trash"></use></svg> Clear Old Project Data</button>
+                    <button id="clearOldDataBtn" class="btn-danger" style="margin-top:15px;"><i class="fas fa-trash-alt"></i> Clear Old Project Data</button>
                 </div>
             </div>
-             <div class="modal-footer"><button id="doneSettingsModalBtn" class="btn-primary">Done</button></div>
         </div>
     </div>
-    
+
     <div id="customConfirmModal" class="modal" aria-modal="true" aria-labelledby="customConfirmModalTitle">
         <div class="modal-content" style="max-width: 480px;">
-            <div class="modal-header"><h2 id="customConfirmModalTitle">Confirm Action</h2></div>
-            <div class="modal-body"><p id="customConfirmModalMessage" style="line-height: 1.6;">Are you sure?</p></div>
-            <div class="modal-footer">
-                <button id="customConfirmModalCancelBtn" class="button">Cancel</button>
-                <button id="customConfirmModalConfirmBtn" class="btn-danger">Confirm</button>
-            </div>
+            <div class="modal-header"><h2 id="customConfirmModalTitle"><i class="fas fa-exclamation-triangle" style="margin-right:0.5rem; color: var(--warning-color);"></i>Confirm Action</h2></div>
+            <div class="modal-body"><p id="customConfirmModalMessage" style="line-height: 1.6; font-size: 0.95rem;">Are you sure?</p></div>
+            <div class="modal-footer"><button id="customConfirmModalCancelBtn" class="button">Cancel</button><button id="customConfirmModalConfirmBtn" class="btn-danger">Confirm</button></div>
         </div>
     </div>
 
     <div id="toastContainer"></div>
 
     <script>
+        // --- App State & Constants ---
         let appData = { projects: [], templates: [] };
-        const APP_DATA_KEY = 'creatorQuestLogData_vGLP_Final_2'; 
-        let inactiveSectionsVisible = false; 
-        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_vGLP_Final_2';
-        let currentWeeklyCalendarDate = new Date(); 
+        const APP_DATA_KEY = 'creatorQuestLogData_v5_final_reskinned'; 
+        let inactiveSectionsVisible = false;
+        const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v3_final_reskinned';
+        let currentCalendarDate = new Date(); 
 
-        const weeklyCalendarContainerGLP = document.getElementById('weeklyCalendarContainerGLP');
-        const weeksLeftMonthElGLP = document.getElementById('weeksLeftMonthGLP');
-        const monthsLeftYearElGLP = document.getElementById('monthsLeftYearGLP');
+        // --- DOM Element References (Cached) ---
+        const weekCalendarContainer = document.getElementById('weekCalendarContainer');
+        const weeksLeftMonthEl = document.getElementById('weeksLeftMonth');
+        const monthsLeftYearEl = document.getElementById('monthsLeftYear');
+        const valueTodayEl = document.getElementById('valueToday');
+        const valueMonthEl = document.getElementById('valueMonth');
+        const upcomingValueEl = document.getElementById('upcomingValue');
+        const clearDataNotificationDiv = document.getElementById('clearDataNotification');
+        const goToSettingsFromNotificationBtn = document.getElementById('goToSettingsFromNotification');
+        const activeQuestsListEl = document.getElementById('activeQuestsList');
+        const completedQuestsListEl = document.getElementById('completedQuestsList');
+        const archivedQuestsListEl = document.getElementById('archivedQuestsList');
+        const activeQuestsSectionEl = document.getElementById('activeQuestsSection');
+        const toggleInactiveSectionsBtn = document.getElementById('toggleInactiveSectionsBtn');
+        const inactiveSectionsToggleIcon = document.getElementById('inactiveSectionsToggleIcon');
+        const inactiveSectionsToggleText = document.getElementById('inactiveSectionsToggleText');
+        const completedSectionContainer = document.getElementById('completedSectionContainer');
+        const archivedSectionContainer = document.getElementById('archivedSectionContainer');
+        const toggleCompletedListBtn = document.getElementById('toggleCompletedListBtn');
+        const completedQuestsListWrapper = document.getElementById('completedQuestsListWrapper');
+        const toggleArchivedListBtn = document.getElementById('toggleArchivedListBtn');
+        const archivedQuestsListWrapper = document.getElementById('archivedQuestsListWrapper');
+        const questModal = document.getElementById('questModal');
+        const closeQuestModalBtn = document.getElementById('closeQuestModal');
+        const cancelQuestModalBtn = document.getElementById('cancelQuestModalBtn');
+        const addQuestHeaderBtn = document.getElementById('addQuestHeaderBtn');
+        const saveQuestBtn = document.getElementById('saveQuestBtn');
+        const questModalTitleEl = document.getElementById('questModalTitle');
+        const questIdInput = document.getElementById('questId');
+        const questTitleInput = document.getElementById('questTitle');
+        const questDeadlineInput = document.getElementById('questDeadline');
+        const questValueInput = document.getElementById('questValueInput');
+        const questTemplateSelect = document.getElementById('questTemplateSelect');
+        const modalTasksContainer = document.getElementById('modalTasksContainer');
+        const addModalMainTaskBtn = document.getElementById('addModalMainTaskBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsModalBtn = document.getElementById('closeSettingsModal');
+        const settingsHeaderBtn = document.getElementById('settingsHeaderBtn');
+        const templateIdInput = document.getElementById('templateId');
+        const templateNameInput = document.getElementById('templateName');
+        const templateTasksContainer = document.getElementById('templateTasksContainer');
+        const addTemplateMainTaskBtn = document.getElementById('addTemplateMainTaskBtn');
+        const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+        const newTemplateBtn = document.getElementById('newTemplateBtn');
+        const templateListDiv = document.getElementById('templateList');
+        const clearOldDataBtn = document.getElementById('clearOldDataBtn');
+        const customConfirmModal = document.getElementById('customConfirmModal');
+        const customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle');
+        const customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage');
+        let customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn');
+        let customConfirmModalCancelBtn = document.getElementById('customConfirmModalCancelBtn');
+        let currentConfirmCallback = null;
+        let currentCancelCallback = null;
+        const toastContainer = document.getElementById('toastContainer');
 
+        // --- Utility Functions ---
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
+        function getTodayString() { 
+            const today = new Date();
+            const offset = today.getTimezoneOffset();
+            const adjustedToday = new Date(today.getTime() - (offset*60*1000));
+            return adjustedToday.toISOString().split('T')[0];
+        }
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info', durationVisible = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`; 
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle'; 
+            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle'; 
+            else if (type === 'error') iconClass = 'fas fa-times-circle';
+            toast.innerHTML = `<i class="${iconClass}"></i> <span class="toast-text-content">${message}</span>`; 
+            toast.style.setProperty('--toast-visible-duration', `${durationVisible}ms`);
+            toastContainer.appendChild(toast); 
+            setTimeout(() => { if (toast.parentNode) { toast.remove(); } }, durationVisible + 700);
+        }
+
+        // --- Custom Confirm Modal Logic ---
+        function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { 
+            customConfirmModalMessageEl.innerHTML = message; 
+            customConfirmModalTitleEl.innerHTML = `<i class="fas fa-exclamation-triangle" style="margin-right:0.5rem; color: var(--warning-color);"></i>${title}`;
+            currentConfirmCallback = onConfirm; 
+            currentCancelCallback = onCancel;
+            const newConfirmBtn = customConfirmModalConfirmBtn.cloneNode(true); 
+            customConfirmModalConfirmBtn.parentNode.replaceChild(newConfirmBtn, customConfirmModalConfirmBtn);
+            customConfirmModalConfirmBtn = newConfirmBtn; 
+            const newCancelBtn = customConfirmModalCancelBtn.cloneNode(true);
+            customConfirmModalCancelBtn.parentNode.replaceChild(newCancelBtn, customConfirmModalCancelBtn);
+            customConfirmModalCancelBtn = newCancelBtn;
+            customConfirmModalConfirmBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentConfirmCallback) currentConfirmCallback(); };
+            customConfirmModalCancelBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentCancelCallback) currentCancelCallback(); };
+            customConfirmModal.style.display = 'block'; 
+            customConfirmModalCancelBtn.focus();
+        }
+        
+        // --- Calendar & Notices ---
+        function calculateQuestDaysLeft(deadlineString) {
+            if (!deadlineString) return { deadlineFormatted: 'No Deadline', countdownText: '', days: Infinity, isOverdue: false, isToday: false };
+            const deadlineDate = new Date(deadlineString + 'T00:00:00Z');
+            const deadlineFormatted = deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+            const now = new Date();
+            const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+            const diffTime = deadlineDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let countdownText = "", isOverdue = false, isToday = false;
+            if (diffDays < 0) { countdownText = `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} overdue`; isOverdue = true; } 
+            else if (diffDays === 0) { countdownText = "Due Today"; isToday = true; } 
+            else { countdownText = `${diffDays} day${diffDays !== 1 ? 's' : ''} left`; }
+            return { deadlineFormatted, countdownText, days: diffDays, isOverdue, isToday };
+        }
+        
+        function renderWeekCalendar(dateToDisplay) {
+            weekCalendarContainer.innerHTML = ''; 
+            const year = dateToDisplay.getFullYear(), month = dateToDisplay.getMonth(), day = dateToDisplay.getDate();
+            const header = document.createElement('div'); header.className = 'week-calendar-header';
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; prevButton.title = "Previous Week";
+            prevButton.onclick = () => { currentCalendarDate.setDate(currentCalendarDate.getDate() - 7); renderWeekCalendar(currentCalendarDate); };
+            const monthYearText = document.createElement('span'); monthYearText.className = 'week-calendar-month-year';
+            const firstDayOfWeek = new Date(dateToDisplay); firstDayOfWeek.setDate(day - dateToDisplay.getDay()); 
+            const lastDayOfWeek = new Date(firstDayOfWeek); lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+            if (firstDayOfWeek.getMonth() === lastDayOfWeek.getMonth()) monthYearText.textContent = `${firstDayOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${year}`;
+            else monthYearText.textContent = `${firstDayOfWeek.toLocaleDateString('en-US', { month: 'short' })} - ${lastDayOfWeek.toLocaleDateString('en-US', { month: 'short' })} ${year}`;
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; nextButton.title = "Next Week";
+            nextButton.onclick = () => { currentCalendarDate.setDate(currentCalendarDate.getDate() + 7); renderWeekCalendar(currentCalendarDate); };
+            header.append(prevButton, monthYearText, nextButton); weekCalendarContainer.appendChild(header);
+            const dayNameRow = document.createElement('div'); dayNameRow.className = 'week-calendar-day-name-row';
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(name => {
+                const dayNameCell = document.createElement('div'); dayNameCell.className = 'week-calendar-day-name';
+                dayNameCell.textContent = name; dayNameRow.appendChild(dayNameCell);
+            });
+            weekCalendarContainer.appendChild(dayNameRow);
+            const grid = document.createElement('div'); grid.className = 'week-calendar-grid';
+            const today = new Date();
+            const currentWeekStart = new Date(dateToDisplay); currentWeekStart.setDate(dateToDisplay.getDate() - dateToDisplay.getDay());
+            for (let i = 0; i < 7; i++) {
+                const dayCellDate = new Date(currentWeekStart); dayCellDate.setDate(currentWeekStart.getDate() + i);
+                const dayCell = document.createElement('div'); dayCell.className = 'week-calendar-day';
+                dayCell.textContent = dayCellDate.getDate();
+                if (dayCellDate.getFullYear() === today.getFullYear() && dayCellDate.getMonth() === today.getMonth() && dayCellDate.getDate() === today.getDate()) dayCell.classList.add('current-day');
+                if (dayCellDate.getMonth() !== dateToDisplay.getMonth()) dayCell.classList.add('other-month-display');
+                grid.appendChild(dayCell);
+            }
+            weekCalendarContainer.appendChild(grid);
+        }
+
+        function updateNotices() {
+            const now = new Date(); const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const daysLeftInMonth = lastDayOfMonth.getDate() - now.getDate(); let weeksLeftText = "";
+            if (daysLeftInMonth < 0) weeksLeftText = "Month ended";
+            else if (daysLeftInMonth === 0) weeksLeftText = "Today is last day!";
+            else {
+                const fullWeeks = Math.floor(daysLeftInMonth / 7); const remainingDays = daysLeftInMonth % 7;
+                if (fullWeeks > 0) weeksLeftText += `${fullWeeks} week${fullWeeks !== 1 ? 's' : ''}`;
+                if (remainingDays > 0) weeksLeftText += `${fullWeeks > 0 ? ', ' : ''}${remainingDays} day${remainingDays !== 1 ? 's' : ''}`;
+                if (weeksLeftText === "") weeksLeftText = (daysLeftInMonth < 7) ? `${daysLeftInMonth} day${daysLeftInMonth !== 1 ? 's' : ''}` : "Final week";
+            }
+            weeksLeftMonthEl.textContent = weeksLeftText || "0 days";
+            monthsLeftYearEl.textContent = `${11 - now.getMonth()} month${(11 - now.getMonth()) !== 1 ? 's' : ''}`;
+        }
+
+        // --- Data Handling ---
         function initializeDefaultAppState() {
-            appData = {
-                projects: [],
-                templates: [{
+            appData = { projects: [], templates: [{
                     id: 'default-' + Date.now(), name: 'Default Video Workflow', isDefault: true,
                     tasks: [
-                        { id: 'dt1-' + generateId(), description: 'Ideation & Research', subtasks: [] },
-                        { id: 'dt2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
+                        { id: 'dt1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dt2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
                         { id: 'dt3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
                         { id: 'dt4-' + generateId(), description: 'Editing', subtasks: [{id: 'dts1-' + generateId(), description: 'Rough Cut'}, {id: 'dts2-' + generateId(), description: 'Final Polish'}] },
-                        { id: 'dt5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] },
-                        { id: 'dt6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
-                    ]
-                }]
+                        { id: 'dt5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] }, { id: 'dt6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
+                    ].map(task => ({...task, isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: task.subtasks.map(st => ({...st, isCompleted:false, completionTimestamp: null, subtaskValue: 0}))}))
+                }] 
             };
+             appData.projects.forEach(p => distributeValueToTasks(p));
         }
 
         function loadData() {
             const storedData = localStorage.getItem(APP_DATA_KEY);
             if (storedData) {
                 try {
-                    appData = JSON.parse(storedData); appData.projects = appData.projects || []; appData.templates = appData.templates || [];
-                    appData.projects.forEach(p => {  p.tasks = p.tasks || []; if (p.ui_isExpanded === undefined) p.ui_isExpanded = false; if (p.ui_scrollPosition === undefined) p.ui_scrollPosition = 0;  if (p.totalGoldValue !== undefined) { p.totalValue = p.totalGoldValue; delete p.totalGoldValue; } if (p.goldEarned !== undefined) { p.valueEarned = p.goldEarned; delete p.goldEarned; } p.totalValue = parseFloat(p.totalValue) || 0; p.valueEarned = parseFloat(p.valueEarned) || 0; if (p.isArchived === undefined) p.isArchived = false; if (p.creationTimestamp === undefined) p.creationTimestamp = Date.now(); p.tasks.forEach(t => { t.subtasks = t.subtasks || []; if (t.goldValue !== undefined) { t.taskValue = t.goldValue; delete t.goldValue; } t.taskValue = parseFloat(t.taskValue) || 0; t.subtasks.forEach(st => { st.subtaskValue = parseFloat(st.subtaskValue) || 0; if (st.completionTimestamp && typeof st.completionTimestamp !== 'number') st.completionTimestamp = new Date(st.completionTimestamp).getTime(); if (isNaN(st.completionTimestamp)) st.completionTimestamp = null; }); if (t.completionTimestamp && typeof t.completionTimestamp !== 'number') t.completionTimestamp = new Date(t.completionTimestamp).getTime(); if (isNaN(t.completionTimestamp)) t.completionTimestamp = null; }); distributeValueToTasks(p);  let initialEarnedValue = 0; p.tasks.forEach(task => { if (task.subtasks.length > 0) { task.subtasks.forEach(subtask => { if (subtask.isCompleted) initialEarnedValue += (parseFloat(subtask.subtaskValue) || 0); }); } else { if (task.isCompleted) initialEarnedValue += (parseFloat(task.taskValue) || 0); } }); p.valueEarned = Math.max(0, Math.min(initialEarnedValue, p.totalValue)); if (p.completionTimestamp && typeof p.completionTimestamp !== 'number') p.completionTimestamp = new Date(p.completionTimestamp).getTime(); if (isNaN(p.completionTimestamp)) p.completionTimestamp = null; });
-                    if (appData.templates.length === 0 || !appData.templates.some(t => t.name === 'Default Video Workflow')) { const defaultTemplateExists = appData.templates.find(t => t.name === 'Default Video Workflow'); if (!defaultTemplateExists) { appData.templates.push({ id: 'default-fallback-' + Date.now(), name: 'Default Video Workflow', isDefault: appData.templates.length === 0, tasks: [ { id: 'dtf1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dtf2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] }, { id: 'dtf3-' + generateId(), description: 'Filming/Recording', subtasks: [] }, { id: 'dtf4-' + generateId(), description: 'Editing', subtasks: [{id: 'dtfs1-' + generateId(), description: 'Rough Cut'}, {id: 'dtfs2-' + generateId(), description: 'Final Polish'}] }, { id: 'dtf5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] }, { id: 'dtf6-' + generateId(), description: 'Upload & Publish', subtasks: [] }] }); }}
-                    if (!appData.templates.some(t => t.isDefault)) { const defaultTemplate = appData.templates.find(t => t.name === 'Default Video Workflow') || appData.templates[0]; if (defaultTemplate) defaultTemplate.isDefault = true; }
-                } catch (error) { console.error("Error parsing data:", error); showToast("Data load error.", 'error'); localStorage.removeItem(APP_DATA_KEY); initializeDefaultAppState(); appData.projects.forEach(p => distributeValueToTasks(p)); }
-            } else { initializeDefaultAppState(); appData.projects.forEach(p => distributeValueToTasks(p)); }
+                    appData = JSON.parse(storedData); 
+                    appData.projects = appData.projects || []; 
+                    appData.templates = appData.templates || [];
+                    
+                    appData.projects.forEach(p => { 
+                        p.ui_isExpanded = p.ui_isExpanded ?? false; 
+                        p.ui_scrollPosition = p.ui_scrollPosition ?? 0; 
+                        p.totalValue = parseFloat(p.totalValue) || 0;
+                        p.valueEarned = parseFloat(p.valueEarned) || 0;
+                        p.isArchived = p.isArchived ?? false; 
+                        p.creationTimestamp = p.creationTimestamp || Date.now();
+                        p.completionTimestamp = p.completionTimestamp ? new Date(p.completionTimestamp).getTime() : null;
+                        if(isNaN(p.completionTimestamp)) p.completionTimestamp = null;
+
+                        p.tasks = p.tasks || [];
+                        p.tasks.forEach(t => {
+                             t.subtasks = t.subtasks || []; 
+                             t.taskValue = parseFloat(t.taskValue) || 0; 
+                             t.isCompleted = t.isCompleted ?? false;
+                             t.completionTimestamp = t.completionTimestamp ? new Date(t.completionTimestamp).getTime() : null;
+                             if(isNaN(t.completionTimestamp)) t.completionTimestamp = null;
+                             t.subtasks.forEach(st => { 
+                                st.subtaskValue = parseFloat(st.subtaskValue) || 0; 
+                                st.isCompleted = st.isCompleted ?? false;
+                                st.completionTimestamp = st.completionTimestamp ? new Date(st.completionTimestamp).getTime() : null;
+                                if(isNaN(st.completionTimestamp)) st.completionTimestamp = null;
+                            });
+                        });
+                        distributeValueToTasks(p); 
+                        let currentEarned = 0;
+                        p.tasks.forEach(task => {
+                            if (task.subtasks.length > 0) {
+                                task.subtasks.forEach(sub => { if (sub.isCompleted) currentEarned += sub.subtaskValue; });
+                            } else { if (task.isCompleted) currentEarned += task.taskValue; }
+                        });
+                        p.valueEarned = Math.min(currentEarned, p.totalValue);
+                    });
+                    if (appData.templates.length === 0 || !appData.templates.some(t => t.isDefault)) {
+                       const defaultTemplate = { id: 'default-fallback-' + Date.now(), name: 'Default Video Workflow', isDefault: true, tasks: [
+                                { id: 'dtf1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dtf2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
+                                { id: 'dtf3-' + generateId(), description: 'Filming/Recording', subtasks: [] },
+                                { id: 'dtf4-' + generateId(), description: 'Editing', subtasks: [{id: 'dtfs1-' + generateId(), description: 'Rough Cut'}, {id: 'dtfs2-' + generateId(), description: 'Final Polish'}] },
+                                { id: 'dtf5-' + generateId(), description: 'Thumbnail & SEO', subtasks: [] }, { id: 'dtf6-' + generateId(), description: 'Upload & Publish', subtasks: [] },
+                            ].map(task => ({...task, subtasks: task.subtasks.map(st => ({...st}))}))
+                        };
+                        if (appData.templates.length === 0) appData.templates.push(defaultTemplate); 
+                        else if (appData.templates.length > 0) appData.templates[0].isDefault = true;
+                    }
+                } catch (error) {
+                    console.error("Error parsing data from localStorage:", error); showToast("Data load error. Resetting to defaults.", 'error', 6000);
+                    localStorage.removeItem(APP_DATA_KEY); initializeDefaultAppState();
+                }
+            } else { initializeDefaultAppState(); }
         }
-        function saveData() { try { localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); } catch (error) { if (error.name === 'QuotaExceededError' || (error.code && (error.code === 22 || error.code === 1014))) { showToast("Storage full.", 'error'); } else { showToast("Save error.", 'error'); }}}
 
-        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
-        function getTodayString() { const today = new Date(); return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; }
+        function saveData() { 
+            try { localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); } 
+            catch (error) { console.error("Error saving data to localStorage:", error); showToast("Save error. Data not saved. Storage might be full.", 'error', 7000); } 
+        }
 
-        function calculateDaysLeft(deadlineString) { 
-            if (!deadlineString) return { deadlineFormatted: 'No Deadline', countdownText: '', days: Infinity, weeks: 0, isOverdue: false, isToday: false }; const [year, month, day] = deadlineString.split('-').map(Number); const deadlineDate = new Date(Date.UTC(year, month - 1, day)); const deadlineFormatted = deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }); const now = new Date(); const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())); const diffTime = deadlineDate.getTime() - today.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let countdownText = "", weeks = 0, isOverdue = false, isToday = false; if (diffDays < 0) { countdownText = `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} overdue`; isOverdue = true; } else if (diffDays === 0) { countdownText = "Due Today"; isToday = true; } else { countdownText = `${diffDays} day${diffDays !== 1 ? 's' : ''} left`; if (diffDays >= 7) { weeks = Math.floor(diffDays / 7); countdownText += ` (${weeks} wk${weeks !== 1 ? 's' : ''})`; } } return { deadlineFormatted, countdownText, days: diffDays, weeks, isOverdue, isToday };
+        // --- Dashboard Update ---
+        function updateDashboard() { 
+            let valueToday = 0, valueMonth = 0, upcomingValueTotal = 0;
+            const todayD = new Date(); todayD.setHours(0, 0, 0, 0); const todayTime = todayD.getTime();
+            const firstDayOfMonth = new Date(todayD.getFullYear(), todayD.getMonth(), 1).getTime();
+            
+            appData.projects.forEach(project => {
+                if (project.isArchived) return; 
+                const totalVal = parseFloat(project.totalValue) || 0;
+                let earnedValProject = 0;
+                
+                (project.tasks || []).forEach(task => {
+                    const checkCompletion = (item, value) => {
+                        if (item.isCompleted && item.completionTimestamp) {
+                            const completionDate = new Date(item.completionTimestamp); completionDate.setHours(0,0,0,0);
+                            const itemVal = parseFloat(value) || 0;
+                            earnedValProject += itemVal;
+                            if (completionDate.getTime() === todayTime) valueToday += itemVal;
+                            if (completionDate.getTime() >= firstDayOfMonth) valueMonth += itemVal;
+                        }
+                    };
+                    if ((task.subtasks || []).length > 0) task.subtasks.forEach(sub => checkCompletion(sub, sub.subtaskValue));
+                    else checkCompletion(task, task.taskValue);
+                });
+                project.valueEarned = Math.min(earnedValProject, totalVal);
+
+                if (!project.isCompleted) {
+                     upcomingValueTotal += Math.max(0, totalVal - project.valueEarned);
+                }
+            });
+            valueTodayEl.textContent = `$${valueToday.toFixed(0)}`;
+            valueMonthEl.textContent = `$${valueMonth.toFixed(0)}`;
+            upcomingValueEl.textContent = `$${upcomingValueTotal.toFixed(0)}`;
+            checkClearDataNotification();
+        }
+
+        // --- Project Rendering & Card Creation ---
+        function renderProjects() {
+            const lists = { active: activeQuestsListEl, completed: completedQuestsListEl, archived: archivedQuestsListEl };
+            const firstPassPositions = new Map();
+            Object.values(lists).forEach(listEl => {
+                if (listEl) {
+                    Array.from(listEl.children).forEach(card => { if (card.dataset.id && !card.classList.contains('exiting')) firstPassPositions.set(card.dataset.id, card.getBoundingClientRect()); });
+                    listEl.innerHTML = '';
+                }
+            });
+            const firstDayOfCurrentMonth = new Date(); firstDayOfCurrentMonth.setDate(1); firstDayOfCurrentMonth.setHours(0, 0, 0, 0);
+            const sorted = { active: [], completed: [], archived: [] };
+            appData.projects.forEach(p => {
+                if (p.isArchived) sorted.archived.push(p);
+                else if (p.isCompleted) { if (!p.completionTimestamp || new Date(p.completionTimestamp) >= firstDayOfCurrentMonth) sorted.completed.push(p); }
+                else sorted.active.push(p);
+            });
+            sorted.active.sort((a, b) => (a.priority !== b.priority) ? (a.priority ? -1 : 1) : (calculateQuestDaysLeft(a.deadline).days - calculateQuestDaysLeft(b.deadline).days) || ((b.creationTimestamp || 0) - (a.creationTimestamp || 0)));
+            sorted.completed.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0));
+            sorted.archived.sort((a,b) => ((b.completionTimestamp || b.creationTimestamp || 0)) - (a.completionTimestamp || a.creationTimestamp || 0));
+            
+            Object.keys(sorted).forEach(key => {
+                const listEl = lists[key];
+                if (listEl) {
+                    if (sorted[key].length === 0 && (key === 'active' || (inactiveSectionsVisible && document.getElementById(`${key}QuestsListWrapper`)?.classList.contains('expanded')))) {
+                        const messages = { active: "No active quests. Time to start a new one!", completed: "No quests completed this month yet.", archived: "No archived quests." };
+                        listEl.innerHTML = `<p class="empty-list-message">${messages[key]}</p>`;
+                    } else { sorted[key].forEach(project => listEl.appendChild(createProjectCard(project))); }
+                }
+            });
+
+            Object.values(lists).forEach(listEl => {
+                if (listEl) {
+                    Array.from(listEl.children).forEach(card => {
+                        const projectId = card.dataset.id; if (!projectId) return;
+                        const oldRect = firstPassPositions.get(projectId);
+                        if (!oldRect) { 
+                            card.classList.add('entering');
+                            requestAnimationFrame(() => { card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out'; card.classList.remove('entering'); card.addEventListener('transitionend', () => card.style.transition = '', { once: true }); });
+                        } else { 
+                            const newRect = card.getBoundingClientRect(); const deltaX = oldRect.left - newRect.left, deltaY = oldRect.top - newRect.top;
+                            if (deltaX !== 0 || deltaY !== 0) {
+                                card.style.transform = `translate(${deltaX}px, ${deltaY}px)`; card.style.transition = 'none'; 
+                                requestAnimationFrame(() => { card.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)'; card.style.transform = 'translate(0, 0)'; card.addEventListener('transitionend', () => { card.style.transform = ''; card.style.transition = ''; }, { once: true }); });
+                            }
+                        }
+                    });
+                }
+            });
+            updateDashboard();
+            appData.projects.forEach(p => { 
+                if (p.ui_isExpanded) { 
+                    const cardEl = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container.expanded`); 
+                    if (cardEl) setTimeout(() => { cardEl.scrollTop = p.ui_scrollPosition || 0; }, 50);
+                } 
+            });
         }
         
-        function renderGLPWeeklyCalendar(targetElement, dateToDisplay) {
-            if (!targetElement) return;
-            targetElement.innerHTML = ''; 
-            const headerDiv = document.createElement('div'); headerDiv.className = 'glp-calendar-header';
-            const monthYearSpan = document.createElement('span'); monthYearSpan.className = 'month-year';
-            const navDiv = document.createElement('div'); navDiv.className = 'glp-calendar-nav';
-            const prevButton = document.createElement('button'); prevButton.className = 'btn-icon-only'; prevButton.innerHTML = '<svg class="icon"><use xlink:href="#icon-chevron-left-calendar"></use></svg>';
-            const nextButton = document.createElement('button'); nextButton.className = 'btn-icon-only'; nextButton.innerHTML = '<svg class="icon"><use xlink:href="#icon-chevron-right-calendar"></use></svg>';
-            prevButton.onclick = () => { currentWeeklyCalendarDate.setDate(currentWeeklyCalendarDate.getDate() - 7); renderGLPWeeklyCalendar(targetElement, currentWeeklyCalendarDate); };
-            nextButton.onclick = () => { currentWeeklyCalendarDate.setDate(currentWeeklyCalendarDate.getDate() + 7); renderGLPWeeklyCalendar(targetElement, currentWeeklyCalendarDate); };
-            const weekStartDate = new Date(dateToDisplay); weekStartDate.setDate(dateToDisplay.getDate() - dateToDisplay.getDay());
-            monthYearSpan.textContent = `${weekStartDate.toLocaleDateString('en-US', { month: 'long' })} ${weekStartDate.getFullYear()}`;
-            navDiv.appendChild(prevButton); navDiv.appendChild(nextButton);
-            headerDiv.appendChild(monthYearSpan); headerDiv.appendChild(navDiv);
-            targetElement.appendChild(headerDiv);
-            const dayNameRow = document.createElement('div'); dayNameRow.className = 'glp-calendar-grid';
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayNames.forEach(name => { const dayNameCell = document.createElement('div'); dayNameCell.className = 'glp-calendar-dayname'; dayNameCell.textContent = name; dayNameRow.appendChild(dayNameCell); });
-            targetElement.appendChild(dayNameRow);
-            const dayGrid = document.createElement('div'); dayGrid.className = 'glp-calendar-grid';
-            const today = new Date(); today.setHours(0,0,0,0);
-            let currentDayIterator = new Date(weekStartDate);
-            for (let i = 0; i < 7; i++) {
-                const dayCell = document.createElement('div'); dayCell.className = 'glp-calendar-day'; dayCell.textContent = currentDayIterator.getDate();
-                if (currentDayIterator.getTime() === today.getTime()) dayCell.classList.add('today');
-                dayGrid.appendChild(dayCell);
-                currentDayIterator.setDate(currentDayIterator.getDate() + 1);
-            }
-            targetElement.appendChild(dayGrid);
-        }
-
-        function updateGLPTimeLeftNotices() {
-            if (!weeksLeftMonthElGLP || !monthsLeftYearElGLP) return;
-            const now = new Date(); const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            const daysLeftInMonth = lastDayOfMonth.getDate() - now.getDate(); let weeksLeftText = "";
-            if (daysLeftInMonth < 0) { weeksLeftText = "Month ended"; } else if (daysLeftInMonth === 0) { weeksLeftText = "Last day!"; }
-            else { const fullWeeks = Math.floor(daysLeftInMonth / 7); const remainingDays = daysLeftInMonth % 7;
-                if (fullWeeks > 0) weeksLeftText += `${fullWeeks} wk${fullWeeks !== 1 ? 's' : ''}`;
-                if (remainingDays > 0) weeksLeftText += `${fullWeeks > 0 ? ', ' : ''}${remainingDays} day${remainingDays !== 1 ? 's' : ''}`;
-                if (weeksLeftText === "") weeksLeftText = daysLeftInMonth === 1 ? "1 day" : `${daysLeftInMonth} days`;
-            }
-            weeksLeftMonthElGLP.textContent = weeksLeftText;
-            monthsLeftYearElGLP.textContent = `${11 - now.getMonth()} mon${(11 - now.getMonth()) !== 1 ? 's' : ''}`;
-        }
-
-        function showToast(message, type = 'info', durationVisible = 3500) { 
-            let toastContainer = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = `toast-message ${type}`; let iconType = 'info-circle'; if (type === 'success') iconType = 'check-circle'; else if (type === 'warning') iconType = 'warning-triangle'; else if (type === 'error') iconType = 'error-circle'; toast.innerHTML = `<svg class="icon toast-icon"><use xlink:href="#icon-${iconType}"></use></svg><span class="toast-text-content">${message}</span>`; toast.style.setProperty('--toast-visible-duration', `${durationVisible}ms`); toastContainer.appendChild(toast); const totalAnimationTime = 350 + durationVisible + 350 + 100; setTimeout(() => { if (toast.parentNode) { toast.remove(); } }, totalAnimationTime);
-        }
-        
-        let customConfirmModal, customConfirmModalTitleEl, customConfirmModalMessageEl, customConfirmModalConfirmBtn, customConfirmModalCancelBtn, currentConfirmCallback, currentCancelCallback; 
-        function initCustomConfirmModal() { 
-            customConfirmModal = document.getElementById('customConfirmModal'); customConfirmModalTitleEl = document.getElementById('customConfirmModalTitle'); customConfirmModalMessageEl = document.getElementById('customConfirmModalMessage'); customConfirmModalConfirmBtn = document.getElementById('customConfirmModalConfirmBtn'); customConfirmModalCancelBtn = document.getElementById('customConfirmModalCancelBtn');
-        }
-        function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) {
-            customConfirmModalMessageEl.innerHTML = message; customConfirmModalTitleEl.textContent = title; currentConfirmCallback = onConfirm; currentCancelCallback = onCancel; const newConfirmBtn = customConfirmModalConfirmBtn.cloneNode(true); customConfirmModalConfirmBtn.parentNode.replaceChild(newConfirmBtn, customConfirmModalConfirmBtn); customConfirmModalConfirmBtn = newConfirmBtn; const newCancelBtn = customConfirmModalCancelBtn.cloneNode(true); customConfirmModalCancelBtn.parentNode.replaceChild(newCancelBtn, customConfirmModalCancelBtn); customConfirmModalCancelBtn = newCancelBtn; customConfirmModalConfirmBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentConfirmCallback) currentConfirmCallback(); }; customConfirmModalCancelBtn.onclick = () => { customConfirmModal.style.display = 'none'; if (currentCancelCallback) currentCancelCallback(); }; customConfirmModal.style.display = 'flex'; customConfirmModalCancelBtn.focus();
-         }
-        
-        let toggleInactiveSectionsBtn, inactiveSectionsToggleIcon, inactiveSectionsToggleText, completedSectionContainer, archivedSectionContainer; 
-        function applyInactiveSectionsVisibilityState() { 
-             if (!completedSectionContainer || !archivedSectionContainer || !inactiveSectionsToggleIcon || !inactiveSectionsToggleText) return; if (inactiveSectionsVisible) { completedSectionContainer.style.display = 'block'; archivedSectionContainer.style.display = 'block'; inactiveSectionsToggleIcon.setAttribute('xlink:href', '#icon-chevron-up'); inactiveSectionsToggleText.textContent = 'Hide Completed & Archived'; } else { completedSectionContainer.style.display = 'none'; archivedSectionContainer.style.display = 'none'; inactiveSectionsToggleIcon.setAttribute('xlink:href', '#icon-chevron-down'); inactiveSectionsToggleText.textContent = 'Show Completed & Archived'; } renderProjects(); 
-        }
-        function initInactiveSectionsToggle() { 
-            if (!toggleInactiveSectionsBtn || !inactiveSectionsToggleIcon || !inactiveSectionsToggleText || !completedSectionContainer || !archivedSectionContainer) return; const storedVisibility = localStorage.getItem(INACTIVE_SECTIONS_VISIBILITY_KEY); if (storedVisibility !== null) inactiveSectionsVisible = JSON.parse(storedVisibility); applyInactiveSectionsVisibilityState();  toggleInactiveSectionsBtn.addEventListener('click', () => { inactiveSectionsVisible = !inactiveSectionsVisible; localStorage.setItem(INACTIVE_SECTIONS_VISIBILITY_KEY, JSON.stringify(inactiveSectionsVisible)); applyInactiveSectionsVisibilityState();  });
-        }
-
-        function updateDashboard() {
-            let valueToday = 0, valueMonth = 0, upcomingValueTotal = 0; const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0);  const firstDayOfMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1); appData.projects.forEach(project => { project.tasks = project.tasks || []; if (project.isArchived) return;  const totalVal = parseFloat(project.totalValue) || 0; const earnedVal = parseFloat(project.valueEarned) || 0; if (!project.isCompleted) upcomingValueTotal += (totalVal - earnedVal);  project.tasks.forEach(task => { task.subtasks = task.subtasks || []; if (task.subtasks.length > 0) { task.subtasks.forEach(subtask => { if (subtask.isCompleted && subtask.completionTimestamp) { const subtaskCompletionDate = new Date(subtask.completionTimestamp); subtaskCompletionDate.setHours(0,0,0,0); const subtaskVal = parseFloat(subtask.subtaskValue) || 0; if (subtaskCompletionDate.getTime() === todayDate.getTime()) { valueToday += subtaskVal; } if (subtaskCompletionDate >= firstDayOfMonth) { valueMonth += subtaskVal; } } }); } else {  if (task.isCompleted && task.completionTimestamp) { const taskCompletionDate = new Date(task.completionTimestamp); taskCompletionDate.setHours(0,0,0,0); const taskVal = parseFloat(task.taskValue) || 0; if (taskCompletionDate.getTime() === todayDate.getTime()) { valueToday += taskVal; } if (taskCompletionDate >= firstDayOfMonth) { valueMonth += taskVal; } } } }); }); document.getElementById('valueToday').textContent = `$${valueToday.toFixed(0)}`; document.getElementById('valueMonth').textContent = `$${valueMonth.toFixed(0)}`; document.getElementById('upcomingValue').textContent = `$${upcomingValueTotal.toFixed(0)}`; updateGLPTimeLeftNotices(); checkClearDataNotification();
-        }
-
-        function renderProjects() { 
-            const activeQuestsList = document.getElementById('activeQuestsList'); const completedQuestsList = document.getElementById('completedQuestsList'); const archivedQuestsList = document.getElementById('archivedQuestsList'); activeQuestsList.innerHTML = ''; completedQuestsList.innerHTML = ''; archivedQuestsList.innerHTML = ''; const active = []; const completedThisMonth = []; const archived = []; const firstDayOfCurrentMonth = new Date(); firstDayOfCurrentMonth.setDate(1); firstDayOfCurrentMonth.setHours(0,0,0,0); appData.projects.forEach(project => { project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []);  if (project.isArchived === undefined) project.isArchived = false; if (project.creationTimestamp === undefined) project.creationTimestamp = Date.now(); if (project.isArchived) { archived.push(project); }  else if (project.isCompleted) { if (!project.completionTimestamp || new Date(project.completionTimestamp) >= firstDayOfCurrentMonth) { completedThisMonth.push(project); } }  else { active.push(project); } }); active.sort((a, b) => { if (a.priority !== b.priority) return a.priority ? -1 : 1; const aDeadline = a.deadline ? new Date(a.deadline) : null; const bDeadline = b.deadline ? new Date(b.deadline) : null; if (!aDeadline && bDeadline) return 1; if (aDeadline && !bDeadline) return -1; if (aDeadline && bDeadline) return aDeadline - bDeadline; return (b.creationTimestamp || 0) - (a.creationTimestamp || 0); }); completedThisMonth.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0)); archived.sort((a,b) => (b.completionTimestamp || b.creationTimestamp || 0) - (a.completionTimestamp || a.creationTimestamp || 0) ); active.forEach(project => activeQuestsList.appendChild(createProjectCard(project))); completedThisMonth.forEach(project => completedQuestsList.appendChild(createProjectCard(project))); archived.forEach(project => archivedQuestsList.appendChild(createProjectCard(project))); updateDashboard(); appData.projects.forEach(project => { if (project.ui_isExpanded) { const projectCard = document.querySelector(`.quest-card[data-id="${project.id}"]`); if (projectCard) { const tasksContainerEl = projectCard.querySelector('.tasks-container'); if (tasksContainerEl) { setTimeout(() => { tasksContainerEl.scrollTop = project.ui_scrollPosition || 0; }, 350); }}}}); const completedWrapper = document.getElementById('completedQuestsListWrapper'); const archivedWrapper = document.getElementById('archivedQuestsListWrapper'); if (activeQuestsList.children.length === 0) activeQuestsList.innerHTML = '<p class="empty-list-message">No active quests. Start a new adventure!</p>'; if (inactiveSectionsVisible) { if (completedQuestsList.children.length === 0 && completedWrapper.classList.contains('expanded')) completedQuestsList.innerHTML = '<p class="empty-list-message">No quests completed this month.</p>'; else if (completedQuestsList.children.length > 0 && completedQuestsList.querySelector('.empty-list-message')) completedQuestsList.querySelector('.empty-list-message').remove(); if (archivedQuestsList.children.length === 0 && archivedWrapper.classList.contains('expanded')) archivedQuestsList.innerHTML = '<p class="empty-list-message">No archived quests.</p>'; else if (archivedQuestsList.children.length > 0 && archivedQuestsList.querySelector('.empty-list-message')) archivedQuestsList.querySelector('.empty-list-message').remove(); } else { if (completedQuestsList.querySelector('.empty-list-message')) completedQuestsList.querySelector('.empty-list-message').remove(); if (archivedQuestsList.querySelector('.empty-list-message')) archivedQuestsList.querySelector('.empty-list-message').remove(); }
-        }
-
-        function createProjectCard(project) { 
+        function createProjectCard(project) {
             const card = document.createElement('div'); card.className = 'quest-card'; card.dataset.id = project.id;
-            const deadlineInfo = calculateDaysLeft(project.deadline);
-            if (!project.isCompleted && !project.isArchived && deadlineInfo.isOverdue) card.classList.add('is-overdue'); 
             if (project.isCompleted) card.classList.add('completed-quest'); if (project.isArchived) card.classList.add('archived-quest');
-            project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []);
-            const totalVal = parseFloat(project.totalValue) || 0; const earnedVal = parseFloat(project.valueEarned) || 0;
-            const progressPercent = totalVal > 0 ? (earnedVal / totalVal) * 100 : (project.isCompleted ? 100 : 0);
-            let deadlineText = deadlineInfo.deadlineFormatted;
-            if (deadlineInfo.countdownText) deadlineText += ` &bull; <span class="countdown-text">${deadlineInfo.countdownText}</span>`;
+            
+            const totalVal = parseFloat(project.totalValue) || 0;
+            let earnedVal = 0;
+             (project.tasks || []).forEach(task => {
+                if ((task.subtasks || []).length > 0) {
+                    (task.subtasks || []).forEach(sub => { if (sub.isCompleted) earnedVal += (parseFloat(sub.subtaskValue) || 0); });
+                } else { if (task.isCompleted) earnedVal += (parseFloat(task.taskValue) || 0); }
+            });
+            earnedVal = Math.min(earnedVal, totalVal);
+            project.valueEarned = earnedVal;
+
+            let progressPercent = totalVal > 0 ? (earnedVal / totalVal) * 100 : ((project.isCompleted) ? 100 : 0);
+            
+            const deadlineInfo = calculateQuestDaysLeft(project.deadline);
+            if (deadlineInfo.isOverdue && !project.isCompleted && !project.isArchived) card.classList.add('is-overdue');
+            
+            let deadlineHtml = `<span class="quest-deadline-details"><i class="fas fa-calendar-alt"></i> <span class="quest-deadline-text">${deadlineInfo.deadlineFormatted}</span></span>`;
+            if (deadlineInfo.countdownText && !project.isCompleted && !project.isArchived) {
+                deadlineHtml += `<span class="quest-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">&bull; <i class="fas fa-hourglass-half"></i> <span class="quest-countdown-text">${deadlineInfo.countdownText}</span></span>`;
+            }
 
             card.innerHTML = `
                 <div class="quest-card-header">
-                    <input type="checkbox" class="quest-card-checkbox quest-complete-checkbox" ${project.isCompleted ? 'checked' : ''} title="Mark Quest ${project.isCompleted ? 'Active' : 'Complete'}" ${project.isArchived ? 'disabled' : ''}>
-                    <div class="quest-card-title-section">
-                        <h4 class="quest-card-title">${project.title}</h4>
-                        <div class="quest-card-due ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">
-                            <svg class="icon"><use xlink:href="#icon-calendar-days"></use></svg> ${deadlineText}
-                        </div>
-                    </div>
-                    <div class="quest-card-value-display">$${earnedVal.toFixed(0)} / $${totalVal.toFixed(0)}</div>
-                    <div class="quest-card-actions-header">
-                        <button class="priority-button-card btn-icon-only ${project.priority ? 'prioritized' : ''}" title="${project.priority ? 'Unprioritize' : 'Prioritize'}" ${project.isArchived ? 'disabled' : ''}><svg class="icon"><use xlink:href="#icon-star"></use></svg></button>
-                        <div class="quest-more-actions-container-card">
-                            <button class="more-actions-button-card btn-icon-only" title="More Actions"><svg class="icon"><use xlink:href="#icon-ellipsis-vertical"></use></svg></button>
-                            <div class="actions-dropdown-card">
-                                <button class="action-edit-quest" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-pencil"></use></svg> Edit Details</button>
-                                ${project.isArchived ? `<button class="action-unarchive-quest" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-folder-open"></use></svg> Unarchive</button>` : `<button class="action-archive-quest" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-archive"></use></svg> Archive</button>`}
-                                <button class="action-delete-quest danger" data-id="${project.id}"><svg class="icon"><use xlink:href="#icon-trash"></use></svg> Delete Quest</button>
+                    <input type="checkbox" class="quest-complete-checkbox" ${project.isCompleted ? 'checked' : ''} title="Mark Quest ${project.isCompleted ? 'Active' : 'Complete'}" ${project.isArchived ? 'disabled' : ''}>
+                    <p class="quest-title-text" title="Edit Quest: ${project.title}">${project.title}</p>
+                    <div class="quest-card-action-buttons">
+                        <button class="toggle-tasks-button btn-icon-only" title="Toggle Tasks View"><i class="fas fa-chevron-${project.ui_isExpanded ? 'up' : 'down'}"></i></button>
+                        <button class="priority-button btn-icon-only ${project.priority ? 'prioritized' : ''}" title="${project.priority ? 'Remove Priority' : 'Set Priority'}" ${project.isArchived || project.isCompleted ? 'disabled' : ''}><i class="fas fa-star"></i></button>
+                        <div class="quest-more-actions-container">
+                            <button class="more-actions-button btn-icon-only" title="More Actions"><i class="fas fa-ellipsis-v"></i></button>
+                            <div class="actions-dropdown">
+                                <button class="action-edit-quest" data-id="${project.id}"><i class="fas fa-edit"></i> Edit</button>
+                                ${project.isArchived ? `<button class="action-unarchive-quest" data-id="${project.id}"><i class="fas fa-folder-open"></i> Unarchive</button>` : `<button class="action-archive-quest" data-id="${project.id}" ${project.isCompleted ? '' : ''}><i class="fas fa-archive"></i> Archive</button>`}
+                                <button class="action-delete-quest danger" data-id="${project.id}"><i class="fas fa-trash-alt"></i> Delete</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="quest-card-body">
-                     <button class="toggle-tasks-button-card button" style="padding: 6px 12px; font-size: 0.85em;">
-                        <svg class="icon" style="width:1em; height:1em;"><use xlink:href="#icon-chevron-${project.ui_isExpanded ? 'up' : 'down'}"></use></svg>
-                        Tasks (${project.tasks.filter(t => t.isCompleted).length}/${project.tasks.length})
-                    </button>
-                    <div class="tasks-container ${project.ui_isExpanded ? 'expanded' : ''}">
-                        ${(project.tasks || []).map(task => createTaskElement(task, project.id, project.title, project.isArchived)).join('')}
-                    </div>
-                </div>
-                <div class="quest-card-progress-container"><div class="quest-card-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div></div>
-            `;
-            card.querySelector('.toggle-tasks-button-card').addEventListener('click', (e) => { e.stopPropagation(); const projectToToggle = appData.projects.find(p => p.id === project.id); if (projectToToggle) { const tasksContainerEl = card.querySelector('.tasks-container'); const isCurrentlyExpanded = tasksContainerEl.classList.contains('expanded'); if (isCurrentlyExpanded) projectToToggle.ui_scrollPosition = tasksContainerEl.scrollTop; projectToToggle.ui_isExpanded = !projectToToggle.ui_isExpanded; tasksContainerEl.classList.toggle('expanded', projectToToggle.ui_isExpanded); e.currentTarget.querySelector('use').setAttribute('xlink:href', `#icon-chevron-${projectToToggle.ui_isExpanded ? 'up' : 'down'}`); if (projectToToggle.ui_isExpanded) { requestAnimationFrame(() => requestAnimationFrame(() => { tasksContainerEl.scrollTop = projectToToggle.ui_scrollPosition || 0; }));} saveData(); } });
-            const completeCheckbox = card.querySelector('.quest-complete-checkbox'); if (completeCheckbox) completeCheckbox.addEventListener('change', (e) => toggleProjectComplete(project.id, e.target.checked));
-            const priorityBtnCard = card.querySelector('.priority-button-card'); if (priorityBtnCard) priorityBtnCard.addEventListener('click', (e) => { e.stopPropagation(); toggleProjectPriority(project.id); });
-            card.querySelector('.quest-card-title').addEventListener('click', () => openQuestModal(project.id));
-            card.querySelectorAll('.task-checkbox').forEach(cb => cb.addEventListener('change', (e) => toggleTaskComplete(project.id, e.target.dataset.taskId, e.target.checked, e.target)));
-            card.querySelectorAll('.subtask-checkbox').forEach(cb => cb.addEventListener('change', (e) => toggleSubtaskComplete(project.id, e.target.dataset.mainTaskId, e.target.dataset.subtaskId, e.target.checked, e.target)));
-            const moreActionsBtnCard = card.querySelector('.more-actions-button-card'); const actionsDropdownCard = card.querySelector('.actions-dropdown-card');
-            moreActionsBtnCard.addEventListener('click', (e) => { e.stopPropagation(); document.querySelectorAll('.actions-dropdown-card').forEach(dd => { if (dd !== actionsDropdownCard) dd.style.display = 'none'; }); actionsDropdownCard.style.display = actionsDropdownCard.style.display === 'none' ? 'block' : 'none'; });
-            actionsDropdownCard.querySelector('.action-edit-quest')?.addEventListener('click', () => { openQuestModal(project.id); actionsDropdownCard.style.display = 'none'; });
-            actionsDropdownCard.querySelector('.action-archive-quest')?.addEventListener('click', () => { archiveProject(project.id); actionsDropdownCard.style.display = 'none'; });
-            actionsDropdownCard.querySelector('.action-unarchive-quest')?.addEventListener('click', () => { unarchiveProject(project.id); actionsDropdownCard.style.display = 'none'; });
-            actionsDropdownCard.querySelector('.action-delete-quest')?.addEventListener('click', () => { deleteProject(project.id); actionsDropdownCard.style.display = 'none'; });
+                <div class="quest-card-meta">${deadlineHtml}<span class="quest-value-display" style="margin-left: auto;"><i class="fas fa-coins"></i> $${earnedVal.toFixed(0)} / $${totalVal.toFixed(0)}</span></div>
+                <div class="quest-progress-wrapper"><div class="quest-progress-bar-container" title="Progress: ${progressPercent.toFixed(0)}%"><div class="quest-progress-fill" style="width: ${Math.min(100, progressPercent).toFixed(0)}%;"></div></div><span class="quest-progress-value-text">${progressPercent.toFixed(0)}%</span></div>
+                <div class="tasks-container ${project.ui_isExpanded ? 'expanded' : ''}">${(project.tasks || []).length > 0 ? (project.tasks || []).map(task => createTaskElement(task, project.id, project.isArchived || project.isCompleted)).join('') : '<p style="font-size:0.85em; color: var(--text-light); text-align:center; padding:0.5rem 0;">No tasks defined for this quest.</p>'}</div>`;
+
+            const tasksContainerEl = card.querySelector('.tasks-container');
+            card.querySelector('.toggle-tasks-button').addEventListener('click', e => { 
+                e.stopPropagation(); 
+                const p = appData.projects.find(proj => proj.id === project.id); 
+                if (p) { 
+                    if (tasksContainerEl.classList.contains('expanded')) p.ui_scrollPosition = tasksContainerEl.scrollTop;
+                    p.ui_isExpanded = !p.ui_isExpanded; 
+                    saveData();
+                    renderProjects();
+                } 
+            });
+            card.querySelector('.quest-complete-checkbox').addEventListener('change', e => toggleProjectComplete(project.id, e.target.checked));
+            card.querySelector('.priority-button').addEventListener('click', e => { e.stopPropagation(); if (!e.currentTarget.disabled) toggleProjectPriority(project.id); });
+            card.querySelector('.quest-title-text').addEventListener('click', () => openQuestModal(project.id));
+            card.querySelectorAll('.task-checkbox').forEach(cb => cb.addEventListener('change', e => toggleTaskComplete(project.id, e.target.dataset.taskId, e.target.checked)));
+            card.querySelectorAll('.subtask-checkbox').forEach(cb => cb.addEventListener('change', e => toggleSubtaskComplete(project.id, e.target.dataset.mainTaskId, e.target.dataset.subtaskId, e.target.checked)));
+            const moreActionsBtn = card.querySelector('.more-actions-button');
+            const dropdown = card.querySelector('.actions-dropdown');
+            moreActionsBtn.addEventListener('click', e => { 
+                e.stopPropagation(); 
+                document.querySelectorAll('.actions-dropdown').forEach(dd => { if (dd !== dropdown) dd.style.display = 'none'; });
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'; 
+            });
+            card.querySelector('.action-edit-quest').addEventListener('click', () => { openQuestModal(project.id); dropdown.style.display = 'none'; });
+            const archiveBtn = card.querySelector('.action-archive-quest');
+            if(archiveBtn) archiveBtn.addEventListener('click', e => { if (!e.currentTarget.disabled) { archiveProject(project.id); dropdown.style.display = 'none'; } });
+            card.querySelector('.action-unarchive-quest')?.addEventListener('click', () => { unarchiveProject(project.id); dropdown.style.display = 'none'; });
+            card.querySelector('.action-delete-quest').addEventListener('click', () => { deleteProjectWithAnimation(project.id); dropdown.style.display = 'none'; });
+            
             return card;
         }
 
-        function createTaskElement(task, projectId, projectTitle, isProjectArchived) { 
-             task.subtasks = task.subtasks || []; let valueDisplay = ''; if (task.taskValue !== undefined && task.taskValue > 0) valueDisplay = `<span class="task-value-chip-list">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`; return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}"><input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} title="Complete task: ${task.description}" aria-label="Mark task '${task.description}' of quest '${projectTitle}' as ${task.isCompleted ? 'incomplete' : 'complete'}" ${isProjectArchived ? 'disabled' : ''}><span class="task-description">${task.description}</span> ${valueDisplay}</div> ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, projectId, projectTitle, task.description, isProjectArchived)).join('')}`;
+        function createTaskElement(task, projectId, isProjectInactive) { 
+            let valueDisplay = ''; if (task.taskValue > 0 && (task.subtasks || []).length === 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
+            return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                    <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
+                    <span class="task-description">${task.description}</span>${valueDisplay}</div>
+                    ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, isProjectInactive)).join('')}`;
         }
-        function createSubtaskElement(subtask, mainTaskId, projectId, projectTitle, mainTaskDescription, isProjectArchived) { 
-            return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}"><input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} title="Complete subtask: ${subtask.description}" aria-label="Mark subtask '${subtask.description}' of task '${mainTaskDescription}' as ${subtask.isCompleted ? 'incomplete' : 'complete'}" ${isProjectArchived ? 'disabled' : ''}><span class="task-description">${subtask.description}</span></div>`;
+        function createSubtaskElement(subtask, mainTaskId, isProjectInactive) {
+            let valueDisplay = ''; if (subtask.subtaskValue > 0) valueDisplay = `<span class="task-value-chip">$${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)}</span>`;
+            return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
+                    <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
+                    <span class="task-description">${subtask.description}</span>${valueDisplay}</div>`;
         }
-        function distributeValueToTasks(project) { 
-            project.tasks = project.tasks || []; const mainTasks = project.tasks; const mainTaskCount = mainTasks.length; const totalVal = parseFloat(project.totalValue) || 0; if (mainTaskCount === 0 || totalVal === 0) { project.tasks.forEach(task => { task.taskValue = 0; task.subtasks = task.subtasks || []; task.subtasks.forEach(sub => sub.subtaskValue = 0); }); return; } const valuePerMainTask = totalVal / mainTaskCount; mainTasks.forEach(task => { task.taskValue = valuePerMainTask; task.subtasks = task.subtasks || []; if (task.subtasks.length > 0) { const valuePerSubtask = task.taskValue / task.subtasks.length; task.subtasks.forEach(sub => sub.subtaskValue = valuePerSubtask); } });
-        }
-        function toggleProjectComplete(projectId, isBeingMarkedCompleted) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []); const oldCompletedState = project.isCompleted; project.isCompleted = isBeingMarkedCompleted; if (isBeingMarkedCompleted) { project.completionTimestamp = project.completionTimestamp || Date.now(); project.valueEarned = parseFloat(project.totalValue) || 0; project.tasks.forEach(task => { task.isCompleted = true; task.completionTimestamp = task.completionTimestamp || Date.now(); task.subtasks.forEach(sub => { sub.isCompleted = true; sub.completionTimestamp = sub.completionTimestamp || Date.now(); }); }); if (!oldCompletedState) { showToast(`Quest "<strong>${project.title}</strong>" completed! +$${project.valueEarned.toFixed(0)} earned.`, 'success', 4000); }}  else { project.completionTimestamp = null; if (oldCompletedState) { showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info'); } } updateProjectCardDOM(projectId, true);
-        }
-        function updateProjectCardDOM(projectId, forceRenderAll = false) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project) return; project.tasks = project.tasks || []; project.tasks.forEach(t => t.subtasks = t.subtasks || []); const projectCardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`); let newEarnedValue = 0; project.tasks.forEach(task => { if (task.subtasks.length > 0) { task.subtasks.forEach(subtask => { if (subtask.isCompleted) newEarnedValue += (parseFloat(subtask.subtaskValue) || 0); }); } else { if (task.isCompleted) newEarnedValue += (parseFloat(task.taskValue) || 0); }}); project.valueEarned = Math.max(0, Math.min(newEarnedValue, parseFloat(project.totalValue) || 0)); if (projectCardElement) { const valueDisplayEl = projectCardElement.querySelector('.quest-card-value-display'); if (valueDisplayEl) valueDisplayEl.textContent = `$${project.valueEarned.toFixed(0)} / $${(parseFloat(project.totalValue) || 0).toFixed(0)}`; const totalValProgress = parseFloat(project.totalValue) || 0; const earnedValProgress = project.valueEarned; let progressPercent = totalValProgress > 0 ? (earnedValProgress / totalValProgress) * 100 : 0; if (project.isCompleted) progressPercent = 100; const progressFill = projectCardElement.querySelector('.quest-card-progress-fill'); if (progressFill) progressFill.style.width = `${Math.min(100, progressPercent).toFixed(0)}%`; const tasksToggleBtn = projectCardElement.querySelector('.toggle-tasks-button-card'); if (tasksToggleBtn) tasksToggleBtn.innerHTML = `<svg class="icon" style="width:1em; height:1em;"><use xlink:href="#icon-chevron-${project.ui_isExpanded ? 'up' : 'down'}"></use></svg> Tasks (${project.tasks.filter(t => t.isCompleted).length}/${project.tasks.length})`;} const oldProjectCompletedState = project.isCompleted; const allTasksEffectivelyDone = project.tasks.length > 0 && project.tasks.every(task => { if (task.subtasks.length > 0) return task.subtasks.every(st => st.isCompleted); return task.isCompleted; }); if (allTasksEffectivelyDone && !project.isCompleted && !project.isArchived) { project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now(); project.valueEarned = parseFloat(project.totalValue); if (!oldProjectCompletedState) showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success', 4000); }  else if (!allTasksEffectivelyDone && project.isCompleted && !project.isArchived) { project.isCompleted = false; project.completionTimestamp = null; if (oldProjectCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info'); } if (forceRenderAll || oldProjectCompletedState !== project.isCompleted) { saveData(); renderProjects(); }  else { if (projectCardElement) { const mainCheckbox = projectCardElement.querySelector('.quest-complete-checkbox'); if (mainCheckbox && mainCheckbox.checked !== project.isCompleted) { mainCheckbox.checked = project.isCompleted; } projectCardElement.classList.toggle('completed-quest', project.isCompleted); } saveData(); updateDashboard(); }
-        }
-        function toggleProjectPriority(projectId) { const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; project.priority = !project.priority; saveData(); renderProjects(); if(project.priority) { showToast(`Quest "<strong>${project.title}</strong>" prioritized.`, 'warning'); } else { showToast(`Quest "<strong>${project.title}</strong>" unprioritized.`, 'info'); }}
-        function toggleTaskComplete(projectId, taskId, isCompleted, checkboxElement) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; project.tasks = project.tasks || []; const task = project.tasks.find(t => t.id === taskId); if (!task) return; task.subtasks = task.subtasks || []; const wasTaskPreviouslyCompleted = task.isCompleted; task.isCompleted = isCompleted; if (isCompleted && !wasTaskPreviouslyCompleted) task.completionTimestamp = task.completionTimestamp || Date.now(); else if (!isCompleted) task.completionTimestamp = null; const taskItemElement = checkboxElement.closest('.task-item'); if (taskItemElement) { taskItemElement.classList.toggle('completed', isCompleted); } let valueChangeForToast = 0; task.subtasks.forEach(sub => { const wasSubtaskPreviouslyCompleted = sub.isCompleted; sub.isCompleted = isCompleted; if (isCompleted && !wasSubtaskPreviouslyCompleted) { sub.completionTimestamp = sub.completionTimestamp || Date.now(); valueChangeForToast += (parseFloat(sub.subtaskValue) || 0); } else if (!isCompleted) sub.completionTimestamp = null; const subtaskItemElement = document.querySelector(`.subtask-item[data-subtask-id="${sub.id}"][data-main-task-id="${task.id}"]`); if (subtaskItemElement) { subtaskItemElement.classList.toggle('completed', isCompleted); const subtaskCheckbox = subtaskItemElement.querySelector('.subtask-checkbox'); if (subtaskCheckbox) { subtaskCheckbox.checked = isCompleted; }}}); if (task.subtasks.length === 0 && isCompleted && !wasTaskPreviouslyCompleted) valueChangeForToast = parseFloat(task.taskValue) || 0; if (isCompleted && !wasTaskPreviouslyCompleted) { const message = valueChangeForToast > 0 ? `Task "<strong>${task.description}</strong>" completed! +$${valueChangeForToast.toFixed(0)}` : `Task "<strong>${task.description}</strong>" completed!`; showToast(message, 'success'); } else if (!isCompleted && wasTaskPreviouslyCompleted) { showToast(`Task "<strong>${task.description}</strong>" un-checked.`, 'info');} updateProjectCardDOM(projectId); 
-        }
-        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted, checkboxElement) { 
-            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return; project.tasks = project.tasks || []; const mainTask = project.tasks.find(t => t.id === mainTaskId); if (!mainTask) return; mainTask.subtasks = mainTask.subtasks || []; const subtask = mainTask.subtasks.find(s => s.id === subtaskId); if (!subtask) return; const wasSubtaskPreviouslyCompleted = subtask.isCompleted; subtask.isCompleted = isCompleted; if (isCompleted && !wasSubtaskPreviouslyCompleted) subtask.completionTimestamp = subtask.completionTimestamp || Date.now(); else if (!isCompleted) subtask.completionTimestamp = null; const subtaskItemElement = checkboxElement.closest('.subtask-item'); if (subtaskItemElement) { subtaskItemElement.classList.toggle('completed', isCompleted); } if (isCompleted && !wasSubtaskPreviouslyCompleted) { const subValue = parseFloat(subtask.subtaskValue) || 0; const message = subValue > 0 ? `Subtask "<strong>${subtask.description}</strong>" completed! +$${subValue.toFixed(0)}` : `Subtask "<strong>${subtask.description}</strong>" completed!`; showToast(message, 'success'); } else if (!isCompleted && wasSubtaskPreviouslyCompleted) { showToast(`Subtask "<strong>${subtask.description}</strong>" un-checked.`, 'info');} const wasMainTaskPreviouslyCompleted = mainTask.isCompleted; if (mainTask.subtasks.length > 0) { const allSubtasksDone = mainTask.subtasks.every(s => s.isCompleted); if (allSubtasksDone && !wasMainTaskPreviouslyCompleted) { mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now(); showToast(`Task "<strong>${mainTask.description}</strong>" completed!`, 'success'); } else if (!allSubtasksDone && wasMainTaskPreviouslyCompleted) { mainTask.isCompleted = false; mainTask.completionTimestamp = null; showToast(`Task "<strong>${mainTask.description}</strong>" reactivated.`, 'info'); } else { mainTask.isCompleted = allSubtasksDone; } const mainTaskItemElement = document.querySelector(`.quest-card[data-id="${projectId}"] .task-item[data-task-id="${mainTask.id}"]`); if (mainTaskItemElement) { mainTaskItemElement.classList.toggle('completed', mainTask.isCompleted); const mainTaskCheckbox = mainTaskItemElement.querySelector('.task-checkbox'); if (mainTaskCheckbox) { mainTaskCheckbox.checked = mainTask.isCompleted;}}} updateProjectCardDOM(projectId); 
-        }
-        function deleteProject(projectId) { const project = appData.projects.find(p => p.id === projectId); if (!project) return; showCustomConfirm(`PERMANENTLY DELETE quest "<strong>${project.title}</strong>"?`, "Delete Quest", () => { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" deleted.`, 'info'); });}
-        function archiveProject(projectId) { const project = appData.projects.find(p => p.id === projectId); if (!project) return; project.isArchived = true; saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" archived.`, 'info');}
-        function unarchiveProject(projectId) { const project = appData.projects.find(p => p.id === projectId); if (!project) return; project.isArchived = false; saveData(); renderProjects(); showToast(`Quest "<strong>${project.title}</strong>" unarchived.`, 'info');}
 
-        const questModalEl = document.getElementById('questModal'); const closeQuestModalBtnEl = document.getElementById('closeQuestModal'); const cancelQuestModalBtnEl = document.getElementById('cancelQuestModalBtn'); const addQuestHeaderBtnEl = document.getElementById('addQuestHeaderBtn'); const saveQuestBtnEl = document.getElementById('saveQuestBtn'); const questModalTitleEl = document.getElementById('questModalTitle'); const questIdInputEl = document.getElementById('questId'); const questTitleInputEl = document.getElementById('questTitle'); const questDeadlineInputEl = document.getElementById('questDeadline'); const questValueInputEl = document.getElementById('questValueInput'); const questTemplateSelectEl = document.getElementById('questTemplateSelect'); const modalTasksContainerEl = document.getElementById('modalTasksContainer'); const addModalMainTaskBtnEl = document.getElementById('addModalMainTaskBtn'); 
-        function openQuestModal(projectId = null) { populateTemplateSelect(questTemplateSelectEl); modalTasksContainerEl.innerHTML = ''; if (projectId) { const project = appData.projects.find(p => p.id === projectId); project.tasks = project.tasks || []; questModalTitleEl.textContent = 'Edit Quest'; questIdInputEl.value = project.id; questTitleInputEl.value = project.title; questDeadlineInputEl.value = project.deadline || ''; questValueInputEl.value = project.totalValue; project.tasks.forEach(taskData => { taskData.subtasks = taskData.subtasks || []; addModalTaskEditor(taskData); }); } else { questModalTitleEl.textContent = 'Start New Quest'; questIdInputEl.value = ''; questTitleInputEl.value = ''; questDeadlineInputEl.value = getTodayString(); questValueInputEl.value = '100'; const defaultTemplateId = questTemplateSelectEl.value; if (defaultTemplateId) { const template = appData.templates.find(t => t.id === defaultTemplateId); if (template) (template.tasks || []).forEach(taskData => addModalTaskEditor({ ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null, subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) })); } else { addModalTaskEditor(); } } questModalEl.style.display = 'flex'; questTitleInputEl.focus();}
-        questTemplateSelectEl.addEventListener('change', () => { if (!questIdInputEl.value) { modalTasksContainerEl.innerHTML = ''; const templateId = questTemplateSelectEl.value; if (templateId) { const template = appData.templates.find(t => t.id === templateId); if (template) (template.tasks || []).forEach(taskData => addModalTaskEditor({ ...taskData, id: generateId(), isCompleted: false, completionTimestamp: null, subtasks: (taskData.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) })); } else { addModalTaskEditor(); } }});
-        function addModalTaskEditor(taskData = null) { const taskId = taskData ? taskData.id : generateId(); const taskDesc = taskData ? taskData.description : ''; const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; taskDiv.dataset.taskId = taskId; taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="modal-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-modal-task-btn btn-icon-only danger" title="Remove This Task"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button><button type="button" class="add-modal-subtask-btn btn-icon-only" title="Add Subtask"><svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg></button></div><div class="modal-subtasks-list" style="padding-top: 5px;"></div>`; modalTasksContainerEl.appendChild(taskDiv); if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), subtaskData)); } taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove(); taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));}
-        function addModalSubtaskEditor(parentList, subtaskData = null) { const subtaskId = subtaskData ? subtaskData.id : generateId(); const subtaskDesc = subtaskData ? subtaskData.description : ''; const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; subtaskDiv.dataset.subtaskId = subtaskId; subtaskDiv.innerHTML = `<input type="text" class="modal-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-modal-subtask-btn btn-icon-only danger" title="Remove Subtask"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button>`; parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();}
-        addModalMainTaskBtnEl.addEventListener('click', () => addModalTaskEditor());
-        closeQuestModalBtnEl.addEventListener('click', () => questModalEl.style.display = 'none');
-        cancelQuestModalBtnEl.addEventListener('click', () => questModalEl.style.display = 'none');
-        addQuestHeaderBtnEl.addEventListener('click', () => openQuestModal());
-        saveQuestBtnEl.addEventListener('click', () => { const id = questIdInputEl.value || generateId(); const title = questTitleInputEl.value.trim(); const deadline = questDeadlineInputEl.value; const totalValue = parseFloat(questValueInputEl.value) || 0; if (!title) { showToast('Quest Title is required.', 'warning'); questTitleInputEl.focus(); return; } const tasksFromModal = []; document.querySelectorAll('#modalTasksContainer .task-editor-item').forEach(taskDiv => { const taskDesc = taskDiv.querySelector('.modal-task-desc').value.trim(); if (taskDesc) { const mainTask = { id: taskDiv.dataset.taskId, description: taskDesc, isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: [] }; taskDiv.querySelectorAll('.subtask-editor-item').forEach(subtaskDiv => { const subtaskDesc = subtaskDiv.querySelector('.modal-subtask-desc').value.trim(); if (subtaskDesc) mainTask.subtasks.push({ id: subtaskDiv.dataset.subtaskId, description: subtaskDesc, isCompleted: false, completionTimestamp: null, subtaskValue: 0 }); }); tasksFromModal.push(mainTask); }}); const existingProject = appData.projects.find(p => p.id === id); if (existingProject) { existingProject.title = title; existingProject.deadline = deadline; existingProject.totalValue = totalValue; existingProject.tasks = existingProject.tasks || []; const oldTasksMap = new Map(existingProject.tasks.map(t => [t.id, t])); tasksFromModal.forEach(newTask => { newTask.subtasks = newTask.subtasks || []; const oldTask = oldTasksMap.get(newTask.id); if (oldTask) { oldTask.subtasks = oldTask.subtasks || []; newTask.isCompleted = oldTask.isCompleted; newTask.completionTimestamp = oldTask.completionTimestamp; const oldSubtasksMap = new Map(oldTask.subtasks.map(st => [st.id, st])); newTask.subtasks.forEach(newSubtask => { const oldSubtask = oldSubtasksMap.get(newSubtask.id); if(oldSubtask) { newSubtask.isCompleted = oldSubtask.isCompleted; newSubtask.completionTimestamp = oldSubtask.completionTimestamp; }}); }}); existingProject.tasks = tasksFromModal; distributeValueToTasks(existingProject); updateProjectCardDOM(existingProject.id, true); showToast(`Quest "<strong>${existingProject.title}</strong>" updated.`, 'info'); } else { const newProject = { id, title, deadline, totalValue, valueEarned: 0, isCompleted: false, completionTimestamp: null, priority: false, tasks: tasksFromModal, ui_isExpanded: true, ui_scrollPosition: 0, isArchived: false, creationTimestamp: Date.now() }; distributeValueToTasks(newProject); appData.projects.push(newProject); saveData(); renderProjects(); showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success'); } questModalEl.style.display = 'none';});
+        function distributeValueToTasks(project) {
+            const totalProjectValue = parseFloat(project.totalValue) || 0; 
+            let valueUnits = 0;
+            (project.tasks || []).forEach(task => { valueUnits += (task.subtasks || []).length > 0 ? (task.subtasks || []).length : 1; });
+            const valuePerUnit = totalProjectValue > 0 && valueUnits > 0 ? totalProjectValue / valueUnits : 0;
+            let calculatedEarnedValue = 0;
+            (project.tasks || []).forEach(task => {
+                task.taskValue = 0;
+                if ((task.subtasks || []).length > 0) {
+                    (task.subtasks || []).forEach(sub => { 
+                        sub.subtaskValue = valuePerUnit; 
+                        if (sub.isCompleted) calculatedEarnedValue += sub.subtaskValue; 
+                    });
+                } else { 
+                    task.taskValue = valuePerUnit; 
+                    if (task.isCompleted) calculatedEarnedValue += task.taskValue; 
+                }
+            });
+        }
 
-        const settingsModalEl = document.getElementById('settingsModal'); const closeSettingsModalBtnEl = document.getElementById('closeSettingsModal'); const doneSettingsModalBtnEl = document.getElementById('doneSettingsModalBtn'); const settingsHeaderBtnEl = document.getElementById('settingsHeaderBtn'); const templateIdInputEl = document.getElementById('templateId'); const templateNameInputEl = document.getElementById('templateName'); const templateTasksContainerEl = document.getElementById('templateTasksContainer'); const addTemplateMainTaskBtnEl = document.getElementById('addTemplateMainTaskBtn'); const saveTemplateBtnEl = document.getElementById('saveTemplateBtn'); const newTemplateBtnEl = document.getElementById('newTemplateBtn'); const templateListDivEl = document.getElementById('templateList'); const goToSettingsFromNotificationEl = document.getElementById('goToSettingsFromNotification');
-        settingsHeaderBtnEl.addEventListener('click', () => { loadTemplateEditor(); renderTemplateList(); settingsModalEl.style.display = 'flex'; templateNameInputEl.focus(); });
-        closeSettingsModalBtnEl.addEventListener('click', () => settingsModalEl.style.display = 'none');
-        doneSettingsModalBtnEl.addEventListener('click', () => settingsModalEl.style.display = 'none');
-        goToSettingsFromNotificationEl.addEventListener('click', () => { settingsModalEl.style.display = 'flex'; loadTemplateEditor(); renderTemplateList(); templateNameInputEl.focus(); });
-        function loadTemplateEditor(templateId = null) { templateTasksContainerEl.innerHTML = ''; if (templateId) { const template = appData.templates.find(t => t.id === templateId); if (template) { template.tasks = template.tasks || []; templateIdInputEl.value = template.id; templateNameInputEl.value = template.name; template.tasks.forEach(taskData => { taskData.subtasks = taskData.subtasks || []; addTemplateTaskEditor(taskData); }); }} else { templateIdInputEl.value = ''; templateNameInputEl.value = ''; addTemplateTaskEditor(); } templateNameInputEl.focus();}
-        function addTemplateTaskEditor(taskData = null) { const taskDesc = taskData ? taskData.description : ''; const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="template-task-desc" value="${taskDesc}" placeholder="Main Task Description"><button type="button" class="remove-template-task-btn btn-icon-only danger" title="Remove This Task"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button><button type="button" class="add-template-subtask-btn btn-icon-only" title="Add Subtask"><svg class="icon"><use xlink:href="#icon-plus-circle"></use></svg></button></div><div class="template-subtasks-list" style="padding-top: 5px;"></div>`; templateTasksContainerEl.appendChild(taskDiv); if (taskData && taskData.subtasks) { taskData.subtasks = taskData.subtasks || []; taskData.subtasks.forEach(subtaskData => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), subtaskData)); } taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove(); taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));}
-        function addTemplateSubtaskEditor(parentList, subtaskData = null) { const subtaskDesc = subtaskData ? subtaskData.description : ''; const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; subtaskDiv.innerHTML = `<input type="text" class="template-subtask-desc" value="${subtaskDesc}" placeholder="Subtask Description"><button type="button" class="remove-template-subtask-btn btn-icon-only danger" title="Remove Subtask"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button>`; parentList.appendChild(subtaskDiv); subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();}
-        addTemplateMainTaskBtnEl.addEventListener('click', () => addTemplateTaskEditor());
-        newTemplateBtnEl.addEventListener('click', () => loadTemplateEditor()); 
-        saveTemplateBtnEl.addEventListener('click', () => { const id = templateIdInputEl.value || generateId(); const name = templateNameInputEl.value.trim(); if (!name) { showToast('Template Name is required.', 'warning'); templateNameInputEl.focus(); return; } const tasks = []; document.querySelectorAll('#templateTasksContainer .task-editor-item').forEach(taskDiv => { const taskDesc = taskDiv.querySelector('.template-task-desc').value.trim(); if (taskDesc) { const mainTask = { description: taskDesc, subtasks: [] }; taskDiv.querySelectorAll('.subtask-editor-item').forEach(subtaskDiv => { const subtaskDesc = subtaskDiv.querySelector('.template-subtask-desc').value.trim(); if (subtaskDesc) mainTask.subtasks.push({ description: subtaskDesc }); }); tasks.push(mainTask); }}); const existingIndex = appData.templates.findIndex(t => t.id === id); if (existingIndex > -1) { appData.templates[existingIndex].name = name; appData.templates[existingIndex].tasks = tasks; showToast(`Template "<strong>${name}</strong>" updated.`, 'success'); } else { const isFirstTemplate = appData.templates.length === 0; appData.templates.push({ id, name, tasks, isDefault: isFirstTemplate }); showToast(`Template "<strong>${name}</strong>" saved.`, 'success'); } saveData(); renderTemplateList(); loadTemplateEditor(id); });
-        function renderTemplateList() { templateListDivEl.innerHTML = ''; if (appData.templates.length === 0) { templateListDivEl.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No templates. Create one!</p>'; return; } appData.templates.forEach(template => { const item = document.createElement('div'); item.className = 'template-item'; if (template.isDefault) item.classList.add('default-template'); item.innerHTML = `<span>${template.name} ${template.isDefault ? '<strong style="color: var(--warning-color);">(Default)</strong>' : ''}</span><div class="template-actions"><button class="edit-template-btn button" data-id="${template.id}" title="Edit ${template.name}"><svg class="icon"><use xlink:href="#icon-pencil"></use></svg> Edit</button>${!template.isDefault ? `<button class="set-default-template-btn button" data-id="${template.id}" title="Set ${template.name} as Default" style="background-color:var(--warning-color);color:var(--text-on-accent);border-color:var(--warning-color);"><svg class="icon"><use xlink:href="#icon-star"></use></svg> Set Default</button>` : ''}<button class="delete-template-btn btn-icon-only danger" data-id="${template.id}" title="Delete ${template.name}"><svg class="icon"><use xlink:href="#icon-trash"></use></svg></button></div>`; templateListDivEl.appendChild(item); }); templateListDivEl.querySelectorAll('.edit-template-btn').forEach(btn => btn.onclick = () => loadTemplateEditor(btn.dataset.id)); templateListDivEl.querySelectorAll('.delete-template-btn').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id)); templateListDivEl.querySelectorAll('.set-default-template-btn').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));}
-        function deleteTemplate(templateId) { const templateToDelete = appData.templates.find(t => t.id === templateId); if (!templateToDelete) return; if (templateToDelete.isDefault && appData.templates.length <= 1) { showToast("Cannot delete the only default template.", 'warning'); return; } if (templateToDelete.isDefault && appData.templates.length > 1) { showToast("Cannot delete active default. Set a new default first.", 'warning'); return; } showCustomConfirm(`Delete template "<strong>${templateToDelete.name}</strong>"?`, "Delete Template", () => { const name = templateToDelete.name; appData.templates = appData.templates.filter(t => t.id !== templateId); if (appData.templates.length > 0 && !appData.templates.some(t => t.isDefault)) { appData.templates[0].isDefault = true; } saveData(); renderTemplateList(); loadTemplateEditor(); showToast(`Template "<strong>${name}</strong>" deleted.`, 'info'); });}
-        function setDefaultTemplate(templateId) { let name = ''; appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; }); saveData(); renderTemplateList(); if (name) { showToast(`Template "<strong>${name}</strong>" set as default.`, 'info'); }}
-        function populateTemplateSelect(selectElement) { selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null; appData.templates.forEach(template => { const option = document.createElement('option'); option.value = template.id; option.textContent = template.name; if (template.isDefault) { option.selected = true; defaultId = template.id; } selectElement.appendChild(option); }); if (defaultId) selectElement.value = defaultId; return defaultId;}
+        // --- Project Actions ---
+        function toggleProjectComplete(projectId, isBeingMarkedCompleted) {
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived) return;
+            const oldCompletedState = project.isCompleted; 
+            project.isCompleted = isBeingMarkedCompleted;
+            
+            if (isBeingMarkedCompleted) {
+                project.completionTimestamp = project.completionTimestamp || Date.now();
+                (project.tasks || []).forEach(t => { 
+                    t.isCompleted = true; t.completionTimestamp = t.completionTimestamp || Date.now(); 
+                    (t.subtasks || []).forEach(s => { s.isCompleted = true; s.completionTimestamp = s.completionTimestamp || Date.now(); }); 
+                });
+                if (!oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" completed!`, 'success', 4000);
+            } else { 
+                project.completionTimestamp = null;
+                if (oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+            }
+            let currentEarned = 0;
+            (project.tasks || []).forEach(task => {
+                if ((task.subtasks || []).length > 0) {
+                    (task.subtasks || []).forEach(sub => { if (sub.isCompleted) currentEarned += (parseFloat(sub.subtaskValue) || 0); });
+                } else {
+                    if (task.isCompleted) currentEarned += (parseFloat(task.taskValue) || 0);
+                }
+            });
+            project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
+            saveData(); renderProjects();
+        }
+        
+        function toggleTaskComplete(projectId, taskId, isCompleted) {
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived || project.isCompleted) return;
+            const task = (project.tasks || []).find(t => t.id === taskId); if (!task) return;
+            const wasTaskCompleted = task.isCompleted;
+            task.isCompleted = isCompleted;
+            if (isCompleted) task.completionTimestamp = task.completionTimestamp || Date.now(); else task.completionTimestamp = null;
+            
+            (task.subtasks || []).forEach(sub => { 
+                sub.isCompleted = isCompleted; 
+                if (isCompleted) sub.completionTimestamp = sub.completionTimestamp || Date.now(); else sub.completionTimestamp = null; 
+            });
 
-        const clearOldDataBtnEl = document.getElementById('clearOldDataBtn'); 
-        const clearDataNotificationDivEl = document.getElementById('clearDataNotification'); 
-        function checkClearDataNotification() { const today = new Date(); if (today.getDate() > 7) { const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1); const hasOld = appData.projects.some(p => p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth); clearDataNotificationDivEl.style.display = hasOld ? 'flex' : 'none'; } else { clearDataNotificationDivEl.style.display = 'none'; }}
-        clearOldDataBtnEl.addEventListener('click', () => { showCustomConfirm('Permanently DELETE old project data (completed BEFORE current month)? This CANNOT BE UNDONE.', "Clear Old Data", () => { const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0); const initialCount = appData.projects.length; appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth)); const cleared = initialCount - appData.projects.length; saveData(); renderProjects(); showToast(`${cleared} old project(s) cleared.`, 'success'); checkClearDataNotification(); settingsModalEl.style.display = 'none'; });});
+            const allTasksDone = project.tasks.every(t => t.isCompleted && ((t.subtasks || []).length === 0 || (t.subtasks || []).every(st => st.isCompleted)));
+            if(allTasksDone && !project.isCompleted) {
+                project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now();
+                showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success');
+            } else if (!allTasksDone && project.isCompleted) {
+                 project.isCompleted = false; project.completionTimestamp = null;
+                 showToast(`Quest "<strong>${project.title}</strong>" reactivated (task incomplete).`, 'info');
+            }
+             let currentEarned = 0;
+            (project.tasks || []).forEach(t_calc => {
+                if ((t_calc.subtasks || []).length > 0) {
+                    (t_calc.subtasks || []).forEach(s_calc => { if (s_calc.isCompleted) currentEarned += (parseFloat(s_calc.subtaskValue) || 0); });
+                } else { if (t_calc.isCompleted) currentEarned += (parseFloat(t_calc.taskValue) || 0); }
+            });
+            project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
+            saveData(); renderProjects();
+             if (isCompleted && !wasTaskCompleted) showToast(`Task "${task.description}" marked complete.`, 'info', 2000);
+             else if (!isCompleted && wasTaskCompleted) showToast(`Task "${task.description}" marked incomplete.`, 'info', 2000);
+        }
 
+        function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted) {
+            const project = appData.projects.find(p => p.id === projectId); if (!project || project.isArchived || project.isCompleted) return;
+            const mainTask = (project.tasks || []).find(t => t.id === mainTaskId); if (!mainTask) return;
+            const subtask = (mainTask.subtasks || []).find(s => s.id === subtaskId); if (!subtask) return;
+            const wasSubtaskCompleted = subtask.isCompleted;
+            subtask.isCompleted = isCompleted;
+            if (isCompleted) subtask.completionTimestamp = subtask.completionTimestamp || Date.now(); else subtask.completionTimestamp = null;
+            
+            const allSubtasksOfMainTaskDone = (mainTask.subtasks || []).every(s => s.isCompleted);
+            if (allSubtasksOfMainTaskDone && !mainTask.isCompleted) {
+                mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now();
+            } else if (!allSubtasksOfMainTaskDone && mainTask.isCompleted) {
+                mainTask.isCompleted = false; mainTask.completionTimestamp = null;
+            }
+
+            const allTasksDone = project.tasks.every(t => t.isCompleted && ((t.subtasks || []).length === 0 || (t.subtasks || []).every(st => st.isCompleted)));
+            if(allTasksDone && !project.isCompleted) {
+                project.isCompleted = true; project.completionTimestamp = project.completionTimestamp || Date.now();
+                 showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success');
+            } else if (!allTasksDone && project.isCompleted) {
+                 project.isCompleted = false; project.completionTimestamp = null;
+                 showToast(`Quest "<strong>${project.title}</strong>" reactivated (task incomplete).`, 'info');
+            }
+            let currentEarned = 0;
+            (project.tasks || []).forEach(t_calc => {
+                if ((t_calc.subtasks || []).length > 0) {
+                    (t_calc.subtasks || []).forEach(s_calc => { if (s_calc.isCompleted) currentEarned += (parseFloat(s_calc.subtaskValue) || 0); });
+                } else { if (t_calc.isCompleted) currentEarned += (parseFloat(t_calc.taskValue) || 0); }
+            });
+            project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
+            saveData(); renderProjects();
+             if (isCompleted && !wasSubtaskCompleted) showToast(`Subtask "${subtask.description}" marked complete.`, 'info', 2000);
+             else if (!isCompleted && wasSubtaskCompleted) showToast(`Subtask "${subtask.description}" marked incomplete.`, 'info', 2000);
+        }
+
+        function toggleProjectPriority(projectId) { 
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p || p.isArchived || p.isCompleted) return; 
+            p.priority = !p.priority; saveData(); renderProjects(); 
+            showToast(`Quest "<strong>${p.title}</strong>" ${p.priority ? 'prioritized' : 'unprioritized'}.`, 'info'); 
+        }
+        function animateThenRemoveQuest(projectId) { 
+            const cardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
+            if (cardElement) { cardElement.classList.add('exiting'); cardElement.addEventListener('animationend', () => { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }, { once: true }); } 
+            else { appData.projects = appData.projects.filter(p => p.id !== projectId); saveData(); renderProjects(); }
+        }
+        function deleteProjectWithAnimation(projectId) { 
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
+            showCustomConfirm(`Are you sure you want to PERMANENTLY DELETE the quest "<strong>${p.title}</strong>"?`, "Delete Quest", () => { animateThenRemoveQuest(projectId); showToast(`Quest "<strong>${p.title}</strong>" deleted.`, 'info'); });
+        }
+        function archiveProject(projectId) { 
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
+            p.isArchived = true; p.priority = false; saveData(); renderProjects(); showToast(`Quest "<strong>${p.title}</strong>" archived.`, 'info');
+        }
+        function unarchiveProject(projectId) { 
+            const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
+            p.isArchived = false; saveData(); renderProjects(); showToast(`Quest "<strong>${p.title}</strong>" unarchived.`, 'info');
+        }
+
+        // --- Modal Logic ---
+        function openQuestModal(projectId = null) { 
+            populateTemplateSelect(questTemplateSelect); modalTasksContainer.innerHTML = ''; 
+            if (projectId) {
+                const p = appData.projects.find(proj => proj.id === projectId);
+                if (!p) { console.error("Project not found for editing:", projectId); return; }
+                questModalTitleEl.innerHTML = `<i class="fas fa-edit" style="margin-right:0.5rem;"></i>Edit Quest`;
+                questIdInput.value = p.id; questTitleInput.value = p.title; 
+                questDeadlineInput.value = p.deadline || ''; 
+                questValueInput.value = p.totalValue;
+                (p.tasks || []).forEach(t => addModalTaskEditor(t));
+            } else {
+                questModalTitleEl.innerHTML = `<i class="fas fa-plus-circle" style="margin-right:0.5rem;"></i>Start New Quest`;
+                questIdInput.value = ''; questTitleInput.value = ''; questDeadlineInput.value = getTodayString(); questValueInput.value = '100'; 
+                const t = appData.templates.find(temp => temp.id === questTemplateSelect.value);
+                if (t) {
+                    (t.tasks || []).forEach(task => addModalTaskEditor({ ...task, id: generateId(), isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: (task.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) }));
+                } else { addModalTaskEditor(); }
+            }
+            questModal.style.display = 'block'; questTitleInput.focus();
+        }
+        questTemplateSelect.addEventListener('change', () => { 
+            if (!questIdInput.value) {
+                modalTasksContainer.innerHTML = ''; 
+                const t = appData.templates.find(temp => temp.id === questTemplateSelect.value); 
+                if (t) {
+                    (t.tasks || []).forEach(task => addModalTaskEditor({ ...task, id: generateId(), isCompleted: false, completionTimestamp: null, taskValue: 0, subtasks: (task.subtasks || []).map(st => ({...st, id: generateId(), isCompleted: false, completionTimestamp: null, subtaskValue: 0})) }));
+                } else { addModalTaskEditor(); }
+            } 
+        });
+        function addModalTaskEditor(taskData = null) { 
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; 
+            taskDiv.dataset.taskId = taskData?.id || generateId(); 
+            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="modal-task-desc" value="${taskData?.description || ''}" placeholder="Main Task Description"><button type="button" class="remove-modal-task-btn btn-icon-only danger" title="Remove Task"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-modal-subtask-btn btn-icon-only" title="Add Subtask"><i class="fas fa-plus-circle"></i></button></div><div class="modal-subtasks-list" style="padding-top: 5px;"></div>`;
+            modalTasksContainer.appendChild(taskDiv); 
+            (taskData?.subtasks || []).forEach(s => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'), s));
+            taskDiv.querySelector('.remove-modal-task-btn').onclick = () => taskDiv.remove(); 
+            taskDiv.querySelector('.add-modal-subtask-btn').onclick = () => addModalSubtaskEditor(taskDiv.querySelector('.modal-subtasks-list'));
+        }
+        function addModalSubtaskEditor(parentList, subtaskData = null) { 
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; 
+            subtaskDiv.dataset.subtaskId = subtaskData?.id || generateId(); 
+            subtaskDiv.innerHTML = `<input type="text" class="modal-subtask-desc" value="${subtaskData?.description || ''}" placeholder="Subtask Description"><button type="button" class="remove-modal-subtask-btn btn-icon-only danger" title="Remove Subtask"><i class="fas fa-trash-alt"></i></button>`;
+            parentList.appendChild(subtaskDiv); 
+            subtaskDiv.querySelector('.remove-modal-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+        addModalMainTaskBtn.addEventListener('click', () => addModalTaskEditor());
+        [closeQuestModalBtn, cancelQuestModalBtn].forEach(btn => btn.addEventListener('click', () => questModal.style.display = 'none'));
+        addQuestHeaderBtn.addEventListener('click', () => openQuestModal());
+        saveQuestBtn.addEventListener('click', () => { 
+            const id = questIdInput.value || generateId();
+            const title = questTitleInput.value.trim();
+            if (!title) { showToast('Quest Title is required.', 'warning'); questTitleInput.focus(); return; }
+            const deadline = questDeadlineInput.value; 
+            const totalValue = parseFloat(questValueInput.value) || 0;
+            
+            const tasksFromModal = Array.from(document.querySelectorAll('#modalTasksContainer .task-editor-item')).map(taskDiv => {
+                const taskDesc = taskDiv.querySelector('.modal-task-desc').value.trim(); if (!taskDesc) return null;
+                return { 
+                    id: taskDiv.dataset.taskId, description: taskDesc, isCompleted: false, completionTimestamp: null, taskValue: 0,
+                    subtasks: Array.from(taskDiv.querySelectorAll('.subtask-editor-item')).map(subDiv => { 
+                        const subDesc = subDiv.querySelector('.modal-subtask-desc').value.trim(); 
+                        return subDesc ? { id: subDiv.dataset.subtaskId, description: subDesc, isCompleted: false, completionTimestamp: null, subtaskValue: 0 } : null; 
+                    }).filter(Boolean) 
+                };
+            }).filter(Boolean);
+
+            const existing = appData.projects.find(p => p.id === id);
+            if (existing) { 
+                existing.title = title; existing.deadline = deadline; existing.totalValue = totalValue;
+                const oldTasksMap = new Map((existing.tasks || []).map(t => [t.id, t]));
+                existing.tasks = tasksFromModal.map(newTask => {
+                    const oldTask = oldTasksMap.get(newTask.id);
+                    let mergedTask = { ...newTask };
+                    if (oldTask) {
+                        mergedTask.isCompleted = oldTask.isCompleted; mergedTask.completionTimestamp = oldTask.completionTimestamp;
+                        const oldSubtasksMap = new Map((oldTask.subtasks || []).map(st => [st.id, st]));
+                        mergedTask.subtasks = newTask.subtasks.map(newSub => {
+                            const oldSub = oldSubtasksMap.get(newSub.id);
+                            return oldSub ? {...newSub, isCompleted: oldSub.isCompleted, completionTimestamp: oldSub.completionTimestamp } : newSub;
+                        });
+                    }
+                    return mergedTask;
+                });
+                distributeValueToTasks(existing);
+                let currentEarned = 0;
+                (existing.tasks || []).forEach(task => {
+                    if ((task.subtasks || []).length > 0) { (task.subtasks || []).forEach(sub => { if (sub.isCompleted) currentEarned += sub.subtaskValue; });}
+                    else { if (task.isCompleted) currentEarned += task.taskValue; }
+                });
+                existing.valueEarned = Math.min(currentEarned, existing.totalValue);
+                showToast(`Quest "<strong>${existing.title}</strong>" updated.`, 'info');
+            } else { 
+                const newProject = { id, title, deadline, totalValue, tasks: tasksFromModal, valueEarned: 0, isCompleted: false, completionTimestamp: null, priority: false, ui_isExpanded: true, ui_scrollPosition: 0, isArchived: false, creationTimestamp: Date.now() }; 
+                appData.projects.push(newProject); 
+                distributeValueToTasks(newProject);
+                showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success'); 
+            }
+            saveData(); renderProjects(); questModal.style.display = 'none';
+        });
+
+        // Settings Modal
+        settingsHeaderBtn.addEventListener('click', () => { loadTemplateEditor(); renderTemplateList(); settingsModal.style.display = 'block'; templateNameInput.focus(); });
+        closeSettingsModalBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+        goToSettingsFromNotificationBtn.addEventListener('click', () => { settingsModal.style.display = 'block'; loadTemplateEditor(); renderTemplateList(); templateNameInput.focus(); });
+        function loadTemplateEditor(templateId = null) { 
+            templateTasksContainer.innerHTML = ''; 
+            const t = templateId ? appData.templates.find(temp => temp.id === templateId) : null;
+            templateIdInput.value = t?.id || ''; 
+            templateNameInput.value = t?.name || ''; 
+            (t?.tasks || [null]).forEach(task => addTemplateTaskEditor(task));
+            templateNameInput.focus();
+        }
+        function addTemplateTaskEditor(taskData = null) { 
+            const taskDiv = document.createElement('div'); taskDiv.className = 'task-editor-item'; 
+            taskDiv.innerHTML = `<div class="task-editor-header"><input type="text" class="template-task-desc" value="${taskData?.description || ''}" placeholder="Main Task Description"><button type="button" class="remove-template-task-btn btn-icon-only danger"><i class="fas fa-trash-alt"></i></button><button type="button" class="add-template-subtask-btn btn-icon-only"><i class="fas fa-plus-circle"></i></button></div><div class="template-subtasks-list" style="padding-top: 5px;"></div>`;
+            templateTasksContainer.appendChild(taskDiv); 
+            (taskData?.subtasks || []).forEach(s => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'), s));
+            taskDiv.querySelector('.remove-template-task-btn').onclick = () => taskDiv.remove(); 
+            taskDiv.querySelector('.add-template-subtask-btn').onclick = () => addTemplateSubtaskEditor(taskDiv.querySelector('.template-subtasks-list'));
+        }
+        function addTemplateSubtaskEditor(parentList, subtaskData = null) { 
+            const subtaskDiv = document.createElement('div'); subtaskDiv.className = 'subtask-editor-item'; 
+            subtaskDiv.innerHTML = `<input type="text" class="template-subtask-desc" value="${subtaskData?.description || ''}" placeholder="Subtask Description"><button type="button" class="remove-template-subtask-btn btn-icon-only danger"><i class="fas fa-trash-alt"></i></button>`;
+            parentList.appendChild(subtaskDiv); 
+            subtaskDiv.querySelector('.remove-template-subtask-btn').onclick = () => subtaskDiv.remove();
+        }
+        addTemplateMainTaskBtn.addEventListener('click', () => addTemplateTaskEditor()); 
+        newTemplateBtn.addEventListener('click', () => loadTemplateEditor()); 
+        saveTemplateBtn.addEventListener('click', () => { 
+            const id = templateIdInput.value || generateId(); const name = templateNameInput.value.trim(); 
+            if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; }
+            const tasks = Array.from(document.querySelectorAll('#templateTasksContainer .task-editor-item')).map(div => { 
+                const desc = div.querySelector('.template-task-desc').value.trim(); 
+                return desc ? { description: desc, subtasks: Array.from(div.querySelectorAll('.template-subtask-desc')).map(sub => sub.value.trim()).filter(Boolean).map(d => ({description: d})) } : null 
+            }).filter(Boolean);
+            const existingIndex = appData.templates.findIndex(t => t.id === id);
+            if (existingIndex > -1) { Object.assign(appData.templates[existingIndex], {name, tasks}); showToast(`Template "<strong>${name}</strong>" updated.`, 'success'); }
+            else { appData.templates.push({ id, name, tasks, isDefault: appData.templates.length === 0 }); showToast(`Template "<strong>${name}</strong>" saved.`, 'success'); }
+            saveData(); renderTemplateList(); loadTemplateEditor(id); 
+        });
+        function renderTemplateList() { 
+            templateListDiv.innerHTML = appData.templates.length === 0 ? '<p style="color: var(--text-light); font-style: italic;">No templates. Create one!</p>' : '';
+            appData.templates.forEach(t => {
+                const item = document.createElement('div'); item.className = `template-item ${t.isDefault ? 'default-template' : ''}`;
+                item.innerHTML = `<span>${t.name} ${t.isDefault ? '<strong style="color: var(--star-important-color);">(Default)</strong>' : ''}</span>
+                    <div class="template-actions">
+                        <button class="btn-modal-utility edit-template-btn" data-id="${t.id}"><i class="fas fa-edit"></i> Edit</button>
+                        ${!t.isDefault ? `<button class="btn-modal-utility set-default-template-btn" data-id="${t.id}" style="background-color:var(--star-important-color);color:var(--text-color);border-color:#f59e0b;"><i class="fas fa-star"></i> Default</button>` : ''}
+                        <button class="btn-icon-only danger delete-template-btn" data-id="${t.id}"><i class="fas fa-trash-alt"></i></button>
+                    </div>`;
+                templateListDiv.appendChild(item);
+            });
+            templateListDiv.querySelectorAll('.edit-template-btn').forEach(btn => btn.onclick = () => loadTemplateEditor(btn.dataset.id));
+            templateListDiv.querySelectorAll('.delete-template-btn').forEach(btn => btn.onclick = () => deleteTemplate(btn.dataset.id));
+            templateListDiv.querySelectorAll('.set-default-template-btn').forEach(btn => btn.onclick = () => setDefaultTemplate(btn.dataset.id));
+        }
+        function deleteTemplate(templateId) {
+            const t = appData.templates.find(temp => temp.id === templateId); if (!t) return;
+            if (t.isDefault) { showToast("Cannot delete the active default template. Set a new default first.", 'warning', 4000); return; }
+            showCustomConfirm(`Are you sure you want to delete template "<strong>${t.name}</strong>"?`, "Delete Template", () => { appData.templates = appData.templates.filter(temp => temp.id !== templateId); saveData(); renderTemplateList(); loadTemplateEditor(); showToast(`Template "<strong>${t.name}</strong>" deleted.`, 'info'); });
+        }
+        function setDefaultTemplate(templateId) { 
+            let name = ''; appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; }); 
+            saveData(); renderTemplateList(); if (name) showToast(`Template "<strong>${name}</strong>" set as default.`, 'info'); 
+        }
+        function populateTemplateSelect(selectElement) { 
+            selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null;
+            appData.templates.forEach(t => { const opt = document.createElement('option'); opt.value = t.id; opt.textContent = t.name; if (t.isDefault) { opt.selected = true; defaultId = t.id; } selectElement.appendChild(opt); });
+            if (defaultId) selectElement.value = defaultId; return defaultId;
+        }
+
+        // Data Management
+        function checkClearDataNotification() { 
+            const today = new Date();
+            if (today.getDate() > 7) { 
+                const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1); 
+                const hasOld = appData.projects.some(p => p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth); 
+                clearDataNotificationDiv.style.display = hasOld ? 'flex' : 'none'; 
+            } else { clearDataNotificationDiv.style.display = 'none'; }
+        }
+        clearOldDataBtn.addEventListener('click', () => { 
+            showCustomConfirm('Permanently DELETE old project data (completed BEFORE current month)? This action CANNOT BE UNDONE.', "Clear Old Project Data", () => { 
+                const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0);
+                const initialCount = appData.projects.length;
+                appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth));
+                saveData(); renderProjects(); showToast(`${initialCount - appData.projects.length} old project(s) cleared.`, 'success', 4000);
+                checkClearDataNotification(); settingsModal.style.display = 'none'; 
+            });
+        });
+        
+        // --- Inactive Sections Toggle Logic ---
+        function applyInactiveSectionsVisibilityState() { 
+            if (!completedSectionContainer || !archivedSectionContainer || !inactiveSectionsToggleIcon || !inactiveSectionsToggleText) return;
+            if (inactiveSectionsVisible) {
+                completedSectionContainer.style.display = 'block'; archivedSectionContainer.style.display = 'block';
+                inactiveSectionsToggleIcon.className = 'fas fa-chevron-up'; inactiveSectionsToggleText.textContent = 'Hide Completed & Archived';
+            } else {
+                completedSectionContainer.style.display = 'none'; archivedSectionContainer.style.display = 'none';
+                inactiveSectionsToggleIcon.className = 'fas fa-chevron-down'; inactiveSectionsToggleText.textContent = 'Show Completed & Archived';
+            }
+            renderProjects();
+        }
+
+        function initInactiveSectionsToggle() { 
+            const storedVisibility = localStorage.getItem(INACTIVE_SECTIONS_VISIBILITY_KEY);
+            if (storedVisibility !== null) inactiveSectionsVisible = JSON.parse(storedVisibility);
+            applyInactiveSectionsVisibilityState(); 
+            if(toggleInactiveSectionsBtn) {
+                toggleInactiveSectionsBtn.addEventListener('click', () => { 
+                    inactiveSectionsVisible = !inactiveSectionsVisible; 
+                    localStorage.setItem(INACTIVE_SECTIONS_VISIBILITY_KEY, JSON.stringify(inactiveSectionsVisible)); 
+                    applyInactiveSectionsVisibilityState(); 
+                });
+            }
+        }
+        
+        // --- Event Listeners & Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
-            loadData(); initCustomConfirmModal(); 
-            toggleInactiveSectionsBtn = document.getElementById('toggleInactiveSectionsBtn');
-            const svgIconElement = document.getElementById('inactiveSectionsToggleIcon'); 
-            if (svgIconElement && svgIconElement.tagName.toLowerCase() === 'svg') { inactiveSectionsToggleIcon = svgIconElement.querySelector('use') || svgIconElement; } 
-            else if (svgIconElement && svgIconElement.tagName.toLowerCase() === 'use') { inactiveSectionsToggleIcon = svgIconElement; }
-            inactiveSectionsToggleText = document.getElementById('inactiveSectionsToggleText');
-            completedSectionContainer = document.getElementById('completedSectionContainer');
-            archivedSectionContainer = document.getElementById('archivedSectionContainer');
+            loadData(); 
             initInactiveSectionsToggle(); 
-            updateDashboard(); 
-            renderGLPWeeklyCalendar(weeklyCalendarContainerGLP, currentWeeklyCalendarDate); 
+            updateNotices(); renderWeekCalendar(currentCalendarDate); 
             checkClearDataNotification(); 
-            document.addEventListener('click', function(event) { const openDropdowns = document.querySelectorAll('.actions-dropdown-card'); let clickedInsideDropdownRelated = false; openDropdowns.forEach(dd => { if (dd.style.display === 'block') { if (dd.contains(event.target) || (dd.closest('.quest-more-actions-container-card') && dd.closest('.quest-more-actions-container-card').contains(event.target))) clickedInsideDropdownRelated = true; }}); if (!clickedInsideDropdownRelated) openDropdowns.forEach(dd => dd.style.display = 'none'); if (event.target == questModalEl) questModalEl.style.display = "none"; if (event.target == settingsModalEl) settingsModalEl.style.display = "none"; if (event.target == customConfirmModal) customConfirmModal.style.display = "none"; });
-            document.addEventListener('keydown', function(event) { if (event.key === "Escape" || event.key === "Esc") { if (questModalEl.style.display === 'flex') questModalEl.style.display = "none"; if (settingsModalEl.style.display === 'flex') settingsModalEl.style.display = "none"; if (customConfirmModal.style.display === 'flex') customConfirmModal.style.display = "none"; document.querySelectorAll('.actions-dropdown-card').forEach(dd => dd.style.display = 'none'); }});
-            const toggleCompletedListBtn = document.getElementById('toggleCompletedListBtn'); const completedQuestsListWrapper = document.getElementById('completedQuestsListWrapper'); const completedQuestsList = document.getElementById('completedQuestsList'); let isCompletedListExpanded = false; 
-            if (toggleCompletedListBtn && completedQuestsListWrapper) { completedQuestsListWrapper.classList.remove('expanded'); if(toggleCompletedListBtn.querySelector('use')) toggleCompletedListBtn.querySelector('use').setAttribute('xlink:href', '#icon-chevron-down'); toggleCompletedListBtn.addEventListener('click', () => { isCompletedListExpanded = !isCompletedListExpanded; completedQuestsListWrapper.classList.toggle('expanded', isCompletedListExpanded); if(toggleCompletedListBtn.querySelector('use')) toggleCompletedListBtn.querySelector('use').setAttribute('xlink:href', isCompletedListExpanded ? '#icon-chevron-up' : '#icon-chevron-down'); if (isCompletedListExpanded && inactiveSectionsVisible && completedQuestsList.children.length === 0) { if (!completedQuestsList.querySelector('.empty-list-message')) completedQuestsList.innerHTML = '<p class="empty-list-message">No quests completed this month.</p>'; } else if (!isCompletedListExpanded && completedQuestsList.querySelector('.empty-list-message')) completedQuestsList.querySelector('.empty-list-message').remove(); });}
-            const toggleArchivedListBtn = document.getElementById('toggleArchivedListBtn'); const archivedQuestsListWrapper = document.getElementById('archivedQuestsListWrapper'); const archivedQuestsList = document.getElementById('archivedQuestsList'); let isArchivedListExpanded = false; 
-            if (toggleArchivedListBtn && archivedQuestsListWrapper) { archivedQuestsListWrapper.classList.remove('expanded'); if(toggleArchivedListBtn.querySelector('use')) toggleArchivedListBtn.querySelector('use').setAttribute('xlink:href', '#icon-chevron-down'); toggleArchivedListBtn.addEventListener('click', () => { isArchivedListExpanded = !isArchivedListExpanded; archivedQuestsListWrapper.classList.toggle('expanded', isArchivedListExpanded); if(toggleArchivedListBtn.querySelector('use')) toggleArchivedListBtn.querySelector('use').setAttribute('xlink:href', isArchivedListExpanded ? '#icon-chevron-up' : '#icon-chevron-down'); if(isArchivedListExpanded && inactiveSectionsVisible && archivedQuestsList.children.length === 0) { if (!archivedQuestsList.querySelector('.empty-list-message')) archivedQuestsList.innerHTML = '<p class="empty-list-message">No archived quests.</p>'; } else if (!isArchivedListExpanded && archivedQuestsList.querySelector('.empty-list-message')) archivedQuestsList.querySelector('.empty-list-message').remove(); });}
+            if(activeQuestsSectionEl) activeQuestsSectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            document.addEventListener('click', e => {
+                document.querySelectorAll('.actions-dropdown').forEach(dd => { if (!dd.contains(e.target) && !(dd.previousElementSibling && dd.previousElementSibling.contains(e.target))) dd.style.display = 'none'; });
+                if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+            });
+            document.addEventListener('keydown', e => { if (e.key === "Escape") { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.querySelectorAll('.actions-dropdown').forEach(dd => dd.style.display = 'none'); } });
+
+            const setupSectionToggle = (btn, wrapper, listEl, emptyMsgKey) => {
+                if (btn && wrapper && listEl) {
+                    let isExpanded = false;
+                    wrapper.classList.remove('expanded'); 
+                    if(btn.querySelector('i')) btn.querySelector('i').className = 'fas fa-chevron-down';
+                    
+                    btn.addEventListener('click', () => {
+                        isExpanded = !isExpanded; 
+                        wrapper.classList.toggle('expanded', isExpanded);
+                        if(btn.querySelector('i')) btn.querySelector('i').className = isExpanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                        if (isExpanded && inactiveSectionsVisible && listEl.children.length === 0) {
+                            const messages = { completed: "No quests completed this month yet.", archived: "No archived quests." };
+                            listEl.innerHTML = `<p class="empty-list-message">${messages[emptyMsgKey]}</p>`;
+                        }
+                    });
+                }
+            };
+            setupSectionToggle(toggleCompletedListBtn, completedQuestsListWrapper, completedQuestsListEl, 'completed');
+            setupSectionToggle(toggleArchivedListBtn, archivedQuestsListWrapper, archivedQuestsListEl, 'archived');
         });
-        window.addEventListener('beforeunload', () => { appData.projects.forEach(project => { if (project.ui_isExpanded) { const projectCard = document.querySelector(`.quest-card[data-id="${project.id}"]`); if (projectCard) { const tasksContainerEl = projectCard.querySelector('.tasks-container'); if (tasksContainerEl) project.ui_scrollPosition = tasksContainerEl.scrollTop; } } }); saveData(); });
-    </script>
-    
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js') 
-            .then(registration => console.log('Service Worker registered successfully:', registration.scope))
-            .catch(error => console.log('Service Worker registration failed:', error));
+
+        window.addEventListener('beforeunload', () => { 
+            appData.projects.forEach(p => { 
+                if (p.ui_isExpanded) { 
+                    const el = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container`); 
+                    if (el) p.ui_scrollPosition = el.scrollTop; 
+                } 
+            });
+            saveData(); 
         });
-      }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => console.log('Service Worker registered.', reg.scope)).catch(err => console.log('Service Worker registration failed:', err)); });
+        }
     </script>
 </body>
 </html>
