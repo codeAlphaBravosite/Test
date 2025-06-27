@@ -196,10 +196,15 @@
             border-bottom: 2px solid var(--primary-color); 
         }
         .quest-list-section-header .section-header-count {
-            color: var(--text-light);
-            font-weight: 500;
-            font-size: 0.9em;
-            margin-left: 0.25rem;
+            display: inline-block;
+            color: var(--primary-color);
+            background-color: #eef2ff;
+            font-weight: 600;
+            font-size: 0.8em;
+            padding: 0.1rem 0.6rem;
+            border-radius: 1rem;
+            margin-left: 0.5rem;
+            line-height: 1.4;
         }
         .quest-list-section-header .toggle-section-button { 
             background: transparent; border: none; color: var(--text-light);
@@ -646,7 +651,7 @@
             <div id="clearDataNotification" style="display: none; margin-top: 1rem;"><span><i class="fas fa-info-circle"></i> Keep things lean! Old project data from previous months can be cleared in Settings.</span><button id="goToSettingsFromNotification" aria-label="Go to Settings to clear data">Go to Settings</button></div>
         </div>
         <div class="quest-list-section" id="activeQuestsSection">
-            <h2 class="quest-list-section-header"><i class="fas fa-rocket" style="margin-right: 0.5rem;"></i> Active Quests <span id="activeQuestsCount" class="section-header-count"></span></h2>
+            <h2 class="quest-list-section-header"><i class="fas fa-bolt" style="margin-right: 0.5rem;"></i> Active Quests <span id="activeQuestsCount" class="section-header-count"></span></h2>
             <div id="activeQuestsList" class="quests-list"></div>
         </div>
         <div class="inactive-sections-toggle-container"><button id="toggleInactiveSectionsBtn" aria-label="Toggle visibility of completed and archived sections"><i class="fas fa-chevron-down" id="inactiveSectionsToggleIcon"></i><span id="inactiveSectionsToggleText">Show Completed & Archived</span></button></div>
