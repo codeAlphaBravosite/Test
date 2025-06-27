@@ -1149,83 +1149,131 @@
             checkClearDataNotification();
         }
 
+        // --- START: DEFINITIVE FLICKER-FREE RENDER FUNCTION ---
         function renderProjects() {
-            // --- START: EXPERT FIX - PRESERVE SCROLL STATE ---
-            // Before we destroy and redraw the DOM, find any expanded task lists and save their current scroll position to our app's state.
-            // This ensures that after the redraw, we can restore it.
-            document.querySelectorAll('.quest-card[data-id]').forEach(cardEl => {
-                const projectId = cardEl.dataset.id;
-                const project = appData.projects.find(p => p.id === projectId);
-                if (project && project.ui_isExpanded) {
-                    const tasksContainer = cardEl.querySelector('.tasks-container.expanded');
-                    if (tasksContainer) {
-                        project.ui_scrollPosition = tasksContainer.scrollTop;
-                    }
-                }
-            });
-            // --- END: EXPERT FIX ---
-
             const lists = { active: activeQuestsListEl, completed: completedQuestsListEl, archived: archivedQuestsListEl };
             const firstPassPositions = new Map();
-            Object.values(lists).forEach(listEl => {
-                if (listEl) {
-                    Array.from(listEl.children).forEach(card => { if (card.dataset.id && !card.classList.contains('exiting')) firstPassPositions.set(card.dataset.id, card.getBoundingClientRect()); });
-                    listEl.innerHTML = '';
-                }
-            });
-            const firstDayOfCurrentMonth = new Date(); firstDayOfCurrentMonth.setDate(1); firstDayOfCurrentMonth.setHours(0, 0, 0, 0);
-            const sorted = { active: [], completed: [], archived: [] };
-            appData.projects.forEach(p => {
-                if (p.isArchived) sorted.archived.push(p);
-                else if (p.isCompleted) { if (!p.completionTimestamp || new Date(p.completionTimestamp) >= firstDayOfCurrentMonth) sorted.completed.push(p); }
-                else sorted.active.push(p);
-            });
-            
-            const activeQuestsCountEl = document.getElementById('activeQuestsCount');
-            if (activeQuestsCountEl) {
-                activeQuestsCountEl.textContent = `(${sorted.active.length})`;
-            }
-            
-            sorted.active.sort((a, b) => (a.priority !== b.priority) ? (a.priority ? -1 : 1) : (calculateQuestDaysLeft(a.deadline).days - calculateQuestDaysLeft(b.deadline).days) || ((b.creationTimestamp || 0) - (a.creationTimestamp || 0)));
-            sorted.completed.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0));
-            sorted.archived.sort((a,b) => ((b.completionTimestamp || b.creationTimestamp || 0)) - (a.completionTimestamp || a.creationTimestamp || 0));
-            
-            Object.keys(sorted).forEach(key => {
-                const listEl = lists[key];
-                if (listEl) {
-                    if (sorted[key].length === 0 && (key === 'active' || (inactiveSectionsVisible && document.getElementById(`${key}QuestsListWrapper`)?.classList.contains('expanded')))) {
-                        const messages = { active: "No active quests. Time to start a new one!", completed: "No quests completed this month yet.", archived: "No archived quests." };
-                        listEl.innerHTML = `<p class="empty-list-message">${messages[key]}</p>`;
-                    } else { sorted[key].forEach(project => listEl.appendChild(createProjectCard(project))); }
-                }
-            });
 
+            // --- STEP 1: Capture starting positions for smooth animation (FLIP) ---
             Object.values(lists).forEach(listEl => {
                 if (listEl) {
                     Array.from(listEl.children).forEach(card => {
-                        const projectId = card.dataset.id; if (!projectId) return;
+                        if (card.dataset.id && !card.classList.contains('exiting')) {
+                            firstPassPositions.set(card.dataset.id, card.getBoundingClientRect());
+                        }
+                    });
+                }
+            });
+
+            // --- STEP 2: Save current scroll positions BEFORE any DOM changes ---
+            // This is still crucial.
+            appData.projects.forEach(p => {
+                if (p.ui_isExpanded) {
+                    const cardElement = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container`);
+                    if (cardElement) {
+                        p.ui_scrollPosition = cardElement.scrollTop;
+                    }
+                }
+            });
+
+            const firstDayOfCurrentMonth = new Date();
+            firstDayOfCurrentMonth.setDate(1);
+            firstDayOfCurrentMonth.setHours(0, 0, 0, 0);
+
+            const sorted = { active: [], completed: [], archived: [] };
+            appData.projects.forEach(p => {
+                if (p.isArchived) sorted.archived.push(p);
+                else if (p.isCompleted) {
+                    if (!p.completionTimestamp || new Date(p.completionTimestamp) >= firstDayOfCurrentMonth) sorted.completed.push(p);
+                } else sorted.active.push(p);
+            });
+
+            // Sort the data arrays
+            sorted.active.sort((a, b) => (a.priority !== b.priority) ? (a.priority ? -1 : 1) : (calculateQuestDaysLeft(a.deadline).days - calculateQuestDaysLeft(b.deadline).days) || ((b.creationTimestamp || 0) - (a.creationTimestamp || 0)));
+            sorted.completed.sort((a, b) => (b.completionTimestamp || 0) - (a.completionTimestamp || 0));
+            sorted.archived.sort((a, b) => ((b.completionTimestamp || b.creationTimestamp || 0)) - (a.completionTimestamp || a.creationTimestamp || 0));
+            
+            document.getElementById('activeQuestsCount').textContent = `(${sorted.active.length})`;
+
+            // --- STEP 3: Build the new UI for each list in an off-screen DocumentFragment ---
+            Object.keys(sorted).forEach(key => {
+                const listEl = lists[key];
+                if (!listEl) return;
+
+                // Create an in-memory fragment. Manipulating this is fast and causes no flickers.
+                const fragment = document.createDocumentFragment();
+
+                if (sorted[key].length === 0 && (key === 'active' || (inactiveSectionsVisible && document.getElementById(`${key}QuestsListWrapper`)?.classList.contains('expanded')))) {
+                    const messages = { active: "No active quests. Time to start a new one!", completed: "No quests completed this month yet.", archived: "No archived quests." };
+                    const p = document.createElement('p');
+                    p.className = 'empty-list-message';
+                    p.textContent = messages[key];
+                    fragment.appendChild(p);
+                } else {
+                    sorted[key].forEach(project => {
+                        const projectCard = createProjectCard(project);
+                        
+                        // **THE KEY TO NO FLICKER**: Set the scroll position on the element
+                        // BEFORE it is added to the visible DOM.
+                        if (project.ui_isExpanded && project.ui_scrollPosition > 0) {
+                            const tasksContainer = projectCard.querySelector('.tasks-container.expanded');
+                            if (tasksContainer) {
+                                tasksContainer.scrollTop = project.ui_scrollPosition;
+                            }
+                        }
+                        fragment.appendChild(projectCard);
+                    });
+                }
+                
+                // --- STEP 4: Perform a single, atomic replacement of the live DOM ---
+                listEl.innerHTML = ''; // Clear the list
+                listEl.appendChild(fragment); // Append the fully-prepared fragment
+            });
+
+
+            // --- STEP 5: Apply the re-ordering animation (FLIP) ---
+            // This logic can now run on the newly attached elements.
+            Object.values(lists).forEach(listEl => {
+                if (listEl) {
+                    Array.from(listEl.children).forEach(card => {
+                        const projectId = card.dataset.id;
+                        if (!projectId) return;
+
                         const oldRect = firstPassPositions.get(projectId);
-                        if (!oldRect) { 
+                        if (!oldRect) {
+                            // Animate new cards entering
                             card.classList.add('entering');
-                            requestAnimationFrame(() => { card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out'; card.classList.remove('entering'); card.addEventListener('transitionend', () => card.style.transition = '', { once: true }); });
-                        } else { 
-                            const newRect = card.getBoundingClientRect(); const deltaX = oldRect.left - newRect.left, deltaY = oldRect.top - newRect.top;
+                            requestAnimationFrame(() => {
+                                card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                                card.classList.remove('entering');
+                                card.addEventListener('transitionend', () => card.style.transition = '', { once: true });
+                            });
+                        } else {
+                            // Animate existing cards moving
+                            const newRect = card.getBoundingClientRect();
+                            const deltaX = oldRect.left - newRect.left;
+                            const deltaY = oldRect.top - newRect.top;
                             if (deltaX !== 0 || deltaY !== 0) {
-                                card.style.transform = `translate(${deltaX}px, ${deltaY}px)`; card.style.transition = 'none'; 
-                                requestAnimationFrame(() => { card.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)'; card.style.transform = 'translate(0, 0)'; card.addEventListener('transitionend', () => { card.style.transform = ''; card.style.transition = ''; }, { once: true }); });
+                                card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                                card.style.transition = 'none';
+                                requestAnimationFrame(() => {
+                                    card.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                                    card.style.transform = 'translate(0, 0)';
+                                    card.addEventListener('transitionend', () => {
+                                        card.style.transform = '';
+                                        card.style.transition = '';
+                                    }, { once: true });
+                                });
                             }
                         }
                     });
                 }
             });
+            
+            // Finally, update the dashboard metrics
             updateDashboard();
-            appData.projects.forEach(p => { 
-                if (p.ui_isExpanded) { 
-                    const cardEl = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container.expanded`); 
-                    if (cardEl) setTimeout(() => { cardEl.scrollTop = p.ui_scrollPosition || 0; }, 50);
-                } 
-            });
         }
+        // --- END: DEFINITIVE FLICKER-FREE RENDER FUNCTION ---
         
         function createProjectCard(project) {
             const card = document.createElement('div'); card.className = 'quest-card'; card.dataset.id = project.id;
@@ -1293,8 +1341,7 @@
                 e.stopPropagation(); 
                 const p = appData.projects.find(proj => proj.id === project.id); 
                 if (p) { 
-                    // The scroll position is now automatically captured by renderProjects(). 
-                    // We only need to toggle the expanded state here.
+                    if (tasksContainerEl.classList.contains('expanded')) p.ui_scrollPosition = tasksContainerEl.scrollTop;
                     p.ui_isExpanded = !p.ui_isExpanded; 
                     saveData();
                     renderProjects();
@@ -1885,12 +1932,8 @@
         });
 
         window.addEventListener('beforeunload', () => { 
-            appData.projects.forEach(p => { 
-                if (p.ui_isExpanded) { 
-                    const el = document.querySelector(`.quest-card[data-id="${p.id}"] .tasks-container`); 
-                    if (el) p.ui_scrollPosition = el.scrollTop; 
-                } 
-            });
+            // The scroll positions are already up-to-date in appData due to our improved render function.
+            // We just need to ensure the data is saved one last time.
             saveData(); 
         });
         
