@@ -505,26 +505,88 @@
         }
         #settingsModal #clearOldDataBtn:hover { background-color: var(--warning-hover); }
 
+        /* --- START: UPDATED TOAST STYLES --- */
         #toastContainer {
-            position: fixed; bottom: 20px; right: 20px; z-index: 2000; 
-            display: flex; flex-direction: column-reverse; gap: 10px; max-width: 350px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column-reverse; /* Keeps new toasts at the bottom */
+            gap: 12px; /* A bit more space */
+            width: 100%;
+            max-width: 380px;
         }
-        .toast-message {
-            padding: 1rem 1.25rem; border-radius: 0.5rem; color: white; font-size: 0.95em;
-            box-shadow: var(--shadow); opacity: 0; word-wrap: break-word;
-            animation-name: toastFadeIn, toastFadeOut; animation-duration: 0.3s, 0.3s; 
-            animation-fill-mode: forwards, forwards; animation-timing-function: ease-out, ease-in;
-            animation-delay: 0s, var(--toast-visible-duration, 3000ms); 
-            display: flex; align-items: center; gap: 0.75rem;
-        }
-        .toast-message i { font-size: 1.2em; } 
-        .toast-message.success { background-color: var(--success-color); }
-        .toast-message.info { background-color: var(--info-color); }
-        .toast-message.warning { background-color: var(--star-important-color); color: var(--text-color); }
-        .toast-message.error { background-color: var(--warning-color); }
 
-        @keyframes toastFadeIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastFadeOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        .toast-message {
+            background: var(--primary-color); /* Darker, more premium base */
+            color: white;
+            border-radius: 0.75rem; /* Slightly larger radius */
+            padding: 0.9rem 1.25rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); /* Softer, layered shadow */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95); /* Start position for new animation */
+            transition: transform 0.3s cubic-bezier(0.215, 0.610, 0.355, 1), opacity 0.3s ease-out;
+            will-change: transform, opacity;
+            overflow: hidden; /* Important for text truncation */
+            border-left: 4px solid var(--info-color); /* Accent border */
+        }
+
+        .toast-message.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .toast-message .toast-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .toast-message .toast-content {
+            flex-grow: 1;
+            font-size: 0.92rem;
+            line-height: 1.4;
+            overflow: hidden;
+        }
+
+        /* For truncating long quest/task titles */
+        .toast-content .toast-main-text {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Style for the value gain text */
+        .toast-content .toast-value-gain {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #a7f3d0; /* A light green for contrast */
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        /* Variant Colors for the accent border */
+        .toast-message.success { border-left-color: var(--success-color); }
+        .toast-message.success .toast-icon { color: var(--success-color); }
+
+        .toast-message.warning {
+            border-left-color: var(--star-important-color);
+            background-color: #fffbeb; /* Lighter bg for warning */
+            color: #b45309;
+        }
+        .toast-message.warning .toast-icon { color: var(--star-important-color); }
+        .toast-message.warning .toast-value-gain { color: #854d0e; }
+
+        .toast-message.error { border-left-color: var(--warning-color); }
+        .toast-message.error .toast-icon { color: var(--warning-color); }
+
+        .toast-message.info { border-left-color: var(--info-color); }
+        .toast-message.info .toast-icon { color: var(--info-color); }
+        /* --- END: UPDATED TOAST STYLES --- */
         
         .quest-card.exiting { animation: fadeOutCollapseQuest 0.35s ease-out forwards; }
         @keyframes fadeOutCollapseQuest { 
@@ -668,12 +730,11 @@
         let inactiveSectionsVisible = false;
         const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v3_final_reskinned';
         let currentCalendarDate = new Date(); 
-
-        // --- NEW: Toast Coalescing System ---
-        // This system prevents spamming the user with too many notifications at once.
+        
+        // --- START: UPDATED TOAST STATE ---
         let toastQueue = [];
-        let toastTimer = null;
-        const TOAST_COALESCE_DELAY = 750; // Wait 750ms after the last action to show a summary toast.
+        let isToastVisible = false;
+        // --- END: UPDATED TOAST STATE ---
 
         // --- DOM Element References (Cached) ---
         const weekCalendarContainer = document.getElementById('weekCalendarContainer');
@@ -744,12 +805,11 @@
         // --- ACCESSIBILITY: Modal Helper Functions ---
         function openModal(modalElement, elementToFocus) {
             if (activeModalKeydownHandler) {
-                // Failsafe in case a modal is opened while another is already open
                 document.removeEventListener('keydown', activeModalKeydownHandler);
             }
             const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
             const modalFocusable = Array.from(modalElement.querySelectorAll(focusableElements));
-            if(modalFocusable.length === 0) return; // Nothing to focus
+            if(modalFocusable.length === 0) return;
 
             const firstFocusable = modalFocusable[0];
             const lastFocusable = modalFocusable[modalFocusable.length - 1];
@@ -787,52 +847,88 @@
             }
             modalElement.style.display = 'none';
         }
-
-        function showToast(message, type = 'info', durationVisible = 3000) {
-            const toast = document.createElement('div');
-            toast.className = `toast-message ${type}`; 
-            let iconClass = 'fas fa-info-circle';
-            if (type === 'success') iconClass = 'fas fa-check-circle'; 
-            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle'; 
-            else if (type === 'error') iconClass = 'fas fa-times-circle';
-            toast.innerHTML = `<i class="${iconClass}"></i> <span class="toast-text-content">${message}</span>`; 
-            toast.style.setProperty('--toast-visible-duration', `${durationVisible}ms`);
-            toastContainer.appendChild(toast); 
-            setTimeout(() => { if (toast.parentNode) { toast.remove(); } }, durationVisible + 700); 
+        
+        // --- START: NEW TOAST NOTIFICATION SYSTEM ---
+        /**
+         * Adds a notification to the queue and processes it.
+         * This is the new public-facing function.
+         * @param {string} message - The main message, can contain HTML.
+         * @param {string} type - 'info', 'success', 'warning', 'error'.
+         * @param {object} options - Optional parameters { duration, valueGainText, title }
+         */
+        function showToast(message, type = 'info', options = {}) {
+            toastQueue.push({ message, type, options });
+            processToastQueue();
         }
 
-        // --- NEW: Functions to handle the optimized toast notification system ---
+        /**
+         * Processes the next toast in the queue if one isn't already visible.
+         * This is the new internal "worker" function.
+         */
         function processToastQueue() {
-            if (toastQueue.length === 0) return;
-
-            if (toastQueue.length === 1) {
-                const item = toastQueue[0];
-                showToast(`${item.type} "<strong>${item.description}</strong>" complete <strong>(+$${item.value.toFixed(0)})</strong>`, 'success');
-            } else {
-                const totalValue = toastQueue.reduce((sum, item) => sum + item.value, 0);
-                showToast(`<strong>${toastQueue.length} tasks</strong> completed <strong>(+$${totalValue.toFixed(0)})</strong>`, 'success', 4000);
+            if (isToastVisible || toastQueue.length === 0) {
+                return; // Don't show a new toast if one is already active or queue is empty
             }
 
-            toastQueue = []; // Clear the queue after processing
-            toastTimer = null;
-        }
+            isToastVisible = true;
+            const { message, type, options } = toastQueue.shift();
+            const { duration = 3000, valueGainText = null, title = null } = options;
 
-        function queueToastForCompletion(itemType, description, value) {
-            // Don't queue toasts for actions that don't earn value
-            const numericValue = parseFloat(value) || 0;
-            if (numericValue <= 0) return;
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            if (title) {
+                toast.title = title; // Add full text for hover on truncated messages
+            }
+            
+            // Icon
+            const icon = document.createElement('i');
+            icon.className = 'toast-icon ';
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+            else if (type === 'error') iconClass = 'fas fa-times-circle';
+            icon.classList.add(...iconClass.split(' '));
+            
+            // Content Container
+            const content = document.createElement('div');
+            content.className = 'toast-content';
 
-            // If a timer is already running, clear it. We'll set a new one.
-            if (toastTimer) {
-                clearTimeout(toastTimer);
+            // Main Text (sanitized via innerHTML, but with a clear class)
+            const mainText = document.createElement('span');
+            mainText.className = 'toast-main-text';
+            mainText.innerHTML = message;
+            content.appendChild(mainText);
+
+            // Optional Value Gain Text
+            if (valueGainText) {
+                const valueGain = document.createElement('span');
+                valueGain.className = 'toast-value-gain';
+                valueGain.textContent = valueGainText;
+                content.appendChild(valueGain);
             }
 
-            toastQueue.push({ type: itemType, description, value: numericValue });
+            toast.append(icon, content);
+            toastContainer.appendChild(toast);
 
-            // Set a new timer to process the queue.
-            toastTimer = setTimeout(processToastQueue, TOAST_COALESCE_DELAY);
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.add('visible');
+            });
+
+            // Set timeout to remove the toast
+            setTimeout(() => {
+                toast.classList.remove('visible');
+                // Wait for animation to finish before removing and processing next
+                toast.addEventListener('transitionend', () => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                    isToastVisible = false;
+                    processToastQueue(); // Check for the next toast in the queue
+                }, { once: true });
+            }, duration);
         }
-        // --- End of NEW toast system functions ---
+        // --- END: NEW TOAST NOTIFICATION SYSTEM ---
 
         function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { 
             customConfirmModalMessageEl.innerHTML = message; 
@@ -853,12 +949,10 @@
             openModal(customConfirmModal, customConfirmModalCancelBtn);
         }
         
-        // BUG FIX: Added robust handling for invalid date formats.
         function calculateQuestDaysLeft(deadlineString) {
             if (!deadlineString) return { deadlineFormatted: 'No Deadline', countdownText: '', days: Infinity, isOverdue: false, isToday: false };
             const deadlineDate = new Date(deadlineString + 'T00:00:00Z');
             
-            // This check prevents errors if the date string is malformed.
             if (isNaN(deadlineDate.getTime())) {
                 return { deadlineFormatted: 'Invalid Date', countdownText: '', days: Infinity, isOverdue: false, isToday: false };
             }
@@ -998,7 +1092,8 @@
                         else if (appData.templates.length > 0) appData.templates[0].isDefault = true;
                     }
                 } catch (error) {
-                    console.error("Error parsing data from localStorage:", error); showToast("Data load error. Resetting to defaults.", 'error', 6000);
+                    console.error("Error parsing data from localStorage:", error); 
+                    showToast("Data load error. Resetting to defaults.", 'error', { duration: 6000, title: "Data load error. Resetting to defaults." });
                     localStorage.removeItem(APP_DATA_KEY); initializeDefaultAppState();
                 }
             } else { initializeDefaultAppState(); }
@@ -1009,7 +1104,7 @@
                 localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); 
             } catch (error) { 
                 console.error("Error saving data to localStorage:", error); 
-                showToast("Save error. Data not saved. Storage might be full.", 'error', 7000); 
+                showToast("Save error. Data not saved. Storage might be full.", 'error', { duration: 7000, title: "Save error. Data not saved. Storage might be full." }); 
             } 
         }
 
@@ -1207,34 +1302,24 @@
             return card;
         }
 
-        // MODIFIED: This function now only shows a task's value if it has NO subtasks.
-        function createTaskElement(task, projectId, isProjectInactive) { 
-            let valueDisplay = '';
-            // Only show value chip if there are no subtasks and the value is positive.
-            if ((!task.subtasks || task.subtasks.length === 0) && task.taskValue > 0) {
-               valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
-            }
+           function createTaskElement(task, projectId, isProjectInactive) { 
+           let valueDisplay = '';
+           if (task.taskValue > 0) {
+           valueDisplay = `<span class="task-value-chip">$${(parseFloat(task.taskValue) || 0).toFixed(0)}</span>`;
+          }
                
             return `<div class="task-item ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
-                <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
-                <span class="task-description">${task.description}</span>${valueDisplay}</div>
-                ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, isProjectInactive)).join('')}`;
-        }
+            <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${task.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
+            <span class="task-description">${task.description}</span>${valueDisplay}</div>
+            ${(task.subtasks || []).map(subtask => createSubtaskElement(subtask, task.id, isProjectInactive)).join('')}`;
+          }
         
-        // MODIFIED: This function now adds a value chip to subtasks.
-        function createSubtaskElement(subtask, mainTaskId, isProjectInactive) {
-            let valueDisplay = '';
-            const subtaskVal = parseFloat(subtask.subtaskValue) || 0;
-            if (subtaskVal > 0) {
-                valueDisplay = `<span class="task-value-chip">$${subtaskVal.toFixed(0)}</span>`;
-            }
+           function createSubtaskElement(subtask, mainTaskId, isProjectInactive) {
+           return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
+            <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
+            <span class="task-description">${subtask.description}</span></div>`;
+          }
 
-            return `<div class="subtask-item ${subtask.isCompleted ? 'completed' : ''}" data-subtask-id="${subtask.id}" data-main-task-id="${mainTaskId}">
-                <input type="checkbox" class="subtask-checkbox" data-main-task-id="${mainTaskId}" data-subtask-id="${subtask.id}" ${subtask.isCompleted ? 'checked' : ''} ${isProjectInactive ? 'disabled' : ''}>
-                <span class="task-description">${subtask.description}</span>${valueDisplay}</div>`;
-        }
-
-        // BUG FIX: Rewritten to prevent floating point precision errors.
         function distributeValueToTasks(project) {
             project.tasks = project.tasks || [];
             const mainTasks = project.tasks;
@@ -1253,7 +1338,6 @@
             let distributedValue = 0;
 
             (project.tasks || []).forEach((task, index) => {
-                // Assign remainder to the last task to ensure precision
                 let currentTaskValue = (index === mainTaskCount - 1) 
                     ? totalProjectValue - distributedValue 
                     : valuePerMainTask;
@@ -1266,15 +1350,11 @@
                     let distributedSubValue = 0;
                     let valuePerSubtask = currentTaskValue / task.subtasks.length;
                     task.subtasks.forEach((sub, subIndex) => {
-                        // Also apply the remainder logic to subtasks
                         sub.subtaskValue = (subIndex === task.subtasks.length - 1)
                             ? currentTaskValue - distributedSubValue
                             : valuePerSubtask;
                         distributedSubValue += sub.subtaskValue;
                     });
-                } else {
-                    // if no subtasks, the taskValue is still the total for the branch.
-                    // The subtaskValue logic is not needed.
                 }
             });
         }
@@ -1290,14 +1370,14 @@
                     t.isCompleted = true; t.completionTimestamp = t.completionTimestamp || Date.now(); 
                     (t.subtasks || []).forEach(s => { s.isCompleted = true; s.completionTimestamp = s.completionTimestamp || Date.now(); }); 
                 });
-                // MODIFIED: More impactful and informative completion toast.
                 if (!oldCompletedState) {
-                     showToast(`Quest "<strong>${project.title}</strong>" completed! <strong>(+$${(parseFloat(project.totalValue) || 0).toFixed(0)})</strong>`, 'success', 4000);
+                    showToast(`Quest "<strong>${project.title}</strong>" completed!`, 'success', { title: `Quest "${project.title}" completed!` });
                 }
             } else { 
                 project.completionTimestamp = null;
-                 // MODIFIED: Shorter, clearer reactivation toast.
-                if (oldCompletedState) showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+                if (oldCompletedState) {
+                    showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info', { title: `Quest "${project.title}" reactivated.` });
+                }
             }
             let currentEarned = 0;
             (project.tasks || []).forEach(task => {
@@ -1324,18 +1404,22 @@
                 if (isCompleted) sub.completionTimestamp = sub.completionTimestamp || Date.now(); else sub.completionTimestamp = null; 
             });
 
-            const allTasksDone = project.tasks.every(t => t.isCompleted && ((t.subtasks || []).length === 0 || (t.subtasks || []).every(st => st.isCompleted)));
+            const allTasksDone = project.tasks.every(t => t.isCompleted);
+            let toastShown = false; // Flag to prevent multiple toasts
+
             if(allTasksDone && !project.isCompleted) {
                 project.isCompleted = true;
                 project.completionTimestamp = project.completionTimestamp || Date.now();
-                showToast(`Quest "<strong>${project.title}</strong>" auto-completed! <strong>(+$${(parseFloat(project.totalValue) || 0).toFixed(0)})</strong>`, 'success', 4000);
+                showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success', { title: `Quest "${project.title}" auto-completed!` });
+                toastShown = true;
             } else if (!allTasksDone && project.isCompleted) {
                  project.isCompleted = false;
                  project.completionTimestamp = null;
-                 showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+                 showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info', { title: `Quest "${project.title}" reactivated.` });
+                 toastShown = true;
             }
             
-             let currentEarned = 0;
+            let currentEarned = 0;
             (project.tasks || []).forEach(t_calc => {
                 if ((t_calc.subtasks || []).length > 0) {
                     (t_calc.subtasks || []).forEach(s_calc => { if (s_calc.isCompleted) currentEarned += (parseFloat(s_calc.subtaskValue) || 0); });
@@ -1346,13 +1430,18 @@
             project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
 
             saveData(); renderProjects();
-            
-            // MODIFIED: Use the new toast queue system for completions.
-            if (isCompleted && !wasTaskCompleted) {
-                queueToastForCompletion('Task', task.description, task.taskValue);
-            } else if (!isCompleted && wasTaskCompleted) {
-                showToast(`Task "<strong>${task.description}</strong>" undone.`, 'info', 2000);
-            }
+             
+            if (toastShown) return; // Don't show the less important toast
+
+             if (isCompleted && !wasTaskCompleted) {
+                 showToast(`Task "<strong>${task.description}</strong>" complete.`, 'info', {
+                     valueGainText: `+ $${(parseFloat(task.taskValue) || 0).toFixed(0)} earned`,
+                     title: `Task "${task.description}" complete.`
+                 });
+             }
+             else if (!isCompleted && wasTaskCompleted) {
+                showToast(`Task "<strong>${task.description}</strong>" marked incomplete.`, 'info', { title: `Task "${task.description}" marked incomplete.` });
+             }
         }
 
         function toggleSubtaskComplete(projectId, mainTaskId, subtaskId, isCompleted) {
@@ -1364,21 +1453,31 @@
             if (isCompleted) subtask.completionTimestamp = subtask.completionTimestamp || Date.now(); else subtask.completionTimestamp = null;
             
             const allSubtasksOfMainTaskDone = (mainTask.subtasks || []).every(s => s.isCompleted);
-            if (allSubtasksOfMainTaskDone && !mainTask.isCompleted) {
-                mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now();
-            } else if (!allSubtasksOfMainTaskDone && mainTask.isCompleted) {
-                mainTask.isCompleted = false; mainTask.completionTimestamp = null;
+            const wasMainTaskCompleted = mainTask.isCompleted;
+
+            if (allSubtasksOfMainTaskDone) {
+                if (!mainTask.isCompleted) {
+                    mainTask.isCompleted = true; mainTask.completionTimestamp = mainTask.completionTimestamp || Date.now();
+                }
+            } else {
+                if (mainTask.isCompleted) {
+                    mainTask.isCompleted = false; mainTask.completionTimestamp = null;
+                }
             }
 
-            const allTasksDone = project.tasks.every(t => t.isCompleted && ((t.subtasks || []).length === 0 || (t.subtasks || []).every(st => st.isCompleted)));
+            const allTasksDone = project.tasks.every(t => t.isCompleted);
+            let toastShown = false; // Flag to prevent multiple toasts
+
             if(allTasksDone && !project.isCompleted) {
-                project.isCompleted = true;
-                project.completionTimestamp = project.completionTimestamp || Date.now();
-                showToast(`Quest "<strong>${project.title}</strong>" auto-completed! <strong>(+$${(parseFloat(project.totalValue) || 0).toFixed(0)})</strong>`, 'success', 4000);
+                 project.isCompleted = true;
+                 project.completionTimestamp = project.completionTimestamp || Date.now();
+                 showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success', { title: `Quest "${project.title}" auto-completed!` });
+                 toastShown = true;
             } else if (!allTasksDone && project.isCompleted) {
                  project.isCompleted = false;
                  project.completionTimestamp = null;
-                 showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info');
+                 showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info', { title: `Quest "${project.title}" reactivated.` });
+                 toastShown = true;
             }
 
             let currentEarned = 0;
@@ -1392,20 +1491,32 @@
             project.valueEarned = Math.min(currentEarned, (parseFloat(project.totalValue) || 0));
 
             saveData(); renderProjects();
+            
+            if (toastShown) return; // Exit if a more important toast was already shown.
 
-            // MODIFIED: Use the new toast queue system for completions.
-            if (isCompleted && !wasSubtaskCompleted) {
-                 queueToastForCompletion('Subtask', subtask.description, subtask.subtaskValue);
-            } else if (!isCompleted && wasSubtaskCompleted) {
-                showToast(`Subtask "<strong>${subtask.description}</strong>" undone.`, 'info', 2000);
+            // Show mid-priority toast if main task was just completed by this action
+            if (allSubtasksOfMainTaskDone && !wasMainTaskCompleted) {
+                showToast(`Task "<strong>${mainTask.description}</strong>" complete.`, 'info', {
+                    valueGainText: `+ $${(parseFloat(mainTask.taskValue) || 0).toFixed(0)} total for task`,
+                    title: `Task "${mainTask.description}" complete.`
+                });
+                return; // Exit after showing this toast.
             }
+
+             if (isCompleted && !wasSubtaskCompleted) {
+                showToast(`Subtask "<strong>${subtask.description}</strong>" complete.`, 'info', {
+                     valueGainText: `+ $${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)} earned`,
+                     title: `Subtask "${subtask.description}" complete.`
+                });
+             } else if (!isCompleted && wasSubtaskCompleted) {
+                showToast(`Subtask "<strong>${subtask.description}</strong>" marked incomplete.`, 'info', { title: `Subtask "${subtask.description}" marked incomplete.` });
+             }
         }
 
         function toggleProjectPriority(projectId) { 
             const p = appData.projects.find(proj => proj.id === projectId); if (!p || p.isArchived || p.isCompleted) return; 
             p.priority = !p.priority; saveData(); renderProjects(); 
-            // MODIFIED: Shorter toast message
-            showToast(`Quest ${p.priority ? 'prioritized.' : 'unprioritized.'}`, 'info'); 
+            showToast(`Quest "<strong>${p.title}</strong>" ${p.priority ? 'prioritized' : 'unprioritized'}.`, 'info', { title: `Quest "${p.title}" ${p.priority ? 'prioritized' : 'unprioritized'}.`}); 
         }
         function animateThenRemoveQuest(projectId) { 
             const cardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
@@ -1416,21 +1527,18 @@
             const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
             showCustomConfirm(`Are you sure you want to PERMANENTLY DELETE the quest "<strong>${p.title}</strong>"?`, "Delete Quest", () => { 
                 animateThenRemoveQuest(projectId); 
-                // MODIFIED: Shorter toast message
-                showToast(`Quest deleted.`, 'info'); 
+                showToast(`Quest "<strong>${p.title}</strong>" deleted.`, 'info', { title: `Quest "${p.title}" deleted.` }); 
             });
         }
         function archiveProject(projectId) { 
             const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
             p.isArchived = true; p.priority = false; saveData(); renderProjects(); 
-            // MODIFIED: Shorter toast message
-            showToast(`Quest archived.`, 'info');
+            showToast(`Quest "<strong>${p.title}</strong>" archived.`, 'info', { title: `Quest "${p.title}" archived.` });
         }
         function unarchiveProject(projectId) { 
             const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
             p.isArchived = false; saveData(); renderProjects(); 
-            // MODIFIED: Shorter toast message
-            showToast(`Quest unarchived.`, 'info');
+            showToast(`Quest "<strong>${p.title}</strong>" unarchived.`, 'info', { title: `Quest "${p.title}" unarchived.` });
         }
 
         function openQuestModal(projectId = null) { 
@@ -1502,7 +1610,7 @@
         saveQuestBtn.addEventListener('click', () => { 
             const id = questIdInput.value || generateId();
             const title = questTitleInput.value.trim();
-            if (!title) { showToast('Quest Title is required.', 'warning'); questTitleInput.focus(); return; }
+            if (!title) { showToast('Quest Title is required.', 'warning', { title: 'Quest Title is required.' }); questTitleInput.focus(); return; }
             const deadline = questDeadlineInput.value; 
             const totalValue = parseFloat(questValueInput.value) || 0;
             
@@ -1552,8 +1660,8 @@
                     else { if (task.isCompleted) currentEarned += task.taskValue; }
                 });
                 existing.valueEarned = Math.min(currentEarned, existing.totalValue);
-                // MODIFIED: Shorter, more direct toast message
-                showToast(`Quest updated.`, 'info');
+
+                showToast(`Quest "<strong>${existing.title}</strong>" updated.`, 'info', { title: `Quest "${existing.title}" updated.` });
             } else { 
                 const newProject = { 
                     id, title, deadline, totalValue, tasks: tasksFromModal, 
@@ -1563,8 +1671,7 @@
                 }; 
                 appData.projects.push(newProject); 
                 distributeValueToTasks(newProject);
-                // MODIFIED: Shorter, more direct toast message
-                showToast(`Quest created.`, 'success'); 
+                showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success', { title: `Quest "${newProject.title}" started.` }); 
             }
             saveData(); renderProjects(); closeModal(questModal);
         });
@@ -1605,7 +1712,7 @@
         saveTemplateBtn.addEventListener('click', () => { 
             const id = templateIdInput.value || generateId();
             const name = templateNameInput.value.trim(); 
-            if (!name) { showToast('Template Name is required.', 'warning'); templateNameInput.focus(); return; }
+            if (!name) { showToast('Template Name is required.', 'warning', { title: 'Template Name is required.' }); templateNameInput.focus(); return; }
             const tasks = Array.from(document.querySelectorAll('#templateTasksContainer .task-editor-item')).map(div => { 
                 const desc = div.querySelector('.template-task-desc').value.trim(); 
                 return desc ? { 
@@ -1617,8 +1724,13 @@
                 } : null 
             }).filter(Boolean);
             const existingIndex = appData.templates.findIndex(t => t.id === id);
-            if (existingIndex > -1) { Object.assign(appData.templates[existingIndex], {name, tasks}); showToast(`Template updated.`, 'success'); }
-            else { appData.templates.push({ id, name, tasks, isDefault: appData.templates.length === 0 }); showToast(`Template saved.`, 'success'); }
+            if (existingIndex > -1) { 
+                Object.assign(appData.templates[existingIndex], {name, tasks}); 
+                showToast(`Template "<strong>${name}</strong>" updated.`, 'success', { title: `Template "${name}" updated.` }); 
+            } else { 
+                appData.templates.push({ id, name, tasks, isDefault: appData.templates.length === 0 }); 
+                showToast(`Template "<strong>${name}</strong>" saved.`, 'success', { title: `Template "${name}" saved.` }); 
+            }
             saveData(); renderTemplateList(); loadTemplateEditor(id); 
         });
         function renderTemplateList() { 
@@ -1639,14 +1751,17 @@
         }
         function deleteTemplate(templateId) {
             const t = appData.templates.find(temp => temp.id === templateId); if (!t) return;
-            if (t.isDefault) { showToast("Cannot delete the active default template. Set a new default first.", 'warning', 4000); return; }
-            showCustomConfirm(`Are you sure you want to delete template "<strong>${t.name}</strong>"?`, "Delete Template", () => { appData.templates = appData.templates.filter(temp => temp.id !== templateId); saveData(); renderTemplateList(); loadTemplateEditor(); showToast(`Template deleted.`, 'info'); });
+            if (t.isDefault) { showToast("Cannot delete the default template.", 'warning', { duration: 4000, title: "Cannot delete the active default template. Set a new default first." }); return; }
+            showCustomConfirm(`Are you sure you want to delete template "<strong>${t.name}</strong>"?`, "Delete Template", () => { 
+                appData.templates = appData.templates.filter(temp => temp.id !== templateId); saveData(); renderTemplateList(); loadTemplateEditor(); 
+                showToast(`Template "<strong>${t.name}</strong>" deleted.`, 'info', { title: `Template "${t.name}" deleted.` }); 
+            });
         }
         function setDefaultTemplate(templateId) { 
             let name = ''; 
             appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; }); 
             saveData(); renderTemplateList(); loadTemplateEditor(templateId);
-            if (name) showToast(`"<strong>${name}</strong>" is now the default template.`, 'info'); 
+            if (name) showToast(`Template "<strong>${name}</strong>" set as default.`, 'info', { title: `Template "${name}" set as default.` }); 
         }
         function populateTemplateSelect(selectElement) { 
             selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null;
@@ -1667,13 +1782,9 @@
                 const firstDayCurrentMonth = new Date(); firstDayCurrentMonth.setDate(1); firstDayCurrentMonth.setHours(0,0,0,0);
                 const initialCount = appData.projects.length;
                 appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth));
-                const clearedCount = initialCount - appData.projects.length;
                 saveData(); renderProjects(); 
-                if (clearedCount > 0) {
-                    showToast(`${clearedCount} old project(s) cleared.`, 'success', 4000);
-                } else {
-                    showToast(`No old projects found to clear.`, 'info');
-                }
+                const numCleared = initialCount - appData.projects.length;
+                showToast(`${numCleared} old project(s) cleared.`, 'success', { duration: 4000, title: `${numCleared} old project(s) cleared.` });
                 checkClearDataNotification();
                 closeModal(settingsModal);
             });
@@ -1714,7 +1825,6 @@
             document.addEventListener('click', e => {
                 document.querySelectorAll('.actions-dropdown').forEach(dd => { if (!dd.contains(e.target) && !(dd.previousElementSibling && dd.previousElementSibling.contains(e.target))) dd.style.display = 'none'; });
                 if (e.target.classList.contains('modal')) {
-                    // Close the correct modal
                     if(questModal.style.display === 'block') closeModal(questModal);
                     if(settingsModal.style.display === 'block') closeModal(settingsModal);
                     if(customConfirmModal.style.display === 'block') closeModal(customConfirmModal);
@@ -1722,7 +1832,6 @@
             });
             document.addEventListener('keydown', e => { 
                 if (e.key === "Escape") { 
-                    // Close any open modal
                     document.querySelectorAll('.modal').forEach(m => { if(m.style.display === 'block') closeModal(m); });
                     document.querySelectorAll('.actions-dropdown').forEach(dd => dd.style.display = 'none'); 
                 } 
