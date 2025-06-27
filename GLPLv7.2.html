@@ -607,21 +607,15 @@
             .info-item p, .dashboard-metric-item .metric-value { font-size: 1.2rem; }
             .quest-title-text { font-size: 1.25em; }
             .quest-card-meta { font-size: 0.8rem; }
-            
-            /* --- MODIFIED FOR BETTER MOBILE EXPERIENCE --- */
-            #toastContainer { 
-                right: 10px; 
-                bottom: 10px; 
-                width: auto; /* Allow container to be flexible */
-                max-width: calc(100% - 20px); /* Use most of the width with small gutters */
-            }
+            .modal-content { margin: 5% auto; width: 95%; padding: 1.25rem; }
+            .modal-header h2 { font-size: 1.15rem; }
+            #toastContainer { right: 10px; bottom: 10px; max-width: calc(100% - 100px); }
             .modal-content { 
-               margin: 3% auto; /* Reduced top/bottom margin */
-               width: 97%; /* Increased width */
-               max-width: 97%; /* Enforce max width */
+               margin: 3% auto; 
+               width: 97%;
+               max-width: 97%;
                padding: 1.25rem; 
             }
-            /* --- END OF MODIFICATIONS --- */
         }
 
         @media (max-width: 480px) {
@@ -1156,6 +1150,21 @@
         }
 
         function renderProjects() {
+            // --- START: EXPERT FIX - PRESERVE SCROLL STATE ---
+            // Before we destroy and redraw the DOM, find any expanded task lists and save their current scroll position to our app's state.
+            // This ensures that after the redraw, we can restore it.
+            document.querySelectorAll('.quest-card[data-id]').forEach(cardEl => {
+                const projectId = cardEl.dataset.id;
+                const project = appData.projects.find(p => p.id === projectId);
+                if (project && project.ui_isExpanded) {
+                    const tasksContainer = cardEl.querySelector('.tasks-container.expanded');
+                    if (tasksContainer) {
+                        project.ui_scrollPosition = tasksContainer.scrollTop;
+                    }
+                }
+            });
+            // --- END: EXPERT FIX ---
+
             const lists = { active: activeQuestsListEl, completed: completedQuestsListEl, archived: archivedQuestsListEl };
             const firstPassPositions = new Map();
             Object.values(lists).forEach(listEl => {
@@ -1284,7 +1293,8 @@
                 e.stopPropagation(); 
                 const p = appData.projects.find(proj => proj.id === project.id); 
                 if (p) { 
-                    if (tasksContainerEl.classList.contains('expanded')) p.ui_scrollPosition = tasksContainerEl.scrollTop;
+                    // The scroll position is now automatically captured by renderProjects(). 
+                    // We only need to toggle the expanded state here.
                     p.ui_isExpanded = !p.ui_isExpanded; 
                     saveData();
                     renderProjects();
