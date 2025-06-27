@@ -251,10 +251,10 @@
         .quest-value-display .quest-value-text-chip {
             display: inline-block;
             font-weight: 600;
-            font-size: 0.83rem; /* MODIFIED */
+            font-size: 0.83rem;
             color: var(--success-color);
             background-color: #dcfce7;
-            padding: 0.14rem 0.35rem; /* MODIFIED */
+            padding: 0.14rem 0.35rem;
             border-radius: 10px;
             line-height: 1.3; 
         }
@@ -505,88 +505,93 @@
         }
         #settingsModal #clearOldDataBtn:hover { background-color: var(--warning-hover); }
 
-        /* --- START: UPDATED TOAST STYLES --- */
+        /* --- START: REVISED TOAST STYLES --- */
         #toastContainer {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 2000;
             display: flex;
-            flex-direction: column-reverse; /* Keeps new toasts at the bottom */
-            gap: 12px; /* A bit more space */
+            flex-direction: column-reverse;
+            gap: 12px;
             width: 100%;
-            max-width: 380px;
+            max-width: 360px;
         }
 
         .toast-message {
-            background: var(--primary-color); /* Darker, more premium base */
-            color: white;
-            border-radius: 0.75rem; /* Slightly larger radius */
-            padding: 0.9rem 1.25rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); /* Softer, layered shadow */
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 0.75rem;
+            padding: 0.8rem 1.1rem;
+            box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+            border-left-color: var(--info-color); /* Default color */
             opacity: 0;
-            transform: translateY(20px) scale(0.95); /* Start position for new animation */
+            transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.215, 0.610, 0.355, 1), opacity 0.3s ease-out;
             will-change: transform, opacity;
-            overflow: hidden; /* Important for text truncation */
-            border-left: 4px solid var(--info-color); /* Accent border */
         }
 
         .toast-message.visible {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateX(0);
         }
 
         .toast-message .toast-icon {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             flex-shrink: 0;
+            color: var(--info-color); /* Default color */
         }
 
         .toast-message .toast-content {
             flex-grow: 1;
-            font-size: 0.92rem;
-            line-height: 1.4;
-            overflow: hidden;
+            overflow: hidden; /* Critical for truncation */
+        }
+        
+        .toast-content .toast-title-text {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.3;
         }
 
-        /* For truncating long quest/task titles */
         .toast-content .toast-main-text {
             display: block;
+            font-size: 0.85rem;
+            color: var(--text-light);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.3;
+            margin-top: 2px;
         }
-        /* Style for the value gain text */
+
         .toast-content .toast-value-gain {
             display: block;
             font-size: 0.8rem;
             font-weight: 600;
-            color: #a7f3d0; /* A light green for contrast */
-            opacity: 0.9;
-            margin-top: 2px;
+            color: var(--success-color);
+            margin-top: 4px;
         }
 
-        /* Variant Colors for the accent border */
+        /* Color Variants */
         .toast-message.success { border-left-color: var(--success-color); }
         .toast-message.success .toast-icon { color: var(--success-color); }
 
-        .toast-message.warning {
-            border-left-color: var(--star-important-color);
-            background-color: #fffbeb; /* Lighter bg for warning */
-            color: #b45309;
-        }
+        .toast-message.warning { border-left-color: var(--star-important-color); background-color: #fffbeb; }
         .toast-message.warning .toast-icon { color: var(--star-important-color); }
-        .toast-message.warning .toast-value-gain { color: #854d0e; }
-
-        .toast-message.error { border-left-color: var(--warning-color); }
+        
+        .toast-message.error { border-left-color: var(--warning-color); background-color: #fee2e2; }
         .toast-message.error .toast-icon { color: var(--warning-color); }
+        .toast-message.error .toast-main-text { color: #991b1b; }
 
         .toast-message.info { border-left-color: var(--info-color); }
         .toast-message.info .toast-icon { color: var(--info-color); }
-        /* --- END: UPDATED TOAST STYLES --- */
+        /* --- END: REVISED TOAST STYLES --- */
         
         .quest-card.exiting { animation: fadeOutCollapseQuest 0.35s ease-out forwards; }
         @keyframes fadeOutCollapseQuest { 
@@ -607,8 +612,8 @@
             #toastContainer { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
             .modal-content { 
                margin: 3% auto; 
-               width: 97%; /* This tells it to take up 95% of the screen width */
-               max-width: 97%; /* MODIFIED: This overrides the desktop 550px limit */
+               width: 97%;
+               max-width: 97%;
                padding: 1.25rem; 
             }
         }
@@ -616,10 +621,6 @@
         @media (max-width: 480px) {
             .app-header { padding: 0.5rem 0.75rem; }
             .app-header-actions button { width: 2.2rem; height: 2.2rem; font-size: 1rem;}
-            
-            .quest-value-and-actions { }
-            .quest-card-action-buttons { }
-            .quest-card-meta { }
             .subtask-item { margin-left: 1.25rem; }
         }
     </style>
@@ -731,10 +732,8 @@
         const INACTIVE_SECTIONS_VISIBILITY_KEY = 'creatorQuestLog_inactiveSectionsVisibility_v3_final_reskinned';
         let currentCalendarDate = new Date(); 
         
-        // --- START: UPDATED TOAST STATE ---
         let toastQueue = [];
         let isToastVisible = false;
-        // --- END: UPDATED TOAST STATE ---
 
         // --- DOM Element References (Cached) ---
         const weekCalendarContainer = document.getElementById('weekCalendarContainer');
@@ -791,7 +790,6 @@
         let currentCancelCallback = null;
         const toastContainer = document.getElementById('toastContainer');
 
-        // --- ACCESSIBILITY: References for Modal Focus Trap ---
         let activeModalKeydownHandler = null;
 
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
@@ -802,7 +800,6 @@
             return adjustedToday.toISOString().split('T')[0];
         }
 
-        // --- ACCESSIBILITY: Modal Helper Functions ---
         function openModal(modalElement, elementToFocus) {
             if (activeModalKeydownHandler) {
                 document.removeEventListener('keydown', activeModalKeydownHandler);
@@ -816,12 +813,12 @@
 
             const keydownHandler = (e) => {
                 if (e.key !== 'Tab') return;
-                if (e.shiftKey) { // Shift+Tab
+                if (e.shiftKey) { 
                     if (document.activeElement === firstFocusable) {
                         lastFocusable.focus();
                         e.preventDefault();
                     }
-                } else { // Tab
+                } else { 
                     if (document.activeElement === lastFocusable) {
                         firstFocusable.focus();
                         e.preventDefault();
@@ -848,63 +845,75 @@
             modalElement.style.display = 'none';
         }
         
-        // --- START: NEW TOAST NOTIFICATION SYSTEM ---
+        // --- START: REVISED TOAST NOTIFICATION SYSTEM ---
         /**
-         * Adds a notification to the queue and processes it.
-         * This is the new public-facing function.
-         * @param {string} message - The main message, can contain HTML.
+         * Adds a notification to the queue.
          * @param {string} type - 'info', 'success', 'warning', 'error'.
-         * @param {object} options - Optional parameters { duration, valueGainText, title }
+         * @param {object} options - { title, mainText, valueGainText, fullTextTitle, duration }
          */
-        function showToast(message, type = 'info', options = {}) {
-            toastQueue.push({ message, type, options });
+        function showToast(type = 'info', options = {}) {
+            toastQueue.push({ type, options });
             processToastQueue();
         }
 
         /**
          * Processes the next toast in the queue if one isn't already visible.
-         * This is the new internal "worker" function.
          */
         function processToastQueue() {
             if (isToastVisible || toastQueue.length === 0) {
-                return; // Don't show a new toast if one is already active or queue is empty
+                return;
             }
 
             isToastVisible = true;
-            const { message, type, options } = toastQueue.shift();
-            const { duration = 3000, valueGainText = null, title = null } = options;
+            const { type, options } = toastQueue.shift();
+            const {
+                title = '',
+                mainText = '',
+                valueGainText = null,
+                fullTextTitle = '',
+                duration = 3500
+            } = options;
 
             const toast = document.createElement('div');
             toast.className = `toast-message ${type}`;
-            if (title) {
-                toast.title = title; // Add full text for hover on truncated messages
+            if (fullTextTitle) {
+                toast.title = fullTextTitle;
             }
             
             // Icon
             const icon = document.createElement('i');
             icon.className = 'toast-icon ';
-            let iconClass = 'fas fa-info-circle';
-            if (type === 'success') iconClass = 'fas fa-check-circle';
-            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
-            else if (type === 'error') iconClass = 'fas fa-times-circle';
-            icon.classList.add(...iconClass.split(' '));
+            const iconClasses = {
+                success: 'fas fa-check-circle',
+                warning: 'fas fa-exclamation-triangle',
+                error: 'fas fa-trash-alt',
+                info: 'fas fa-info-circle'
+            };
+            icon.classList.add(...(iconClasses[type] || iconClasses.info).split(' '));
             
             // Content Container
             const content = document.createElement('div');
             content.className = 'toast-content';
 
-            // Main Text (sanitized via innerHTML, but with a clear class)
-            const mainText = document.createElement('span');
-            mainText.className = 'toast-main-text';
-            mainText.innerHTML = message;
-            content.appendChild(mainText);
+            if (title) {
+                const titleEl = document.createElement('span');
+                titleEl.className = 'toast-title-text';
+                titleEl.textContent = title;
+                content.appendChild(titleEl);
+            }
 
-            // Optional Value Gain Text
+            if (mainText) {
+                const mainTextEl = document.createElement('span');
+                mainTextEl.className = 'toast-main-text';
+                mainTextEl.textContent = mainText;
+                content.appendChild(mainTextEl);
+            }
+            
             if (valueGainText) {
-                const valueGain = document.createElement('span');
-                valueGain.className = 'toast-value-gain';
-                valueGain.textContent = valueGainText;
-                content.appendChild(valueGain);
+                const valueGainEl = document.createElement('span');
+                valueGainEl.className = 'toast-value-gain';
+                valueGainEl.textContent = valueGainText;
+                content.appendChild(valueGainEl);
             }
 
             toast.append(icon, content);
@@ -915,20 +924,16 @@
                 toast.classList.add('visible');
             });
 
-            // Set timeout to remove the toast
             setTimeout(() => {
                 toast.classList.remove('visible');
-                // Wait for animation to finish before removing and processing next
                 toast.addEventListener('transitionend', () => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
+                    if (toast.parentNode) toast.remove();
                     isToastVisible = false;
-                    processToastQueue(); // Check for the next toast in the queue
+                    processToastQueue();
                 }, { once: true });
             }, duration);
         }
-        // --- END: NEW TOAST NOTIFICATION SYSTEM ---
+        // --- END: REVISED TOAST NOTIFICATION SYSTEM ---
 
         function showCustomConfirm(message, title = "Confirm Action", onConfirm, onCancel = null) { 
             customConfirmModalMessageEl.innerHTML = message; 
@@ -1093,7 +1098,7 @@
                     }
                 } catch (error) {
                     console.error("Error parsing data from localStorage:", error); 
-                    showToast("Data load error. Resetting to defaults.", 'error', { duration: 6000, title: "Data load error. Resetting to defaults." });
+                    showToast('error', { title: "Data Load Error", mainText: "Resetting to default data.", duration: 6000 });
                     localStorage.removeItem(APP_DATA_KEY); initializeDefaultAppState();
                 }
             } else { initializeDefaultAppState(); }
@@ -1104,7 +1109,7 @@
                 localStorage.setItem(APP_DATA_KEY, JSON.stringify(appData)); 
             } catch (error) { 
                 console.error("Error saving data to localStorage:", error); 
-                showToast("Save error. Data not saved. Storage might be full.", 'error', { duration: 7000, title: "Save error. Data not saved. Storage might be full." }); 
+                showToast('error', { title: "Save Error", mainText: "Could not save data. Storage may be full.", duration: 7000 }); 
             } 
         }
 
@@ -1371,12 +1376,12 @@
                     (t.subtasks || []).forEach(s => { s.isCompleted = true; s.completionTimestamp = s.completionTimestamp || Date.now(); }); 
                 });
                 if (!oldCompletedState) {
-                    showToast(`Quest "<strong>${project.title}</strong>" completed!`, 'success', { title: `Quest "${project.title}" completed!` });
+                    showToast('success', { title: 'Quest Completed', mainText: project.title, fullTextTitle: `Quest: ${project.title}` });
                 }
             } else { 
                 project.completionTimestamp = null;
                 if (oldCompletedState) {
-                    showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info', { title: `Quest "${project.title}" reactivated.` });
+                    showToast('info', { title: 'Quest Reactivated', mainText: project.title, fullTextTitle: `Quest: ${project.title}` });
                 }
             }
             let currentEarned = 0;
@@ -1405,17 +1410,17 @@
             });
 
             const allTasksDone = project.tasks.every(t => t.isCompleted);
-            let toastShown = false; // Flag to prevent multiple toasts
+            let toastShown = false;
 
             if(allTasksDone && !project.isCompleted) {
                 project.isCompleted = true;
                 project.completionTimestamp = project.completionTimestamp || Date.now();
-                showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success', { title: `Quest "${project.title}" auto-completed!` });
+                showToast('success', { title: 'Quest Auto-Completed', mainText: project.title, fullTextTitle: `Quest: ${project.title}` });
                 toastShown = true;
             } else if (!allTasksDone && project.isCompleted) {
                  project.isCompleted = false;
                  project.completionTimestamp = null;
-                 showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info', { title: `Quest "${project.title}" reactivated.` });
+                 showToast('info', { title: 'Quest Reactivated', mainText: project.title, fullTextTitle: `Quest: ${project.title}` });
                  toastShown = true;
             }
             
@@ -1431,16 +1436,18 @@
 
             saveData(); renderProjects();
              
-            if (toastShown) return; // Don't show the less important toast
+            if (toastShown) return;
 
              if (isCompleted && !wasTaskCompleted) {
-                 showToast(`Task "<strong>${task.description}</strong>" complete.`, 'info', {
+                 showToast('success', {
+                     title: 'Task Complete',
+                     mainText: task.description,
                      valueGainText: `+ $${(parseFloat(task.taskValue) || 0).toFixed(0)} earned`,
-                     title: `Task "${task.description}" complete.`
+                     fullTextTitle: `Task: ${task.description}`
                  });
              }
              else if (!isCompleted && wasTaskCompleted) {
-                showToast(`Task "<strong>${task.description}</strong>" marked incomplete.`, 'info', { title: `Task "${task.description}" marked incomplete.` });
+                showToast('info', { title: 'Task Incomplete', mainText: task.description, fullTextTitle: `Task: ${task.description}` });
              }
         }
 
@@ -1466,17 +1473,17 @@
             }
 
             const allTasksDone = project.tasks.every(t => t.isCompleted);
-            let toastShown = false; // Flag to prevent multiple toasts
+            let toastShown = false;
 
             if(allTasksDone && !project.isCompleted) {
                  project.isCompleted = true;
                  project.completionTimestamp = project.completionTimestamp || Date.now();
-                 showToast(`Quest "<strong>${project.title}</strong>" auto-completed!`, 'success', { title: `Quest "${project.title}" auto-completed!` });
+                 showToast('success', { title: 'Quest Auto-Completed', mainText: project.title, fullTextTitle: `Quest: ${project.title}` });
                  toastShown = true;
             } else if (!allTasksDone && project.isCompleted) {
                  project.isCompleted = false;
                  project.completionTimestamp = null;
-                 showToast(`Quest "<strong>${project.title}</strong>" reactivated.`, 'info', { title: `Quest "${project.title}" reactivated.` });
+                 showToast('info', { title: 'Quest Reactivated', mainText: project.title, fullTextTitle: `Quest: ${project.title}` });
                  toastShown = true;
             }
 
@@ -1492,31 +1499,34 @@
 
             saveData(); renderProjects();
             
-            if (toastShown) return; // Exit if a more important toast was already shown.
+            if (toastShown) return;
 
-            // Show mid-priority toast if main task was just completed by this action
             if (allSubtasksOfMainTaskDone && !wasMainTaskCompleted) {
-                showToast(`Task "<strong>${mainTask.description}</strong>" complete.`, 'info', {
+                showToast('success', {
+                    title: 'Task Complete',
+                    mainText: mainTask.description,
                     valueGainText: `+ $${(parseFloat(mainTask.taskValue) || 0).toFixed(0)} total for task`,
-                    title: `Task "${mainTask.description}" complete.`
+                    fullTextTitle: `Task: ${mainTask.description}`
                 });
-                return; // Exit after showing this toast.
+                return;
             }
 
              if (isCompleted && !wasSubtaskCompleted) {
-                showToast(`Subtask "<strong>${subtask.description}</strong>" complete.`, 'info', {
+                showToast('success', {
+                     title: 'Subtask Complete',
+                     mainText: subtask.description,
                      valueGainText: `+ $${(parseFloat(subtask.subtaskValue) || 0).toFixed(0)} earned`,
-                     title: `Subtask "${subtask.description}" complete.`
+                     fullTextTitle: `Subtask: ${subtask.description}`
                 });
              } else if (!isCompleted && wasSubtaskCompleted) {
-                showToast(`Subtask "<strong>${subtask.description}</strong>" marked incomplete.`, 'info', { title: `Subtask "${subtask.description}" marked incomplete.` });
+                showToast('info', { title: 'Subtask Incomplete', mainText: subtask.description, fullTextTitle: `Subtask: ${subtask.description}` });
              }
         }
 
         function toggleProjectPriority(projectId) { 
             const p = appData.projects.find(proj => proj.id === projectId); if (!p || p.isArchived || p.isCompleted) return; 
             p.priority = !p.priority; saveData(); renderProjects(); 
-            showToast(`Quest "<strong>${p.title}</strong>" ${p.priority ? 'prioritized' : 'unprioritized'}.`, 'info', { title: `Quest "${p.title}" ${p.priority ? 'prioritized' : 'unprioritized'}.`}); 
+            showToast('info', { title: p.priority ? 'Quest Prioritized' : 'Priority Removed', mainText: p.title, fullTextTitle: `Quest: ${p.title}`}); 
         }
         function animateThenRemoveQuest(projectId) { 
             const cardElement = document.querySelector(`.quest-card[data-id="${projectId}"]`);
@@ -1527,18 +1537,18 @@
             const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
             showCustomConfirm(`Are you sure you want to PERMANENTLY DELETE the quest "<strong>${p.title}</strong>"?`, "Delete Quest", () => { 
                 animateThenRemoveQuest(projectId); 
-                showToast(`Quest "<strong>${p.title}</strong>" deleted.`, 'info', { title: `Quest "${p.title}" deleted.` }); 
+                showToast('error', { title: 'Quest Deleted', mainText: p.title, fullTextTitle: `Quest: ${p.title}` }); 
             });
         }
         function archiveProject(projectId) { 
             const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
             p.isArchived = true; p.priority = false; saveData(); renderProjects(); 
-            showToast(`Quest "<strong>${p.title}</strong>" archived.`, 'info', { title: `Quest "${p.title}" archived.` });
+            showToast('info', { title: 'Quest Archived', mainText: p.title, fullTextTitle: `Quest: ${p.title}` });
         }
         function unarchiveProject(projectId) { 
             const p = appData.projects.find(proj => proj.id === projectId); if (!p) return;
             p.isArchived = false; saveData(); renderProjects(); 
-            showToast(`Quest "<strong>${p.title}</strong>" unarchived.`, 'info', { title: `Quest "${p.title}" unarchived.` });
+            showToast('info', { title: 'Quest Unarchived', mainText: p.title, fullTextTitle: `Quest: ${p.title}` });
         }
 
         function openQuestModal(projectId = null) { 
@@ -1610,7 +1620,7 @@
         saveQuestBtn.addEventListener('click', () => { 
             const id = questIdInput.value || generateId();
             const title = questTitleInput.value.trim();
-            if (!title) { showToast('Quest Title is required.', 'warning', { title: 'Quest Title is required.' }); questTitleInput.focus(); return; }
+            if (!title) { showToast('warning', { title: 'Title Required', mainText: 'Quest Title cannot be empty.' }); questTitleInput.focus(); return; }
             const deadline = questDeadlineInput.value; 
             const totalValue = parseFloat(questValueInput.value) || 0;
             
@@ -1661,7 +1671,7 @@
                 });
                 existing.valueEarned = Math.min(currentEarned, existing.totalValue);
 
-                showToast(`Quest "<strong>${existing.title}</strong>" updated.`, 'info', { title: `Quest "${existing.title}" updated.` });
+                showToast('info', { title: 'Quest Updated', mainText: existing.title, fullTextTitle: `Quest: ${existing.title}` });
             } else { 
                 const newProject = { 
                     id, title, deadline, totalValue, tasks: tasksFromModal, 
@@ -1671,7 +1681,7 @@
                 }; 
                 appData.projects.push(newProject); 
                 distributeValueToTasks(newProject);
-                showToast(`Quest "<strong>${newProject.title}</strong>" started.`, 'success', { title: `Quest "${newProject.title}" started.` }); 
+                showToast('success', { title: 'Quest Started', mainText: newProject.title, fullTextTitle: `Quest: ${newProject.title}` }); 
             }
             saveData(); renderProjects(); closeModal(questModal);
         });
@@ -1712,7 +1722,7 @@
         saveTemplateBtn.addEventListener('click', () => { 
             const id = templateIdInput.value || generateId();
             const name = templateNameInput.value.trim(); 
-            if (!name) { showToast('Template Name is required.', 'warning', { title: 'Template Name is required.' }); templateNameInput.focus(); return; }
+            if (!name) { showToast('warning', { title: 'Name Required', mainText: 'Template name cannot be empty.' }); templateNameInput.focus(); return; }
             const tasks = Array.from(document.querySelectorAll('#templateTasksContainer .task-editor-item')).map(div => { 
                 const desc = div.querySelector('.template-task-desc').value.trim(); 
                 return desc ? { 
@@ -1726,10 +1736,10 @@
             const existingIndex = appData.templates.findIndex(t => t.id === id);
             if (existingIndex > -1) { 
                 Object.assign(appData.templates[existingIndex], {name, tasks}); 
-                showToast(`Template "<strong>${name}</strong>" updated.`, 'success', { title: `Template "${name}" updated.` }); 
+                showToast('success', { title: 'Template Updated', mainText: name, fullTextTitle: `Template: ${name}` }); 
             } else { 
                 appData.templates.push({ id, name, tasks, isDefault: appData.templates.length === 0 }); 
-                showToast(`Template "<strong>${name}</strong>" saved.`, 'success', { title: `Template "${name}" saved.` }); 
+                showToast('success', { title: 'Template Saved', mainText: name, fullTextTitle: `Template: ${name}` }); 
             }
             saveData(); renderTemplateList(); loadTemplateEditor(id); 
         });
@@ -1751,17 +1761,17 @@
         }
         function deleteTemplate(templateId) {
             const t = appData.templates.find(temp => temp.id === templateId); if (!t) return;
-            if (t.isDefault) { showToast("Cannot delete the default template.", 'warning', { duration: 4000, title: "Cannot delete the active default template. Set a new default first." }); return; }
+            if (t.isDefault) { showToast('warning', { title: "Cannot Delete Default", mainText: 'Set a new default template first.', duration: 4000 }); return; }
             showCustomConfirm(`Are you sure you want to delete template "<strong>${t.name}</strong>"?`, "Delete Template", () => { 
                 appData.templates = appData.templates.filter(temp => temp.id !== templateId); saveData(); renderTemplateList(); loadTemplateEditor(); 
-                showToast(`Template "<strong>${t.name}</strong>" deleted.`, 'info', { title: `Template "${t.name}" deleted.` }); 
+                showToast('error', { title: 'Template Deleted', mainText: t.name, fullTextTitle: `Template: ${t.name}` }); 
             });
         }
         function setDefaultTemplate(templateId) { 
             let name = ''; 
             appData.templates.forEach(t => { t.isDefault = (t.id === templateId); if (t.isDefault) name = t.name; }); 
             saveData(); renderTemplateList(); loadTemplateEditor(templateId);
-            if (name) showToast(`Template "<strong>${name}</strong>" set as default.`, 'info', { title: `Template "${name}" set as default.` }); 
+            if (name) showToast('info', { title: 'Default Template Set', mainText: name, fullTextTitle: `Template: ${name}` }); 
         }
         function populateTemplateSelect(selectElement) { 
             selectElement.innerHTML = '<option value="">-- No Template --</option>'; let defaultId = null;
@@ -1784,7 +1794,7 @@
                 appData.projects = appData.projects.filter(p => !(p.isCompleted && p.completionTimestamp && new Date(p.completionTimestamp) < firstDayCurrentMonth));
                 saveData(); renderProjects(); 
                 const numCleared = initialCount - appData.projects.length;
-                showToast(`${numCleared} old project(s) cleared.`, 'success', { duration: 4000, title: `${numCleared} old project(s) cleared.` });
+                showToast('success', { title: 'Old Data Cleared', mainText: `${numCleared} old project(s) removed.`, duration: 4000 });
                 checkClearDataNotification();
                 closeModal(settingsModal);
             });
