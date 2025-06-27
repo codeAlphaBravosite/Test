@@ -1235,7 +1235,7 @@
             
             let deadlineHtml = `<span class="quest-deadline-details"><i class="fas fa-calendar-alt"></i> <span class="quest-deadline-text">${deadlineInfo.deadlineFormatted}</span></span>`;
             if (deadlineInfo.countdownText && !project.isCompleted && !project.isArchived) {
-                deadlineHtml += `<span class="quest-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}">&bull; <i class="fas fa-hourglass-half"></i> <span class="quest-countdown-text">${deadlineInfo.countdownText}</span></span>`;
+                deadlineHtml += `<span class="quest-countdown ${deadlineInfo.isOverdue ? 'overdue' : ''} ${deadlineInfo.isToday ? 'today' : ''}"> <span style="margin: 0 0.5rem;">&bull;</span> <i class="fas fa-hourglass-half"></i> <span class="quest-countdown-text">${deadlineInfo.countdownText}</span></span>`;
             }
 
             card.innerHTML = `
