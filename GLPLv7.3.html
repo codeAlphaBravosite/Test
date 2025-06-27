@@ -1039,6 +1039,7 @@
              appData.projects.forEach(p => distributeValueToTasks(p));
         }
 
+        // --- START: MODIFIED FUNCTION ---
         function loadData() {
             const storedData = localStorage.getItem(APP_DATA_KEY);
             if (storedData) {
@@ -1047,9 +1048,13 @@
                     appData.projects = appData.projects || []; 
                     appData.templates = appData.templates || [];
                     
+                    // Ensure all projects have the necessary UI and data properties initialized
                     appData.projects.forEach(p => { 
+                        // UI state properties (default to non-expanded, zero scroll)
                         p.ui_isExpanded = p.ui_isExpanded ?? false; 
                         p.ui_scrollPosition = p.ui_scrollPosition ?? 0; 
+
+                        // Data properties
                         p.totalValue = parseFloat(p.totalValue) || 0;
                         p.valueEarned = parseFloat(p.valueEarned) || 0;
                         p.isArchived = p.isArchived ?? false; 
@@ -1085,6 +1090,7 @@
 
 
                     });
+                    
                     if (appData.templates.length === 0 || !appData.templates.some(t => t.isDefault)) {
                        const defaultTemplate = { id: 'default-fallback-' + Date.now(), name: 'Default Video Workflow', isDefault: true, tasks: [
                                 { id: 'dtf1-' + generateId(), description: 'Ideation & Research', subtasks: [] }, { id: 'dtf2-' + generateId(), description: 'Scripting/Outlining', subtasks: [] },
@@ -1103,6 +1109,7 @@
                 }
             } else { initializeDefaultAppState(); }
         }
+        // --- END: MODIFIED FUNCTION ---
 
         function saveData() { 
             try { 
@@ -1149,9 +1156,8 @@
             checkClearDataNotification();
         }
 
-        // START: MODIFIED FUNCTION
+        // --- START: MODIFIED FUNCTION ---
         function renderProjects() {
-            // --- START: Scroll Position Preservation ---
             // 1. Save current scroll positions of all expanded task lists BEFORE re-rendering.
             //    We also update the persistent state (p.ui_scrollPosition) here for maximum robustness.
             const scrollPositions = new Map();
@@ -1162,13 +1168,13 @@
                     const scrollTop = container.scrollTop;
                     scrollPositions.set(projectId, scrollTop);
 
+                    // Persist this value in the main data object
                     const project = appData.projects.find(p => p.id === projectId);
                     if (project) {
                         project.ui_scrollPosition = scrollTop;
                     }
                 }
             });
-            // --- END: Scroll Position Preservation ---
             
             const lists = { active: activeQuestsListEl, completed: completedQuestsListEl, archived: archivedQuestsListEl };
             const firstPassPositions = new Map();
@@ -1225,19 +1231,20 @@
             });
             updateDashboard();
 
-            // --- START: Scroll Position Preservation ---
-            // 3. Restore scroll positions AFTER re-rendering using the data from our Map.
-            if (scrollPositions.size > 0) {
-                scrollPositions.forEach((scrollTop, projectId) => {
-                    const newContainer = document.querySelector(`.quest-card[data-id="${projectId}"] .tasks-container.expanded`);
-                    if (newContainer) {
-                        newContainer.scrollTop = scrollTop;
+            // 2. Restore scroll positions AFTER re-rendering using the persisted data.
+            //    This will handle both initial page load and in-app re-renders.
+            document.querySelectorAll('.quest-card .tasks-container.expanded').forEach(container => {
+                const card = container.closest('.quest-card');
+                if (card && card.dataset.id) {
+                    const project = appData.projects.find(p => p.id === card.dataset.id);
+                    if (project && project.ui_scrollPosition > 0) {
+                        // Restore the scroll position from our persisted data model
+                        container.scrollTop = project.ui_scrollPosition;
                     }
-                });
-            }
-            // --- END: Scroll Position Preservation ---
+                }
+            });
         }
-        // END: MODIFIED FUNCTION
+        // --- END: MODIFIED FUNCTION ---
         
         function createProjectCard(project) {
             const card = document.createElement('div'); card.className = 'quest-card'; card.dataset.id = project.id;
@@ -1895,7 +1902,7 @@
             setupSectionToggle(toggleArchivedListBtn, archivedQuestsListWrapper, archivedQuestsListEl, 'archived');
         });
 
-        // START: MODIFIED EVENT LISTENER
+        // --- START: MODIFIED EVENT LISTENER ---
         window.addEventListener('beforeunload', () => { 
             // Update scroll positions for all currently expanded tasks just before leaving
             document.querySelectorAll('.quest-card .tasks-container.expanded').forEach(container => {
@@ -1907,9 +1914,10 @@
                     }
                 }
             });
+            // Save all data, including the updated scroll positions
             saveData(); 
         });
-        // END: MODIFIED EVENT LISTENER
+        // --- END: MODIFIED EVENT LISTENER ---
         
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => console.log('Service Worker registered.', reg.scope)).catch(err => console.log('Service Worker registration failed:', err)); });
