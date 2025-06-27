@@ -348,7 +348,7 @@
         .task-item:last-child, .subtask-item:last-child { border-bottom: none; }
         .subtask-item { margin-left: 2rem; } 
         
-        .task-item .task-checkbox, .subtask-item .subtask-checkbox { transform: scale(1.1); accent-color: var(--primary-color); cursor: pointer; margin-top: 0.12rem; }
+        .task-item .task-checkbox, .subtask-item .subtask-checkbox { transform: scale(1.1); accent-color: var(--primary-color); cursor: pointer; margin-top: 0.1rem; }
         .task-item .task-checkbox:disabled, .subtask-item .subtask-checkbox:disabled { cursor: not-allowed; opacity: var(--disabled-opacity); }
         .task-description { flex-grow: 1; font-size: 0.9rem; }
         .task-item .task-description { font-weight: 500; } 
@@ -515,8 +515,7 @@
             flex-direction: column-reverse;
             gap: 12px;
            /* width: 100%; */
-            max-width: 360px;
-            align-items: flex-end; /* <-- ADDED THIS LINE */
+            width: 360px;
         }
 
         .toast-message {
@@ -610,7 +609,7 @@
             .quest-card-meta { font-size: 0.8rem; }
             .modal-content { margin: 5% auto; width: 95%; padding: 1.25rem; }
             .modal-header h2 { font-size: 1.15rem; }
-            #toastContainer { right: 10px; left: 10px; bottom: 10px; max-width: 100%; align-items: stretch; }
+            #toastContainer { right: 0; left: 0; bottom: 10px; width: 100%; padding: 0 10px; }
             .toast-message { width: 100%; }
             .modal-content { 
                margin: 3% auto; 
