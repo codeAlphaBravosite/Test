@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUET Tracker Pro - English & GAT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin: -20px -20px 20px -20px;
+            padding: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 2px 10px var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-item:hover {
+            background: var(--light);
+        }
+
+        .sidebar-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        /* Progress Overview */
+        .progress-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 20px;
+            border-radius: var(--radius);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+        }
+
+        .progress-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--white);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Subject Sections */
+        .subject-section {
+            margin-bottom: 30px;
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--light);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .subject-header:hover {
+            background: #e5e7eb;
+        }
+
+        .subject-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subject-progress {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .topics-container {
+            display: grid;
+            gap: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .topics-container.expanded {
+            max-height: 2000px;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .topic-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .topic-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .topic-content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topic-name {
+            font-weight: 500;
+        }
+
+        .topic-actions {
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .topic-item:hover .topic-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .revision-btn {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .revision-btn:hover {
+            background: #dc2626;
+        }
+
+        .notes-btn {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .notes-btn:hover {
+            background: #059669;
+        }
+
+        /* Study Timer */
+        .study-timer {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--white);
+            box-shadow: 0 4px 20px var(--shadow);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .timer-display {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .timer-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .start-btn {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .pause-btn {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .reset-btn {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        /* Analytics Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        /* Charts */
+        .chart-container {
+            margin: 20px 0;
+            height: 300px;
+            background: var(--light);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #6b7280;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .header-content {
+                flex-direction: column;
+            }
+
+            .progress-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .study-timer {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .topic-item {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: #111827;
+            color: var(--white);
+        }
+
+        body.dark-mode .header,
+        body.dark-mode .sidebar,
+        body.dark-mode .main-content,
+        body.dark-mode .study-timer,
+        body.dark-mode .modal-content {
+            background: #1f2937;
+        }
+
+        body.dark-mode .stat-card,
+        body.dark-mode .subject-header,
+        body.dark-mode .topic-item {
+            background: #374151;
+        }
+
+        body.dark-mode .topic-item:hover {
+            background: #4b5563;
+        }
+
+        /* Streak Badge */
+        .streak-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--warning);
+            color: var(--white);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Confidence Slider */
+        .confidence-slider {
+            width: 100px;
+            margin-left: 10px;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: var(--light);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-box h4 {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>📚</span>
+                    CUET Tracker Pro
+                </div>
+                <div class="user-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="overallProgress">0%</div>
+                        <div class="stat-label">Overall Progress</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="studyStreak">0</div>
+                        <div class="stat-label">Day Streak 🔥</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="todayTime">0h 0m</div>
+                        <div class="stat-label">Today's Study</div>
+                    </div>
+                    <button class="timer-btn" onclick="toggleDarkMode()">🌙</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item active" onclick="showSection('syllabus')">
+                        <span class="sidebar-icon">📖</span>
+                        Syllabus Tracker
+                    </li>
+                    <li class="sidebar-item" onclick="showSection('analytics')">
+                        <span class="sidebar-icon">📊</span>
+                        Analytics
+                    </li>
+                    <li class="sidebar-item" onclick="showSection('planner')">
+                        <span class="sidebar-icon">📅</span>
+                        Study Planner
+                    </li>
+                    <li class="sidebar-item" onclick="showSection('resources')">
+                        <span class="sidebar-icon">📁</span>
+                        Resources
+                    </li>
+                    <li class="sidebar-item" onclick="showSection('tests')">
+                        <span class="sidebar-icon">📝</span>
+                        Mock Tests
+                    </li>
+                    <li class="sidebar-item" onclick="showSection('notes')">
+                        <span class="sidebar-icon">📓</span>
+                        My Notes
+                    </li>
+                </ul>
+
+                <div style="margin-top: 30px; padding: 20px; background: var(--light); border-radius: var(--radius);">
+                    <h4 style="margin-bottom: 10px;">Quick Actions</h4>
+                    <button class="action-btn notes-btn" style="width: 100%; margin-bottom: 10px;" onclick="startPomodoro()">
+                        🍅 Start Pomodoro
+                    </button>
+                    <button class="action-btn revision-btn" style="width: 100%;" onclick="showRevisionSuggestions()">
+                        🔄 Revision Mode
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content" id="mainContent">
+                <!-- Progress Overview -->
+                <div class="progress-overview">
+                    <div class="progress-card">
+                        <h3>General Knowledge</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="gkProgress" style="width: 0%"></div>
+                        </div>
+                        <p><span id="gkPercentage">0</span>% Complete</p>
+                    </div>
+                    <div class="progress-card" style="background: linear-gradient(135deg, var(--secondary), #059669);">
+                        <h3>Current Affairs</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="caProgress" style="width: 0%"></div>
+                        </div>
+                        <p><span id="caPercentage">0</span>% Complete</p>
+                    </div>
+                    <div class="progress-card" style="background: linear-gradient(135deg, var(--warning), #dc2626);">
+                        <h3>Mental Ability</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="maProgress" style="width: 0%"></div>
+                        </div>
+                        <p><span id="maPercentage">0</span>% Complete</p>
+                    </div>
+                    <div class="progress-card" style="background: linear-gradient(135deg, #ec4899, #be185d);">
+                        <h3>English</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="engProgress" style="width: 0%"></div>
+                        </div>
+                        <p><span id="engPercentage">0</span>% Complete</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-box">
+                        <h4>Topics Completed</h4>
+                        <div class="value" id="topicsCompleted">0/0</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Study Time This Week</h4>
+                        <div class="value" id="weeklyTime">0h</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Revision Due</h4>
+                        <div class="value" id="revisionDue">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Next Target</h4>
+                        <div class="value" id="nextTarget">--</div>
+                    </div>
+                </div>
+
+                <!-- Syllabus Sections -->
+                <div id="syllabusContent">
+                    <!-- Content will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Study Timer -->
+        <div class="study-timer">
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn start-btn" onclick="startTimer()">Start</button>
+                <button class="timer-btn pause-btn" onclick="pauseTimer()">Pause</button>
+                <button class="timer-btn reset-btn" onclick="resetTimer()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Analytics Modal -->
+        <div class="modal" id="analyticsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Study Analytics</h2>
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="chart-container">
+                    <p>Weekly Progress Chart (Chart.js integration needed)</p>
+                </div>
+                <div class="chart-container">
+                    <p>Subject-wise Distribution (Chart.js integration needed)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Syllabus Data Structure
+        const syllabusData = {
+            "General Knowledge": {
+                "Indian History": [
+                    "Indus Valley Civilization: Urban planning, trade, and decline",
+                    "Vedic Age: Society, religion, and literature",
+                    "Mauryan Empire: Administration, Ashoka's edicts, and economy",
+                    "Gupta Empire: Golden Age, art, and science",
+                    "Delhi Sultanate: Dynasties, architecture, and administration",
+                    "Mughal Empire: Akbar's policies, Taj Mahal, and decline",
+                    "Rajputs: Kingdoms, culture, and resistance",
+                    "British Rule: East India Company, colonial policies, and revolts",
+                    "Independence Movement: Non-cooperation, Quit India, and leaders",
+                    "Post-Independence: Constitution, integration, and economic policies"
+                ],
+                "Geography": [
+                    "Mountains: Himalayas, Western Ghats, and their significance",
+                    "Rivers: Ganges, Brahmaputra, and river systems",
+                    "Lakes: Dal Lake, Chilika Lake, and their ecological importance",
+                    "Deserts: Thar Desert, features, and climate",
+                    "Climate: Monsoon, seasons, and climate zones",
+                    "Natural Resources: Minerals, forests, and water resources",
+                    "Agriculture: Crops, green revolution, and irrigation",
+                    "Industry: Major industries, industrial policies, and growth",
+                    "Trade: Domestic and international trade, exports, and imports",
+                    "Transportation: Railways, roads, and ports",
+                    "States and Union Territories: List, capitals, and boundaries",
+                    "Capitals: National and state capitals, historical significance",
+                    "International Boundaries: India-Pakistan, India-China, etc."
+                ],
+                "Economy": [
+                    "Microeconomics: Supply, demand, and market equilibrium",
+                    "Macroeconomics: National income, fiscal policy, and monetary policy",
+                    "Economic Indicators: GDP, inflation, unemployment rates",
+                    "Economic Reforms: Liberalization, privatization, globalization",
+                    "Banking System: RBI, commercial banks, and financial inclusion",
+                    "Agriculture: Crop patterns, subsidies, and agricultural policies",
+                    "Industry: Manufacturing, MSMEs, and industrial growth",
+                    "Services: IT, tourism, and service sector contribution",
+                    "International Trade: Balance of trade, tariffs, and trade agreements",
+                    "WTO: Functions, disputes, and India's role",
+                    "IMF: Loans, structural adjustments, and global financial stability",
+                    "World Bank: Development projects, loans, and India's engagement"
+                ],
+                "Polity": [
+                    "Preamble: Objectives and principles",
+                    "Fundamental Rights: Six rights, scope, and enforcement",
+                    "Fundamental Duties: List and significance",
+                    "Directive Principles: Social, economic, and political directives",
+                    "Central Government: President, PM, and Parliament",
+                    "State Governments: Governor, CM, and state legislature",
+                    "Local Self-Governments: Panchayats, municipalities, and 73rd/74th amendments",
+                    "Public Administration: Bureaucracy, civil services, and reforms",
+                    "Judiciary: Supreme Court, High Courts, and judicial review",
+                    "Election Commission: Functions, elections, and electoral reforms"
+                ],
+                "Culture": [
+                    "Paintings: Mughal, Rajput, and modern art",
+                    "Sculptures: Mauryan, Gupta, and contemporary",
+                    "Literature Ancient: Vedas, Upanishads, and epics",
+                    "Literature Modern: Tagore, Premchand, and contemporary writers",
+                    "Music Classical: Hindustani, Carnatic, and ragas",
+                    "Music Folk: Regional folk music and instruments",
+                    "Dance Classical: Bharatanatyam, Kathak, and Odissi",
+                    "Dance Folk: Bhangra, Garba, and regional dances",
+                    "Festivals National: Republic Day, Independence Day",
+                    "Festivals Regional: Diwali, Holi, Eid, Pongal, and local festivals"
+                ],
+                "Sports": [
+                    "Olympics: History, events, and India's participation",
+                    "Commonwealth Games: Events, medals, and venues",
+                    "Asian Games: History, events, and India's performance",
+                    "Notable Athletes: Sachin Tendulkar, PV Sindhu, etc.",
+                    "Records: World records, Olympic records, and achievements",
+                    "Arjuna Award: Criteria and recipients",
+                    "Dronacharya Award: Coaching excellence and recipients"
+                ],
+                "Awards and Honours": [
+                    "Bharat Ratna: Highest civilian award, recipients",
+                    "Padma Awards: Padma Vibhushan, Bhushan, Shri, and criteria",
+                    "Gallantry Awards: Param Vir Chakra, Ashok Chakra, etc.",
+                    "Nobel Prize: Categories, notable winners, and history",
+                    "Oscar: Film awards, categories, and notable winners",
+                    "Emmy: Television awards, categories, and history"
+                ],
+                "Important Days": [
+                    "Republic Day: January 26, celebrations, and history",
+                    "Independence Day: August 15, significance, and events",
+                    "Gandhi Jayanti: October 2, birth anniversary, and legacy",
+                    "UN Day: October 24, UN founding, and events",
+                    "Human Rights Day: December 10, significance, and activities",
+                    "Environment Day: June 5, themes, and global initiatives"
+                ],
+                "Books and Authors": [
+                    "Novels: 'God of Small Things' by Arundhati Roy",
+                    "Short Stories: 'The Guide' by R.K. Narayan",
+                    "Biographies: 'Wings of Fire' by APJ Abdul Kalam",
+                    "History: 'India After Gandhi' by Ramachandra Guha",
+                    "Science: 'Brief History of Time' by Stephen Hawking"
+                ],
+                "Science and Technology": [
+                    "Space Technology: Chandrayaan, Gaganyaan, and ISRO missions",
+                    "Biotechnology: GM crops, CRISPR, and medical advancements",
+                    "Information Technology: AI, blockchain, and cybersecurity",
+                    "Scientific Breakthroughs: COVID-19 vaccines, quantum computing",
+                    "Notable Indian Scientists: C.V. Raman, Homi Bhabha",
+                    "International Scientists: Albert Einstein, Marie Curie"
+                ]
+            },
+            "Current Affairs": {
+                "National News": [
+                    "Political Events: Elections, policy announcements, and reforms",
+                    "Economic Developments: Budget highlights, economic growth",
+                    "Social Issues: Education, healthcare, and gender equality",
+                    "Environmental Concerns: Pollution, deforestation, and initiatives"
+                ],
+                "International News": [
+                    "Global Events: Summits, conflicts, and treaties",
+                    "Diplomatic Relations: Bilateral agreements, G20, and UN",
+                    "Economic Trends: Global recession, trade wars",
+                    "Humanitarian Crises: Refugees, natural disasters, and aid"
+                ],
+                "Economy": [
+                    "GDP Growth: Quarterly and annual trends",
+                    "Inflation Rates: CPI, WPI, and monetary policy impacts",
+                    "Fiscal Policies: Government spending, taxation",
+                    "Union Budget: Key allocations, reforms, and schemes",
+                    "State Budgets: State-specific economic plans",
+                    "Export-Import Data: Major commodities, trade deficits",
+                    "Trade Policies: Free trade agreements, tariffs"
+                ],
+                "Sports": [
+                    "National and International Tournaments: IPL, FIFA World Cup",
+                    "Medals and Awards: Olympic medals, Arjuna awards",
+                    "Records Broken: World records, national records"
+                ],
+                "Awards and Honours": [
+                    "Literary Awards: Sahitya Akademi, Booker Prize",
+                    "Film Awards: National Film Awards, Oscars",
+                    "Scientific Awards: Nobel, Fields Medal",
+                    "Sports Awards: Khel Ratna, Dronacharya"
+                ],
+                "Science and Technology": [
+                    "AI, Tech Startups: Unicorn startups, funding rounds",
+                    "New Inventions: Electric vehicles, renewable energy",
+                    "ISRO Projects: Chandrayaan-3, Aditya-L1",
+                    "International Space Programs: NASA, ESA missions"
+                ],
+                "Environment": [
+                    "Global Warming: Carbon emissions, temperature rise",
+                    "Paris Agreement: Commitments, COP meetings",
+                    "Biodiversity: Endangered species, wildlife protection",
+                    "Protected Areas: National parks, sanctuaries",
+                    "National Green Tribunal: Cases, rulings",
+                    "Environmental Laws: Air Act, Water Act, and amendments"
+                ]
+            },
+            "General Mental Ability": {
+                "Logical Reasoning": [
+                    "Syllogisms: All, some, none statements, conclusions",
+                    "Analogies: Word and number analogies, relationships",
+                    "Series Completion: Number, letter, and mixed series",
+                    "Coding-Decoding: Letter, number, and mixed coding",
+                    "Blood Relations: Family tree, relationships",
+                    "Direction Sense: Directions, distances, and positions"
+                ],
+                "Analytical Reasoning": [
+                    "Tables: Reading and interpreting data",
+                    "Graphs: Bar, pie, line graphs, trends",
+                    "Charts: Flowcharts, organizational charts",
+                    "Problem Solving: Logical puzzles, scenarios",
+                    "Decision Making: Choosing best options, trade-offs"
+                ],
+                "Verbal Reasoning": [
+                    "Passage Reading: Short and long passages, main idea",
+                    "Inference: Drawing conclusions, implied meanings",
+                    "Synonyms: Similar meaning words",
+                    "Antonyms: Opposite meaning words",
+                    "Homonyms: Words with same spelling, different meanings",
+                    "Parts of Speech: Nouns, verbs, adjectives, etc.",
+                    "Tenses: Present, past, future, and forms",
+                    "Sentence Structure: Subject-verb agreement, clauses"
+                ],
+                "Non-Verbal Reasoning": [
+                    "Number Patterns: Sequences, series",
+                    "Letter Patterns: Alphabetic sequences",
+                    "Geometrical Shapes: Triangles, circles, polygons",
+                    "Symmetry: Line and rotational symmetry",
+                    "Paper Folding: Folding and cutting patterns",
+                    "Cube and Dice: Views, rotations, and positions"
+                ]
+            },
+            "Numerical Ability": {
+                "Number System": [
+                    "Natural Numbers: 1, 2, 3, ...",
+                    "Whole Numbers: 0, 1, 2, ...",
+                    "Integers: Positive, negative, zero",
+                    "Rational Numbers: Fractions, decimals",
+                    "Irrational Numbers: √2, π, etc.",
+                    "Even and Odd Numbers: Divisibility by 2",
+                    "Prime and Composite Numbers: Factors and divisibility",
+                    "Factors and Multiples: Divisors and products",
+                    "Divisibility Rules: For 2, 3, 5, 9, etc."
+                ],
+                "Arithmetic": [
+                    "Basic Operations: Addition, subtraction, multiplication, division",
+                    "Percentage: Increase/decrease, calculations",
+                    "Ratio and Proportion: Simplifying, solving problems"
+                ],
+                "Algebra": [
+                    "Linear Equations: ax + b = 0",
+                    "Quadratic Equations: ax² + bx + c = 0",
+                    "Inequalities: Solving >, <, ≥, ≤",
+                    "Functions: Linear and quadratic"
+                ],
+                "Geometry": [
+                    "Triangles: Types, area, perimeter",
+                    "Quadrilaterals: Squares, rectangles, trapezoids",
+                    "Circles: Radius, diameter, circumference, area",
+                    "Pythagorean Theorem: a² + b² = c²",
+                    "Properties of Angles: Complementary, supplementary"
+                ],
+                "Trigonometry": [
+                    "Basic Ratios: Sine, cosine, tangent",
+                    "Identities: Pythagorean, sum and difference"
+                ],
+                "Statistics": [
+                    "Measures of Central Tendency: Mean, median, mode",
+                    "Measures of Dispersion: Range, variance, standard deviation"
+                ],
+                "Probability": [
+                    "Basic Concepts: Sample space, events",
+                    "Rules: Addition and multiplication rules"
+                ]
+            },
+            "Quantitative Reasoning": {
+                "Data Interpretation": [
+                    "Tables: Reading and analyzing tabular data",
+                    "Graphs: Bar, pie, line graph interpretation",
+                    "Charts: Flowcharts, organizational charts"
+                ],
+                "Data Sufficiency": [
+                    "Determining sufficiency: Two statements analysis"
+                ],
+                "Problem Solving": [
+                    "Age Problems: Age relationships, calculations",
+                    "Time and Work: Work rates, joint work",
+                    "Speed and Distance: Distance, time, speed calculations",
+                    "Puzzles: Logical arrangement, seating",
+                    "Sequences: Number, letter, and mixed sequences"
+                ]
+            },
+            "English": {
+                "Reading Comprehension": [
+                    "Fiction Passages: Main ideas, supporting details, inferences",
+                    "Non-fiction Passages: Author's tone, purpose, vocabulary",
+                    "Poetry: Poetic devices, themes, interpretation"
+                ],
+                "Verbal Ability": [
+                    "Paragraph Jumbles: Ordering sentences coherently",
+                    "Cloze Test: Filling blanks with appropriate words",
+                    "Critical Reasoning: Analogies, logical connections"
+                ],
+                "Grammar and Usage": [
+                    "Error Spotting: Subject-verb agreement, tense consistency",
+                    "Sentence Correction: Grammar rules, parallel structure",
+                    "Fill in the Blanks: Grammatical context"
+                ],
+                "Vocabulary": [
+                    "Synonyms and Antonyms: Word meanings and opposites",
+                    "Word Meanings: Definitions and usage",
+                    "Idioms and Phrases: Common expressions",
+                    "Phrasal Verbs: Meanings and usage",
+                    "Figures of Speech: Metaphors, similes, etc.",
+                    "Word Analogies: Part-whole, cause-effect",
+                    "Spelling: Common rules and exceptions"
+                ]
+            }
+        };
+
+        // Initialize application
+        let timerInterval;
+        let seconds = 0;
+        let isTimerRunning = false;
+        let studyData = JSON.parse(localStorage.getItem('cuetTrackerData')) || {
+            progress: {},
+            studyTime: {},
+            streak: 0,
+            lastStudyDate: null,
+            revisionSchedule: {},
+            notes: {}
+        };
+
+        // Generate syllabus content
+        function generateSyllabusContent() {
+            const container = document.getElementById('syllabusContent');
+            container.innerHTML = '';
+
+            for (const [subject, categories] of Object.entries(syllabusData)) {
+                const subjectSection = document.createElement('div');
+                subjectSection.className = 'subject-section';
+                
+                const subjectHeader = document.createElement('div');
+                subjectHeader.className = 'subject-header';
+                subjectHeader.onclick = () => toggleSection(subject);
+                
+                subjectHeader.innerHTML = `
+                    <div class="subject-title">
+                        <span id="${subject}-arrow">▶</span>
+                        ${subject}
+                    </div>
+                    <div class="subject-progress">
+                        <span id="${subject}-completed">0</span>/<span id="${subject}-total">0</span> topics
+                        <div class="progress-bar" style="width: 100px;">
+                            <div class="progress-fill" id="${subject}-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                `;
+                
+                const topicsContainer = document.createElement('div');
+                topicsContainer.className = 'topics-container';
+                topicsContainer.id = `${subject}-topics`;
+                
+                let totalTopics = 0;
+                for (const [category, topics] of Object.entries(categories)) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.innerHTML = `<h4 style="margin: 15px 0 10px 20px; color: var(--primary);">${category}</h4>`;
+                    topicsContainer.appendChild(categoryDiv);
+                    
+                    topics.forEach((topic, index) => {
+                        totalTopics++;
+                        const topicId = `${subject}-${category}-${index}`;
+                        const topicItem = document.createElement('div');
+                        topicItem.className = 'topic-item';
+                        topicItem.style.animationDelay = `${index * 0.05}s`;
+                        
+                        topicItem.innerHTML = `
+                            <input type="checkbox" class="topic-checkbox" id="${topicId}" 
+                                onchange="updateProgress('${subject}', '${category}', ${index})"
+                                ${studyData.progress[topicId] ? 'checked' : ''}>
+                            <div class="topic-content">
+                                <label for="${topicId}" class="topic-name">${topic}</label>
+                                <div class="topic-actions">
+                                    <button class="action-btn revision-btn" onclick="scheduleRevision('${topicId}')">
+                                        Schedule Revision
+                                    </button>
+                                    <button class="action-btn notes-btn" onclick="addNote('${topicId}')">
+                                        Add Note
+                                    </button>
+                                    <input type="range" class="confidence-slider" min="1" max="5" value="3"
+                                        onchange="updateConfidence('${topicId}', this.value)">
+                                </div>
+                            </div>
+                        `;
+                        
+                        topicsContainer.appendChild(topicItem);
+                    });
+                }
+                
+                document.getElementById(`${subject}-total`).textContent = totalTopics;
+                
+                subjectSection.appendChild(subjectHeader);
+                subjectSection.appendChild(topicsContainer);
+                container.appendChild(subjectSection);
+            }
+            
+            updateAllProgress();
+        }
+
+        // Toggle section visibility
+        function toggleSection(subject) {
+            const container = document.getElementById(`${subject}-topics`);
+            const arrow = document.getElementById(`${subject}-arrow`);
+            
+            if (container.classList.contains('expanded')) {
+                container.classList.remove('expanded');
+                arrow.textContent = '▶';
+            } else {
+                container.classList.add('expanded');
+                arrow.textContent = '▼';
+            }
+        }
+
+        // Update progress
+        function updateProgress(subject, category, index) {
+            const topicId = `${subject}-${category}-${index}`;
+            const checkbox = document.getElementById(topicId);
+            
+            studyData.progress[topicId] = checkbox.checked;
+            
+            // Update streak
+            const today = new Date().toDateString();
+            if (studyData.lastStudyDate !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (studyData.lastStudyDate === yesterday.toDateString()) {
+                    studyData.streak++;
+                } else {
+                    studyData.streak = 1;
+                }
+                studyData.lastStudyDate = today;
+            }
+            
+            saveData();
+            updateAllProgress();
+            showNotification('Progress updated! Keep going! 🎯');
+        }
+
+        // Update all progress indicators
+        function updateAllProgress() {
+            let totalTopics = 0;
+            let completedTopics = 0;
+            const subjectProgress = {};
+            
+            for (const [subject, categories] of Object.entries(syllabusData)) {
+                let subjectTotal = 0;
+                let subjectCompleted = 0;
+                
+                for (const [category, topics] of Object.entries(categories)) {
+                    topics.forEach((topic, index) => {
+                        const topicId = `${subject}-${category}-${index}`;
+                        totalTopics++;
+                        subjectTotal++;
+                        
+                        if (studyData.progress[topicId]) {
+                            completedTopics++;
+                            subjectCompleted++;
+                        }
+                    });
+                }
+                
+                subjectProgress[subject] = {
+                    completed: subjectCompleted,
+                    total: subjectTotal,
+                    percentage: subjectTotal > 0 ? Math.round((subjectCompleted / subjectTotal) * 100) : 0
+                };
+                
+                // Update subject progress display
+                if (document.getElementById(`${subject}-completed`)) {
+                    document.getElementById(`${subject}-completed`).textContent = subjectCompleted;
+                    document.getElementById(`${subject}-progress`).style.width = `${subjectProgress[subject].percentage}%`;
+                }
+            }
+            
+            // Update overall progress
+            const overallPercentage = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+            document.getElementById('overallProgress').textContent = `${overallPercentage}%`;
+            document.getElementById('topicsCompleted').textContent = `${completedTopics}/${totalTopics}`;
+            
+            // Update category progress cards
+            updateProgressCard('gk', 'General Knowledge', subjectProgress);
+            updateProgressCard('ca', 'Current Affairs', subjectProgress);
+            updateProgressCard('ma', 'General Mental Ability', subjectProgress);
+            updateProgressCard('eng', 'English', subjectProgress);
+            
+            // Update streak
+            document.getElementById('studyStreak').textContent = studyData.streak;
+        }
+
+        // Update progress card
+        function updateProgressCard(id, subject, progress) {
+            if (progress[subject]) {
+                document.getElementById(`${id}Progress`).style.width = `${progress[subject].percentage}%`;
+                document.getElementById(`${id}Percentage`).textContent = progress[subject].percentage;
+            }
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            seconds = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimer() {
+            seconds++;
+            updateTimerDisplay();
+            
+            // Update today's study time
+            const today = new Date().toDateString();
+            if (!studyData.studyTime[today]) {
+                studyData.studyTime[today] = 0;
+            }
+            studyData.studyTime[today]++;
+            
+            if (seconds % 60 === 0) {
+                saveData();
+                updateTodayTime();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            document.getElementById('timerDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTodayTime() {
+            const today = new Date().toDateString();
+            const todaySeconds = studyData.studyTime[today] || 0;
+            const hours = Math.floor(todaySeconds / 3600);
+            const minutes = Math.floor((todaySeconds % 3600) / 60);
+            
+            document.getElementById('todayTime').textContent = `${hours}h ${minutes}m`;
+        }
+
+        // Show notification
+        function showNotification(message) {
+            // Simple notification implementation
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--primary);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('cuetTrackerData', JSON.stringify(studyData));
+        }
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Show different sections
+        function showSection(section) {
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.sidebar-item').classList.add('active');
+            
+            // Show appropriate content
+            const mainContent = document.getElementById('mainContent');
+            
+            switch(section) {
+                case 'analytics':
+                    document.getElementById('analyticsModal').style.display = 'flex';
+                    break;
+                case 'planner':
+                    mainContent.innerHTML = `
+                        <h2>Study Planner</h2>
+                        <div class="chart-container">
+                            <p>AI-powered study schedule generator coming soon!</p>
+                        </div>
+                    `;
+                    break;
+                case 'resources':
+                    mainContent.innerHTML = `
+                        <h2>Resources</h2>
+                        <div class="chart-container">
+                            <p>Study materials, previous papers, and notes will appear here</p>
+                        </div>
+                    `;
+                    break;
+                case 'tests':
+                    mainContent.innerHTML = `
+                        <h2>Mock Tests</h2>
+                        <div class="chart-container">
+                            <p>Practice tests and performance analytics coming soon!</p>
+                        </div>
+                    `;
+                    break;
+                case 'notes':
+                    mainContent.innerHTML = `
+                        <h2>My Notes</h2>
+                        <div class="chart-container">
+                            <p>Your personal notes and bookmarks will appear here</p>
+                        </div>
+                    `;
+                    break;
+                default:
+                    location.reload();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('analyticsModal').style.display = 'none';
+        }
+
+        // Pomodoro timer
+        function startPomodoro() {
+            resetTimer();
+            seconds = 25 * 60; // 25 minutes
+            startTimer();
+            showNotification('Pomodoro session started! Focus for 25 minutes 🍅');
+        }
+
+        // Show revision suggestions
+        function showRevisionSuggestions() {
+            showNotification('Revision mode activated! Topics due for revision will be highlighted 📚');
+        }
+
+        // Schedule revision
+        function scheduleRevision(topicId) {
+            showNotification('Revision scheduled! You\'ll be reminded in 3 days 📅');
+        }
+
+        // Add note
+        function addNote(topicId) {
+            const note = prompt('Add a note for this topic:');
+            if (note) {
+                if (!studyData.notes[topicId]) {
+                    studyData.notes[topicId] = [];
+                }
+                studyData.notes[topicId].push({
+                    text: note,
+                    date: new Date().toISOString()
+                });
+                saveData();
+                showNotification('Note added successfully! 📝');
+            }
+        }
+
+        // Update confidence
+        function updateConfidence(topicId, value) {
+            if (!studyData.confidence) {
+                studyData.confidence = {};
+            }
+            studyData.confidence[topicId] = value;
+            saveData();
+        }
+
+        // Initialize app
+        window.onload = function() {
+            // Load dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Generate syllabus content
+            generateSyllabusContent();
+            
+            // Update today's time
+            updateTodayTime();
+            
+            // Update weekly time
+            const weeklySeconds = Object.entries(studyData.studyTime)
+                .filter(([date]) => {
+                    const d = new Date(date);
+                    const today = new Date();
+                    const weekAgo = new Date(today);
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    return d >= weekAgo && d <= today;
+                })
+                .reduce((total, [, time]) => total + time, 0);
+            
+            document.getElementById('weeklyTime').textContent = `${Math.floor(weeklySeconds / 3600)}h`;
+            
+            // Set next target
+            document.getElementById('nextTarget').textContent = 'Indian History';
+            
+            // Check for revision due
+            document.getElementById('revisionDue').textContent = '3';
+        };
+
+        // Auto-save every 5 minutes
+        setInterval(saveData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
